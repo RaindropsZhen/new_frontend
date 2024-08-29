@@ -55,12 +55,7 @@ const languages = [
     code: "pt",
     name: "Português",
     country_code: "pt"
-  },
-  {
-    code: "es",
-    name: "Español",
-    country_code: "es-es"
-  },
+  }
 ]
 
 const Place = () => {
@@ -97,11 +92,9 @@ const Place = () => {
   const renderCategoryName = (category) => {
     switch (selectedLanguage) {
       case '中文':
-        return category.name;
+        return category.name_cn;
       case 'English':
         return category.name_en;
-      case 'Español':
-        return category.name_es;
       case 'Português':
         return category.name_pt;
       default:
@@ -187,7 +180,7 @@ const Place = () => {
               </div>
             </div>
 
-            <Button variant="link" onClick={showQRModal}>
+            <Button variant="link" href={`/places/${params.id}/qrcode`}>
               <AiOutlineQrcode size={25} />
             </Button>
 
@@ -202,15 +195,6 @@ const Place = () => {
             <Button variant="link" onClick={showprinterModal}>
               <TiPrinter size={25} />
             </Button>
-
-            {/* <Button variant="link" href={`/places/${params.id}/Analysis`}>
-              <VscGraph size={25} />
-            </Button>   */}
-            
-            {/* <Button variant="link" href={`/places/${params.id}/settings`}>
-              <FiSettings size={25} />
-            </Button>  */}
-            
           </div>
         </Col>
 

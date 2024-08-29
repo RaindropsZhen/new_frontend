@@ -15,6 +15,7 @@ import Orders from '../pages/Orders';
 import MenuSettings from '../pages/MenuSettings';
 import TableNumberInput from '../pages/SelectTable';
 import Analysis from '../components/DataAnalysis/DataAnalysis';
+import QRCode from '../pages/QRCode';
 
 import { useTranslation, initReactI18next } from "react-i18next";
 
@@ -65,8 +66,8 @@ function App() {
                 <MenuSettings/>
               </PrivateRoute>
 
-              <PrivateRoute exact path='/places/:id/Analysis'>
-                <Analysis/>
+              <PrivateRoute exact path='/places/:id/qrcode'>
+                <QRCode/>
               </PrivateRoute>
 
             </Switch>
