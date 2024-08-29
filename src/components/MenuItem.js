@@ -25,7 +25,7 @@ const Container = styled.div`
 const renderMenuItemName = (item,selectedLanguage) => {
   switch (selectedLanguage) {
     case '中文':
-      return item.name;
+      return item.name_cn;
       case 'English':
       return item.name_en;
       case 'Español':
@@ -40,7 +40,7 @@ const renderMenuItemName = (item,selectedLanguage) => {
 const renderMenuItemDescription = (item, selectedLanguage) => {
   switch (selectedLanguage) {
     case '中文':
-      return item.description;
+      return item.description_cn;
       case 'English':
       return item.description_en;
       case 'Español':
@@ -56,7 +56,7 @@ const MenuItem = ({ language,item, onEdit, onRemove, onOrder, color }) => (
 
     <Col xs={5} 
       style={{
-        backgroundImage: `url(${item.image})`,
+        backgroundImage: `url(€{item.image})`,
         backgroundSize: 'contain',
         backgroundRepeat: 'no-repeat',
         backgroundPosition: 'center',
@@ -72,7 +72,7 @@ const MenuItem = ({ language,item, onEdit, onRemove, onOrder, color }) => (
       <div>
         <div className="d-flex justify-content-between align-items-center mb-2">
           <h4 className="mb-0">
-            <b>{item.name_to_print} {renderMenuItemName(item,language)}</b>
+            <b> {item.code}. {renderMenuItemName(item,language)}</b>
           </h4>
           <div>
             { onEdit ? (
@@ -93,7 +93,7 @@ const MenuItem = ({ language,item, onEdit, onRemove, onOrder, color }) => (
       <div className="d-flex justify-content-between align-items-end">
         <div>
           <h5 className="mb-0 text-standard">
-            <b style={{ color }}>${item.price}</b>
+            <b style={{ color }}>€ {item.price}</b>
           </h5>
 
           {onOrder ? (

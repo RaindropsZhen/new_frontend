@@ -340,65 +340,15 @@ body {
   color: rgb(12, 11, 11);
 }
 
-.print-only {
-  display: none;
+.qrcode-tab .nav-link {
+  color: #000; /* Default text color */
+  background-color: #f8f9fa; /* Default background color */
+  border: 1px solid transparent; /* Default border color */
+  border-radius: 0; /* Remove default border-radius */
 }
 
-/* Show the element when printing */
-@media print {
-  .print-only {
-    display: inline; /* Or any display property you want for printing */
-    
-  }
+.qrcode-tab .nav-link.active {
+  color: #fff; /* Text color when active */
+  background-color: #007bff; /* Background color when active */
+  border-color: #007bff; /* Border color when active */
 }
-
-@media print {
-  /* Add padding to the printed content */
-  .print-content {
-    text-align: left; /* Set text alignment to left */
-    margin: 0; /* Remove any default margins */
-  }
-}
-
-@media print {
-  /* Increase the font size for the printed content */
-  body {
-    font-size: 300%; /* Adjust the percentage to increase the font size significantly */
-  }
-}
-
-@media print {
-  body {
-    margin: 0;
-    padding: 0;
-    background: white;
-  }
-
-  body * {
-    display: none;
-  }
-
-  .printable-section, .printable-section * {
-    display: block;
-    visibility: visible;
-  }
-
-  .printable-section {
-    position: absolute;
-    left: 50%;
-    top: 0;
-    transform: translateX(-50%);
-    width: auto;
-    height: auto;
-  }
-}
-
-.card-price-text {
-  font-size: 1.5em; /* Larger text for emphasis */
-  color: #007bff; /* A distinct color, adjust based on your color scheme */
-  font-weight: bold; /* Make the text stand out */
-  text-align: center; /* Center aligns the text in the card */
-  margin: 10px 0; /* Adds some spacing around the text */
-  font-family: 'Arial', sans-serif; /* Use a clear, readable font */
-}
-

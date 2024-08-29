@@ -50,10 +50,10 @@ const MultipleQRCode = ({ table, placeId }) => {
       <Overlay>
         <div className="d-flex" >
           <Button variant="standard" onClick={handlePrint} className="mr-2">
-            {`打印 ${table} 号桌`}
+            {`打印`}
           </Button>
-          <Button variant="standard" href={`/menu/1/${placeId}/${table}`} target="_blank">
-            <AiOutlineLink size={25} />
+          <Button variant="standard" href={`/menu/1/${placeId}/${table}`} target="_blank" >
+            链接   <AiOutlineLink size={25} />
           </Button>
         </div>
       </Overlay>
