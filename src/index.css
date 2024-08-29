@@ -1,0 +1,404 @@
+body {
+  background-color: #f2f2f2;
+}
+
+.with-border {
+  border: 2px solid #3105058c; /* You can customize the border color and width */
+}
+
+* {
+  font-family: "Poppins", "Helvetica Neue", sans-serif;
+}
+
+.btn-standard {
+  background-color: #ff3366;
+  color: white;
+}
+
+.btn-standard:hover {
+  background-color: #fc285d;
+  color: white;
+}
+
+.btn-lightgray {
+  background-color: #f0f3f5;
+  color: black;
+}
+
+.btn-lightgray:hover {
+  background-color: #edeff0;
+  color: black;
+}
+
+.StripeElement {
+  height: 38px;
+  padding: 10px 12px;
+  width: 100%;
+  color: #32325d;
+  background-color: white;
+  border: 1px solid #ced4da;
+  border-radius: 4px;
+}
+
+.StripeElement--focus {
+  border-color: #80bdff;
+  box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+}
+
+.StripeElement--invalid {
+  border-color: #fa755a;
+}
+
+.StripeElement--webkit-autofill {
+  background-color: #fefde5 !important;
+}
+
+.new-order {
+  font-size: 1.0em;
+  font-weight: bold;
+  color: rgb(233, 61, 61);
+  background-color: rgba(238, 40, 0, 0.2); /* Example color with 50% opacity */
+  padding: 2px 4px;
+  border-radius: 4px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
+  animation: pulse 0.1s infinite;
+}
+
+.order-info {
+  font-size: 14px; /* Adjust the font size as needed */
+  font-weight: bold;
+  color: #333; /* Choose your preferred text color */
+  text-transform: uppercase; /* Convert text to uppercase */
+  background-color: #f7f7f7; /* Background color */
+  padding: 2px; /* Add padding for spacing */
+  border: 0.5px solid #ccc; /* Add a border */
+  border-radius: 2px; /* Add rounded corners */
+}
+
+.header-info {
+  font-size: 14px;
+  padding: 2px; /* Add padding for spacing */
+  background-color: #f2f2f2; /* Background color */
+  border: 1px solid #ddd; /* Border */
+  border-radius: 5px; /* Rounded corners */
+  text-align: center; /* Center text */
+}
+
+.home-page-card {
+  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  border-radius: 15px;
+  border: none;
+  transition: transform 0.3s ease-in-out;
+}
+
+.home-page-card .card-body {
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+}
+
+.home-page-card .card-title {
+  font-size: 1.5rem;
+  font-weight: bold;
+  color: #057cfb; /* Bootstrap primary color */
+  margin-bottom: 15px;
+}
+
+.home-page-card .card-text {
+  font-size: 1rem;
+  color: #555; /* Darker text for better readability */
+}
+
+.home-page-features-title-style {
+  font-size: 2.5rem; /* Larger font size */
+  font-weight: 700; /* Bolder font weight */
+  color: #007bff; /* Dark color for contrast */
+  text-shadow: 0 2px 4px rgba(81, 66, 199, 0.2); /* Text shadow for depth */
+}
+
+.home-page-button-style {
+  font-size: 1.5rem; /* Large font size, slightly smaller than the title */
+  font-weight: 700; /* Bold */
+  color: #fff; /* White text */
+  background-color: #007bff; /* Bootstrap primary color */
+  border: none;
+  border-radius: 0.25rem;
+  padding: 0.5rem 1.5rem; /* Larger padding for a bigger button */
+  text-shadow: 0 2px 4px rgba(0,0,0,0.2); /* Text shadow for depth */
+  transition: background-color 0.3s ease-in-out; /* Smooth transition for hover effects */
+}
+
+.home-page-button-style:hover, .button-style:focus {
+  background-color: #0056b3; /* Darker shade on hover/focus */
+  color: #fff; /* Ensuring text color stays white */
+  text-decoration: none; /* Removing underline from focus state */
+}
+
+
+.progress-bar {
+  width: 100%; /* Set the width of the progress bar container */
+  height: 20px; /* Set the height of the progress bar */
+  background-color: #f2f2f2; /* Background color for the progress bar */
+  border: 1px solid #0f0f0f; /* Border for the progress bar */
+  border-radius: 10px; /* Rounded corners */
+}
+
+.progress-bar-fill {
+  height: 100%; /* Set the height of the progress bar fill */
+  background-color: #40b97d; /* Color of the completed progress */
+  border-radius: 5px; /* Rounded corners for the fill */
+  transition: width 0.5s; /* Add a smooth transition effect */
+}
+
+.menu-button {
+  width: 10em;
+  position: relative;
+  height: 3.5em;
+  border: 3px ridge #234355;
+  outline: none;
+  background-color: transparent;
+  color: rgb(48, 17, 51);
+  transition: 1s;
+  border-radius: 0.3em;
+  font-size: 16px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.menu-button::after {
+  content: "";
+  position: absolute;
+  top: -10px;
+  left: 3%;
+  width: 95%;
+  height: 40%;
+  background-color: #F1FAFA;
+  transition: 0.5s;
+  transform-origin: center;
+}
+
+.menu-button::before {
+  content: "";
+  transform-origin: center;
+  position: absolute;
+  top: 80%;
+  left: 3%;
+  width: 95%;
+  height: 40%;
+  background-color: #F1FAFA;
+  transition: 0.5s;
+}
+
+.menu-button:hover::before, button:hover::after {
+  transform: scale(0)
+}
+
+.menu-button:hover {
+  box-shadow: inset 0px 0px 25px #1479EA;
+}
+
+.selected-button {
+  background-color: #222; /* Background color for selected button */
+  color: #fff; /* Text color for selected button */
+  font-weight: bold; /* Bold text for selected button */
+  margin: 0 2px; /* Margin around the button */
+}
+
+.languageModalTitle {
+  font-family: 'Poppins';
+  font-size: 20px;
+  font-weight: 400;
+  line-height: 30px;
+  letter-spacing: 0em;
+  text-align: center;
+}
+
+.languageModelBody {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
+  height: 100%;
+  width: 100%;
+}
+
+.category-filter {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 31px;
+  top: 112px;
+  left: 26px;
+  border-radius: 15px;
+  background-color: #FE6C4C;
+  color: white;
+  font-size: 17px;
+}
+
+.category-filter2 {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 31px;
+  top: 112px;
+  left: 26px;
+  border-radius: 15px;
+  background: #F5F5F5;
+  color:#0f0f0f;
+  font-size: 17px;
+}
+
+.menu-item-card {
+
+  border-radius: 12px;
+  border: 1px solid #E1E1E1;
+  background: linear-gradient(0deg, #E1E1E1, #E1E1E1),
+              linear-gradient(0deg, #FFFFFF, #FFFFFF);
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Add a subtle box shadow */
+}
+.plus-icon {
+  width: 24px; /* Adjust size as needed */
+  height: 24px; /* Adjust size as needed */
+  color: #FE6C4C;
+}
+
+.printable-section {
+  display: none;
+  font-family: 'Arial', sans-serif;
+  color: #333;
+}
+
+.printable-section p, .printable-section span {
+  font-size: 14px;
+  line-height: 1.5;
+}
+
+.printable-section .mb-2 {
+  margin-bottom: 20px;
+}
+
+.printable-section div {
+  border-bottom: 1px solid #ccc;
+  padding-bottom: 10px;
+  margin-bottom: 10px;
+}
+
+@media print {
+  body * {
+    visibility: hidden;
+  }
+
+  .printable-section, .printable-section * {
+    visibility: visible;
+  }
+  .printable-section {
+    display: block !important;
+  }
+  .printable-section {
+    position: absolute;
+    left: 0;
+    top: 0;
+  }
+  .page-break {
+    page-break-before: always;
+  }
+  .content-container {
+    page-break-inside: avoid;
+  }
+}
+
+
+.language-drop-down {
+  margin: 12px;
+  height: 50px;
+  width: 120px;
+  border-radius: 15px;
+  background: linear-gradient(0deg, #FE6C4C, #FE6C4C),linear-gradient(0deg, #FFDFD7, #FFDFD7);
+  justify-content: center;
+  align-items: center;
+  /* box-shadow: -5px -5px 15px #339b8a, 5px 5px 15px #3a0202, inset 5px 5px 10px #444, inset -5px -5px 10px #222; */
+  font-family: 'Poppins';
+  border: 1px solid #FE6C4C;
+  font-size: 16px;
+  color: rgb(255, 255, 255);
+  /* transition: 500ms; */
+}
+/* 
+.language-drop-down:hover {
+  box-shadow: -5px -5px 15px #444, 5px 5px 15px #222, inset 5px 5px 10px #222, inset -5px -5px 10px #444;
+  color: #d6d6d6;
+  transition: 500ms;
+} */
+
+/* Hide the element in the regular web view */
+.menu-language-drop-down {
+  border-radius: 6px;
+  border: 1px;
+  background: linear-gradient(0deg, #F5F5F5, #F5F5F5), linear-gradient(0deg, #FFFFFF, #FFFFFF);
+  border: 1px solid #F5F5F5;
+  font-family: 'Poppins';
+  color: rgb(12, 11, 11);
+}
+
+.print-only {
+  display: none;
+}
+
+/* Show the element when printing */
+@media print {
+  .print-only {
+    display: inline; /* Or any display property you want for printing */
+    
+  }
+}
+
+@media print {
+  /* Add padding to the printed content */
+  .print-content {
+    text-align: left; /* Set text alignment to left */
+    margin: 0; /* Remove any default margins */
+  }
+}
+
+@media print {
+  /* Increase the font size for the printed content */
+  body {
+    font-size: 300%; /* Adjust the percentage to increase the font size significantly */
+  }
+}
+
+@media print {
+  body {
+    margin: 0;
+    padding: 0;
+    background: white;
+  }
+
+  body * {
+    display: none;
+  }
+
+  .printable-section, .printable-section * {
+    display: block;
+    visibility: visible;
+  }
+
+  .printable-section {
+    position: absolute;
+    left: 50%;
+    top: 0;
+    transform: translateX(-50%);
+    width: auto;
+    height: auto;
+  }
+}
+
+.card-price-text {
+  font-size: 1.5em; /* Larger text for emphasis */
+  color: #007bff; /* A distinct color, adjust based on your color scheme */
+  font-weight: bold; /* Make the text stand out */
+  text-align: center; /* Center aligns the text in the card */
+  margin: 10px 0; /* Adds some spacing around the text */
+  font-family: 'Arial', sans-serif; /* Use a clear, readable font */
+}
+
