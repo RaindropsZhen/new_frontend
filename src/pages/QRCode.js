@@ -1,16 +1,12 @@
 import { useParams, useHistory } from 'react-router-dom';
 import React, { useEffect, useState, useContext } from 'react';
-import { Modal, Container, Row, Col, Button, Tab, Tabs } from 'react-bootstrap';
+import { Container, Row, Tab, Tabs } from 'react-bootstrap';
 import MultipleQRCode from '../components/MultipleQRCode';
 import QRCode from '../components/QRCode';
 import styled from 'styled-components';
 
 import { 
     fetchPlace, 
-    removePlace, 
-    removeCategory, 
-    removeMenuItem, 
-    updatePlace,
     // deleteImage
   } from '../apis';
 
@@ -42,7 +38,13 @@ const QRCodePage = () => {
     return (
 
         <Container fluid style={{ padding: 20 }}>
-            <h2 className="text-center">点餐二维码</h2>
+            <h2 
+                className="text-center"
+            >
+                点餐二维码,
+                总桌号 <b>{place.number_of_tables}</b>
+
+            </h2>
             <Tabs 
                 defaultActiveKey="MultipleQRCode" 
                 id="qr-tabs"
@@ -51,12 +53,6 @@ const QRCodePage = () => {
                 fill>
 
                 <Tab eventKey="MultipleQRCode" title="多 二维码">
-                    <div className="d-flex align-items-center mt-4 mb-4">
-                        <h5 className="mb-0 mr-2">
-                        总桌号 <b>{place.number_of_tables}</b>
-                        </h5>
-                    </div>
-
                     <GridContainer >
                         {Array.from({ length: place.number_of_tables }, (_, i) => i + 1).map((table) => (
                         <div 
@@ -66,7 +62,7 @@ const QRCodePage = () => {
                         <Row style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
                             <h5> 桌号{table}</h5>
                         </Row>
-                        
+
                         <Row style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
 
                             <MultipleQRCode table={table} placeId={place.id} />
