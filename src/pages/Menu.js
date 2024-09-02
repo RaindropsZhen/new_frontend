@@ -10,10 +10,10 @@ import LanguageSelectionModal from '../components/LanguageSelectionModal';
 import MenuList from '../components/MenuList';
 import ShoppingCart from '../components/ShoppingCart';
 import { useTranslation } from 'react-i18next';
+
 const languages = [
   {value: "en","label":"English"},
   {value:"pt","label":"Português"},
-  {value:"es","label":"Español"},
   { value: 'cn', "label": '中文' }
 ];
 
@@ -45,8 +45,6 @@ const GlobeIcon = ({ width = 24, height = 24 }) => (
         return '全部';
       case 'English':
         return 'All';
-      case 'Español':
-        return 'Todo';
       case 'Português':
         return 'Tudo';
       default:
@@ -144,8 +142,6 @@ const Menu = () => {
         return category.name;
       case 'English':
         return category.name_en;
-      case 'Español':
-        return category.name_es;
       case 'Português':
         return category.name_pt;
       default:

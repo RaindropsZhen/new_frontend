@@ -180,15 +180,16 @@ const Place = () => {
               </div>
             </div>
 
-            <Button variant="link" href={`/places/${params.id}/qrcode`}>
+            <Button variant="link" href={`/places/${params.id}/qrcode`} target="_blank" rel="noopener noreferrer">
               <AiOutlineQrcode size={25} />
             </Button>
 
-            <Button variant="link" onClick={showqrCodeTakeAway}>
+
+            <Button variant="link" onClick={showqrCodeTakeAway} >
               <RiEBike2Fill size={25} />
             </Button>
 
-            <Button variant="link" href={`/places/${params.id}/orders`}>
+            <Button variant="link" href={`/places/${params.id}/orders`} target="_blank" rel="noopener noreferrer">
               <RiFileList3Line size={25} />
             </Button>
 
@@ -265,37 +266,31 @@ const Place = () => {
         </Modal.Body>
       </Modal>
 
-        <QRCodeModal 
-          show={qrCode} 
-          onHide={hideQRModal} 
-          place={place}
-          centered 
-          onUpdatePlace={onUpdatePlace}
-        />
 
-        <QRCodeModalTakeAway 
-          show={qrCodeTakeAway} 
-          onHide={hideqrCodeTakeAway} 
-          place={place} 
-          centered 
-          onUpdatePlace={onUpdatePlace}
-        />
 
-        <PrintersModal
-          show={printersModalShow}
-          onHide={hideprinterModal}
-          place={place}
-        />
+      <QRCodeModalTakeAway 
+        show={qrCodeTakeAway} 
+        onHide={hideqrCodeTakeAway} 
+        place={place} 
+        centered 
+        onUpdatePlace={onUpdatePlace}
+      />
 
-        <Modal 
-          show={EditPlaceFormShow} 
-          onHide={hideEditPlace} 
-          centered
-        >
-          <Modal.Body>
-            <EditPlace place={place}/>
-          </Modal.Body>
-        </Modal>
+      <PrintersModal
+        show={printersModalShow}
+        onHide={hideprinterModal}
+        place={place}
+      />
+
+      <Modal 
+        show={EditPlaceFormShow} 
+        onHide={hideEditPlace} 
+        centered
+      >
+        <Modal.Body>
+          <EditPlace place={place}/>
+        </Modal.Body>
+      </Modal>
 
 
     </MainLayout>
