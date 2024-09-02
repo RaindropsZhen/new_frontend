@@ -13,11 +13,9 @@ const MenuList = ({ selectedLanguage, place, shoppingCart = {}, onOrder, font = 
   const renderCategoryName = (category) => {
     switch (selectedLanguage) {
       case '中文':
-        return category.name;
+        return category.name_cn;
       case 'English':
         return category.name_en;
-      case 'Español':
-        return category.name_es;
       case 'Português':
         return category.name_pt;
       default:

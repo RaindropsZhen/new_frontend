@@ -54,7 +54,7 @@ const renderAvailabilityLunch = (selectedLanguage) => {
 const renderMenuItemName = (item,selectedLanguage) => {
   switch (selectedLanguage) {
     case '中文':
-      return item.name;
+      return item.name_cn;
     case 'English':
       return item.name_en;
     case 'Español':
@@ -149,7 +149,7 @@ const MenuItemCard = ({ language,item, onOrder, color }) => {
               onClick={currentAvailability ? handleShow : undefined}
           /> */}
           <Card.Body>
-              <Card.Title style={{ fontSize: '16px' }}>{renderMenuItemName(item,language)}</Card.Title>
+              <Card.Title style={{ fontSize: '16px' }}>{item.code}. {renderMenuItemName(item,language)}</Card.Title>
               <Card.Text>
                 <Col>
                   <Modal show={showDescription} onHide={handleClose} centered>
