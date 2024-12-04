@@ -30,8 +30,8 @@ const MenuList = ({ selectedLanguage, place, shoppingCart = {}, onOrder, font = 
         )
         .filter((category) => !selectedCategoryName || renderCategoryName(category) === selectedCategoryName)
         .map((category) => (
-          <div key={category.id} className="mt-5">
-            <h4 className="mb-4">
+          <div>
+            <h4>
               <b>{renderCategoryName(category)}</b>
             </h4>
             <MenuGrid 

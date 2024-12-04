@@ -352,3 +352,7 @@ body {
   background-color: #007bff; /* Background color when active */
   border-color: #007bff; /* Border color when active */
 }
+
+.red-text {
+  color: red;
+}

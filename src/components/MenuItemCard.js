@@ -11,8 +11,6 @@ const renderMenuItemDescriptionModalName = (selectedLanguage) => {
       return '介绍';
     case 'English':
       return 'Description';
-    case 'Español':
-      return 'Descripción';
     case 'Português':
       return 'Descrição';
     default:
@@ -26,8 +24,6 @@ const renderAvailabilityDinner = (selectedLanguage) => {
       return '晚餐可点';
     case 'English':
       return 'Only available in dinner';
-    case 'Español':
-      return 'Solo disponible en la cena';
     case 'Português':
       return 'Disponível apenas no jantar';
     default:
@@ -41,8 +37,6 @@ const renderAvailabilityLunch = (selectedLanguage) => {
       return ' 午餐可点';
     case 'English':
       return 'Only available in lunch';
-    case 'Español':
-      return 'Solo disponible en el almuerzo';
     case 'Português':
       return 'Disponível apenas no almoço';
     default:
@@ -54,11 +48,9 @@ const renderAvailabilityLunch = (selectedLanguage) => {
 const renderMenuItemName = (item,selectedLanguage) => {
   switch (selectedLanguage) {
     case '中文':
-      return item.name_cn;
+      return item.name;
     case 'English':
       return item.name_en;
-    case 'Español':
-      return item.name_es;
     case 'Português':
       return item.name_pt;
     default:
@@ -72,8 +64,6 @@ const renderMenuItemDescription = (item, selectedLanguage) => {
       return item.description;
       case 'English':
       return item.description_en;
-      case 'Español':
-      return item.description_es;
       case 'Português':
       return item.description_pt;
     default:
@@ -136,8 +126,8 @@ const MenuItemCard = ({ language,item, onOrder, color }) => {
               filter: currentAvailability ? '' : 'grayscale(50%)'
             }}
             onClick={currentAvailability ? handleShow : undefined}
-          /> */}
-          {/* <LazyLoadImage 
+          />  */}
+          <LazyLoadImage 
               variant="top"
               src={item.image}
               style={{
@@ -147,9 +137,9 @@ const MenuItemCard = ({ language,item, onOrder, color }) => {
                   filter: currentAvailability ? '' : 'grayscale(50%)'
               }}
               onClick={currentAvailability ? handleShow : undefined}
-          /> */}
+          /> 
           <Card.Body>
-              <Card.Title style={{ fontSize: '16px' }}>{item.code}. {renderMenuItemName(item,language)}</Card.Title>
+              <Card.Title style={{ fontSize: '16px' }}><span className="red-text">{item.code}</span>{renderMenuItemName(item,language)}</Card.Title>
               <Card.Text>
                 <Col>
                   <Modal show={showDescription} onHide={handleClose} centered>
@@ -203,12 +193,13 @@ const MenuItemCard = ({ language,item, onOrder, color }) => {
 
           <div>
           <p>
-            {!currentAvailability && (
+            {!currentAvailability && item.ordering_timing === 'dinner' && (
               <small className="text-secondary">
-                {item.ordering_timing === 'lunch' ? renderAvailabilityDinner(language) : renderAvailabilityLunch(language)}
+                {renderAvailabilityDinner(language)}
               </small>
             )}
           </p>
+
 
           </div>
         </div>
