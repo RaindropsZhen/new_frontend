@@ -9,7 +9,6 @@ import LanguageSelectionModal from '../components/LanguageSelectionModal';
 
 import MenuList from '../components/MenuList';
 import ShoppingCart from '../components/ShoppingCart';
-import { useTranslation } from 'react-i18next';
 
 const languages = [
   {value: "en","label":"English"},

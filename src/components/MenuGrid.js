@@ -5,21 +5,24 @@ import MenuItemCard from './MenuItemCard';
 const MenuGrid = ({ category, selectedLanguage, shoppingCart, onOrder, color }) => {
   const items = category.menu_items.filter((item) => item.is_available);
 return (
-    <Row xs={3} md={6}>
-    {items.map((item, index) => (
-        <Col key={index}>
-          <MenuItemCard 
-              language={selectedLanguage}
-              item={{  
-              ...item,
-              quantity: shoppingCart[item.id]?.quantity,
-              }} 
-              onOrder={onOrder}
-              color={color}
-          />
-        </Col>
-    ))}
-    </Row>
+// Modify the Row and Col to display 2 items per row on larger screens
+<Row xs={2} sm={2} md={2} lg={2} xl={2} className="g-4">
+  {items.map((item, index) => (
+    <Col key={index} className="custom-col">
+      <MenuItemCard
+        language={selectedLanguage}
+        item={{
+          ...item,
+          quantity: shoppingCart[item.id]?.quantity,
+        }}
+        onOrder={onOrder}
+        color={color}
+      />
+    </Col>
+  ))}
+</Row>
+
+
 
   );
 };

@@ -1,3 +1,20 @@
+@import url('https://fonts.googleapis.com/css2?family=Inria+Serif:wght@400;700&display=swap');
+
+body {
+  font-family: 'Inria Serif', serif;
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: 'Inria Serif', serif;
+}
+
+p, span, div, button, input {
+  font-family: 'Inria Serif', serif;
+}
+
 body {
   background-color: #f2f2f2;
 }
@@ -355,4 +372,9 @@ body {
 
 .red-text {
   color: red;
+}
+
+.custom-col {
+  padding: 2px !important; /* Remove padding */
+  margin: 0 !important;  /* Remove margin */
 }
