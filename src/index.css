@@ -378,3 +378,41 @@ body {
   padding: 2px !important; /* Remove padding */
   margin: 0 !important;  /* Remove margin */
 }
+
+/* Ensure the parent container has the correct background color */
+.StickyFilterContainer {
+  background-color: #FFEEE5 !important; /* Use !important to override other styles */
+  padding: 15px 20px;
+  border-radius: 8px;
+  box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+}
+
+/* Dropdown styling */
+.custom-dropdown {
+  flex: 1;
+  max-width: 45%; /* Ensure dropdowns fit */
+  padding: 12px 15px;
+  font-size: 1rem;
+  border: 2px solid #FE6C4C;
+  border-radius: 6px;
+  background-color: #FE6C4C !important; /* Ensure the dropdown background is applied */
+  color: white !important; /* Force text color to white */
+  text-align: center;
+  outline: none;
+  appearance: none;
+}
+
+/* Option styling */
+.custom-dropdown option {
+  background-color: #FFC1A1;
+  color: black;
+  padding: 8px;
+}
+
+/* Flex container to align dropdowns */
+.d-flex {
+  display: flex;
+  flex-wrap: nowrap;
+  gap: 10px;
+}

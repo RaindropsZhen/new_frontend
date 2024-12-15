@@ -104,62 +104,63 @@ const MenuItemCard = ({ language, item, onOrder, color }) => {
 
   return (
     <>
-      <Card className='card'>
-        <LazyLoadImage
-          src={item.image}
-          alt={item.name}
-          style={{
-            objectFit: 'cover',
-            width: '100%',
-            height: '200px',
-            filter: currentAvailability ? '' : 'grayscale(50%)'
-          }}
-          onClick={currentAvailability ? handleShow : undefined}
-        />
-        <Card.Body style={{ padding: '5px' }}>
-          <Card.Title style={{ fontSize: '14px' }}>
-            <span className="red-text">{item.code}</span>{renderMenuItemName(item, language)}
-          </Card.Title>
-          <Card.Text>
-            <Col>
-              <Modal show={showDescription} onHide={handleClose} centered>
-                <Modal.Header closeButton>
-                  <Modal.Title>{renderMenuItemDescriptionModalName(language)}</Modal.Title>
-                </Modal.Header>
-                <LazyLoadImage
-                  src={item.image}
-                  alt={item.name}
-                  style={{ width: '100%', height: 'auto' }}
-                />
-                <Modal.Body>{renderMenuItemDescription(item, language)}</Modal.Body>
-              </Modal>
-              <Row className="d-flex justify-content-between align-items-center">
-                {/* Conditionally hide the price if it's 0 */}
-                {item.price > 0 && <b style={{ color }}>{item.price}€</b>}
-                {onOrder ? (
-                  <Button
-                    style={{
-                      backgroundColor: "#FE6C4C",
-                      borderRadius: "50%",
-                      width: "2em",
-                      height: "2em",
-                      display: "flex",
-                      alignItems: "center",
-                      justifyContent: "center"
-                    }}
-                    disabled={!currentAvailability}
-                    className="mt-2 ml-auto" // This pushes the button to the right
-                    size="sm"
-                    onClick={() => onOrder(item)}
-                  >
-                    <FaPlus className='plus-icon' style={{ color: "white", fontSize: "1.5em" }} /> {item.quantity}
-                  </Button>
-                ) : null}
-              </Row>
-            </Col>
-          </Card.Text>
-        </Card.Body>
-      </Card>
+      <Card className='card' style={{ borderRadius: '10px', overflow: 'hidden' }}>
+  <LazyLoadImage
+    src={item.image}
+    alt={item.name}
+    style={{
+      objectFit: 'cover',
+      width: '100%',
+      height: '200px',
+      filter: currentAvailability ? '' : 'grayscale(50%)'
+    }}
+    onClick={currentAvailability ? handleShow : undefined}
+  />
+  <Card.Body style={{ padding: '5px' }}>
+    <Card.Title style={{ fontSize: '14px' }}>
+      <span className="red-text">{item.code}</span>{renderMenuItemName(item, language)}
+    </Card.Title>
+    <Card.Text>
+      <Col>
+        <Modal show={showDescription} onHide={handleClose} centered>
+          <Modal.Header closeButton>
+            <Modal.Title>{renderMenuItemDescriptionModalName(language)}</Modal.Title>
+          </Modal.Header>
+          <LazyLoadImage
+            src={item.image}
+            alt={item.name}
+            style={{ width: '100%', height: 'auto' }}
+          />
+          <Modal.Body>{renderMenuItemDescription(item, language)}</Modal.Body>
+        </Modal>
+        <Row className="d-flex justify-content-between align-items-center">
+          {/* Conditionally hide the price if it's 0 */}
+          {item.price > 0 && <b style={{ color }}>{item.price}€</b>}
+          {onOrder ? (
+            <Button
+              style={{
+                backgroundColor: "#FE6C4C",
+                borderRadius: "50%",
+                width: "2em",
+                height: "2em",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center"
+              }}
+              disabled={!currentAvailability}
+              className="mt-2 ml-auto" // This pushes the button to the right
+              size="sm"
+              onClick={() => onOrder(item)}
+            >
+              <FaPlus className='plus-icon' style={{ color: "white", fontSize: "1.5em" }} /> {item.quantity}
+            </Button>
+          ) : null}
+        </Row>
+      </Col>
+    </Card.Text>
+  </Card.Body>
+</Card>
+
 
       <Row xs={7} className="d-flex flex-column justify-content-between w-100">
         <div className="d-flex justify-content-between align-items-end">

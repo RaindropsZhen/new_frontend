@@ -147,15 +147,12 @@ const Menu = () => {
     <Container fluid className="mt-2 mb-4">
       {/* Filter */}
       <StickyFilterContainer >
-        <Row className="d-flex justify-content-between align-items-center">
+        <Row className="d-flex justify-content-between align-items-center flex-nowrap gap-3">
+          {/* Category Dropdown */}
           <select
             value={selectedCategoryName}
             onChange={(e) => handleCategoryClick(e.target.value)}
-            className="form-select mx-2 btn-lg with-border"
-            style={{
-              backgroundColor: '#FE6C4C',
-              color: 'white',
-            }}
+            className="custom-dropdown"
           >
             <option value="">{renderFilterAllButton(selectedLanguage)}</option>
             {categories?.map((name) => (
@@ -165,25 +162,21 @@ const Menu = () => {
             ))}
           </select>
 
+          {/* Language Dropdown */}
           <select
             value={selectedLanguage}
             onChange={(e) => handleLanguageSelect(e.target.value)}
-            className="form-select mx-2 btn-lg with-border"
-            style={{ backgroundColor: '#FE6C4C', color: 'white' }}
+            className="custom-dropdown"
           >
             {languages.map((language) => (
-              <option
-                key={language.label}
-                value={language.label}
-                style={{ backgroundColor: '#FE6C4C', color: 'white' }}
-              >
+              <option key={language.label} value={language.label}>
                 {language.label}
               </option>
             ))}
           </select>
-
         </Row>
       </StickyFilterContainer>
+
 
 
 
