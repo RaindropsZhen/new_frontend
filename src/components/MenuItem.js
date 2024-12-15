@@ -25,7 +25,7 @@ const Container = styled.div`
 const renderMenuItemName = (item,selectedLanguage) => {
   switch (selectedLanguage) {
     case '中文':
-      return item.name_cn;
+      return item.name;
       case 'English':
       return item.name_en;
       case 'Español':
@@ -72,7 +72,7 @@ const MenuItem = ({ language,item, onEdit, onRemove, onOrder, color }) => (
       <div>
         <div className="d-flex justify-content-between align-items-center mb-2">
           <h4 className="mb-0">
-            <b> {item.code}. {renderMenuItemName(item,language)}</b>
+            <b> {item.code}{renderMenuItemName(item,language)}</b>
           </h4>
           <div>
             { onEdit ? (

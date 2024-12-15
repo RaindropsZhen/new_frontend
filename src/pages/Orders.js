@@ -3,8 +3,6 @@ import { Row, Col, Button, Tab, Nav  } from 'react-bootstrap';
 import { useParams, useHistory } from 'react-router-dom';
 import React, { useState, useEffect, useContext, useRef } from 'react';
 import 'react-toastify/dist/ReactToastify.css';
-
-import PrintableOrders from '../components/PrintableOrders';
 import { fetchOrders, completeOrder } from '../apis';
 import AuthContext from '../contexts/AuthContext';
 import MainLayout from '../layouts/MainLayout';
@@ -104,9 +102,6 @@ const Orders = () => {
         </Button>
         <h3 className="mb-0 ml-2 mr-2">我的订单</h3>
       </div>
-
-      <PrintableOrders ref={componentRef} orders={unprintedOrders} style={{ display: "none" }}/>
-
 
       {/* orders completion status */}
       <Row className="d-flex justify-content-center">

@@ -14,7 +14,6 @@ import Menu from '../pages/Menu';
 import Orders from '../pages/Orders';
 import MenuSettings from '../pages/MenuSettings';
 import TableNumberInput from '../pages/SelectTable';
-import Analysis from '../components/DataAnalysis/DataAnalysis';
 import QRCode from '../pages/QRCode';
 
 import { useTranslation, initReactI18next } from "react-i18next";
