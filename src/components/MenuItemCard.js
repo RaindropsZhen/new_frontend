@@ -1,8 +1,8 @@
-import { Row, Button, Col, Modal } from 'react-bootstrap';
+import { Row, Col, Modal } from 'react-bootstrap';
 import React, { useState, useEffect } from 'react';
 import Card from 'react-bootstrap/Card';
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import { FaPlus } from "react-icons/fa";
+import OperationButton from './OperationButton';
 
 const renderMenuItemDescriptionModalName = (selectedLanguage) => {
   switch (selectedLanguage) {
@@ -27,19 +27,6 @@ const renderAvailabilityDinner = (selectedLanguage) => {
       return 'Disponível apenas no jantar';
     default:
       return 'Only available in dinner';
-  }
-};
-
-const renderAvailabilityLunch = (selectedLanguage) => {
-  switch (selectedLanguage) {
-    case '中文':
-      return ' 午餐可点';
-    case 'English':
-      return 'Only available in lunch';
-    case 'Português':
-      return 'Disponível apenas no almoço';
-    default:
-      return 'Only available in lunch';
   }
 };
 
@@ -69,7 +56,7 @@ const renderMenuItemDescription = (item, selectedLanguage) => {
   }
 };
 
-const MenuItemCard = ({ language, item, onOrder, color }) => {
+const MenuItemCard = ({ language, item, onOrder, onRemove, color }) => {
 
   const [showDescription, setShowDescription] = useState(false);
   const handleShow = () => setShowDescription(true);
@@ -133,27 +120,28 @@ const MenuItemCard = ({ language, item, onOrder, color }) => {
           />
           <Modal.Body>{renderMenuItemDescription(item, language)}</Modal.Body>
         </Modal>
-        <Row className="d-flex justify-content-between align-items-center">
-          {/* Conditionally hide the price if it's 0 */}
+        <Row className="d-flex justify-content-end align-items-center">
+        {/* Conditionally hide the price if it's 0 */}
           {item.price > 0 && <b style={{ color }}>{item.price}€</b>}
           {onOrder ? (
-            <Button
-              style={{
-                backgroundColor: "#FE6C4C",
-                borderRadius: "50%",
-                width: "2em",
-                height: "2em",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center"
-              }}
-              disabled={!currentAvailability}
-              className="mt-2 ml-auto" // This pushes the button to the right
-              size="sm"
-              onClick={() => onOrder(item)}
-            >
-              <FaPlus className='plus-icon' style={{ color: "white", fontSize: "1.5em" }} /> {item.quantity}
-            </Button>
+              <div className="d-flex align-items-center">
+                <OperationButton
+                  variant="lightgray"
+                  size="sm"
+                  onClick={() => onRemove(item)}
+                >
+                  - 
+                </OperationButton>
+                <span>{item.quantity >= 0 ? item.quantity : 0}</span>
+                <OperationButton
+                  variant="lightgray"
+                  size="sm"
+                  onClick={() => onOrder(item)}
+                >
+                  +
+                </OperationButton>
+              </div>
+
           ) : null}
         </Row>
       </Col>

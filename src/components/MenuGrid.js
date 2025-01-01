@@ -2,7 +2,7 @@ import React from 'react';
 import { Row, Col } from 'react-bootstrap';
 import MenuItemCard from './MenuItemCard'; 
 
-const MenuGrid = ({ category, selectedLanguage, shoppingCart, onOrder, color }) => {
+const MenuGrid = ({ category, selectedLanguage, shoppingCart, onOrder, onRemove, color }) => {
   const items = category.menu_items.filter((item) => item.is_available);
 return (
 // Modify the Row and Col to display 2 items per row on larger screens
@@ -16,6 +16,7 @@ return (
           quantity: shoppingCart[item.id]?.quantity,
         }}
         onOrder={onOrder}
+        onRemove={onRemove}
         color={color}
       />
     </Col>

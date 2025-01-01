@@ -83,6 +83,8 @@ const Menu = () => {
       }
     });
   }
+
+
   const onRemoveItemToShoppingCart = (item) => {
     if (totalQuantity === 1) {
       setShowShoppingCart(false);
@@ -211,6 +213,7 @@ const Menu = () => {
               place={place} 
               shoppingCart={shoppingCart} 
               onOrder={onAddItemtoShoppingCart}
+              onRemove={onRemoveItemToShoppingCart}
               color={place.color} 
               font={place.font}
               selectedCategoryName={selectedCategoryName}

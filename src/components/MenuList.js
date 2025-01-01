@@ -30,6 +30,7 @@ const MenuList = ({
   place, 
   shoppingCart = {}, 
   onOrder, 
+  onRemove,
   font = "", 
   color = "", 
   selectedCategoryName=""
@@ -64,6 +65,7 @@ const MenuList = ({
               selectedLanguage={selectedLanguage} 
               shoppingCart={shoppingCart} 
               onOrder={onOrder} 
+              onRemove = {onRemove}
               color={color} 
             />
           </CategoryWrapper>
