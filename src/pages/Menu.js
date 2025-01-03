@@ -44,6 +44,7 @@ const OrderButton = styled(Button)`
   box-shadow: 1px 1px 8px rgba(0,0,0,0.2);
   width: 60px;
   height: 60px;
+  borderRadius: '10px'
 `;
 const Menu = () => {
 
@@ -180,7 +181,17 @@ const Menu = () => {
       </StickyFilterContainer>
 
 
-
+      <div style={{
+        backgroundColor: '#FE6C4C',
+        color: 'white',
+        textAlign: 'center',
+        fontWeight: 'bold',
+        padding: '10px',
+        fontSize: '18px',
+        borderRadius: '10px'
+      }}>
+        Número de Mesa:  {params.table}
+      </div>
 
       <Row className="justify-content-center m-2">
         {showLanguageModal && (
@@ -190,6 +201,7 @@ const Menu = () => {
             languages={languages}
             selectedLanguage={selectedLanguage}
             onLanguageSelect={handleLanguageSelect}
+            tableNumber={params.table}
           />
         )}
         <Col lg={8}>

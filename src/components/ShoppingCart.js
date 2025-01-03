@@ -19,6 +19,7 @@ const renderMenuItemName = (item,selectedLanguage) => {
       return item.name;
   }
 };
+
 const ShoppingCart = ({ selectedLanguage,items, onAdd, onRemove, color,last_ordering_timing,orderingInterval }) => {
   const location = useLocation(); // This gives you the location object
   const pathParts = location.pathname.split('/');
