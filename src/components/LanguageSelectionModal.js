@@ -14,33 +14,41 @@ const GlobeIcon = ({ width = 24, height = 24 }) => (
   </svg>
 )
 
-const LanguageSelectionModal = ({ show, onHide, languages, onLanguageSelect }) => {
+const LanguageSelectionModal = ({ show, onHide, languages, onLanguageSelect,tableNumber }) => {
   return (
-    <Modal show={show} onHide={onHide} centered>
-      <Modal.Header closeButton style={{ padding: '5px' }}>
-      <Modal.Title
-          className='languageModalTitle'
-          style={{ padding: '10px' }}
-        > 
-          <GlobeIcon width={24} height={24}/>
-          Select Language </Modal.Title>
-      </Modal.Header>
-      <Modal.Body className='languageModelBody'>
-        <ul style={{ listStyleType: 'none', justifyContent: 'center', flexDirection: 'column' }}>
-          {languages.map((language) => (
-            <li key={language.label} tyle={{ listStyleType: 'none', display: 'flex', justifyContent: 'center', flexDirection: 'column' }}>
+    <Modal show={show} onHide={onHide} centered style={{ borderRadius: '15px', overflow: 'hidden' }}>
+  <div style={{
+    backgroundColor: '#FE6C4C',
+    color: 'white',
+    textAlign: 'center',
+    fontWeight: 'bold',
+    padding: '10px',
+    fontSize: '18px'
+  }}>
+    Número de Mesa:  {tableNumber}
+  </div>
+  <Modal.Header closeButton style={{ padding: '5px' }}>
+    <Modal.Title className='languageModalTitle' style={{ padding: '10px' }}>
+      <GlobeIcon width={24} height={24} />
+      Select Language
+    </Modal.Title>
+  </Modal.Header>
+  <Modal.Body className='languageModelBody'>
+    <ul style={{ listStyleType: 'none', justifyContent: 'center', flexDirection: 'column' }}>
+      {languages.map((language) => (
+        <li key={language.label} style={{ listStyleType: 'none', display: 'flex', justifyContent: 'center', flexDirection: 'column' }}>
+          <Button
+            className='language-drop-down'
+            onClick={() => onLanguageSelect(language.label)}
+          >
+            {language.label}
+          </Button>
+        </li>
+      ))}
+    </ul>
+  </Modal.Body>
+</Modal>
 
-              <Button
-                className='language-drop-down'
-                onClick={() => onLanguageSelect(language.label)}
-              >
-                {language.label}
-              </Button>
-            </li>
-          ))}
-        </ul>
-      </Modal.Body>
-    </Modal>
   );
 };
 
