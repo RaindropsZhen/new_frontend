@@ -99,7 +99,7 @@ const MenuItemCard = ({ language, item, onOrder, onRemove, color }) => {
       objectFit: 'cover',
       width: '100%',
       height: '200px',
-      filter: currentAvailability ? '' : 'grayscale(50%)'
+      filter: currentAvailability ? '' : 'grayscale(80%)'
     }}
     onClick={currentAvailability ? handleShow : undefined}
   />
@@ -121,28 +121,31 @@ const MenuItemCard = ({ language, item, onOrder, onRemove, color }) => {
           <Modal.Body>{renderMenuItemDescription(item, language)}</Modal.Body>
         </Modal>
         <Row className="d-flex justify-content-end align-items-center">
-        {/* Conditionally hide the price if it's 0 */}
-          {item.price > 0 && <b style={{ color }}>{item.price}€</b>}
-          {onOrder ? (
-              <div className="d-flex align-items-center">
-                <OperationButton
-                  variant="lightgray"
-                  size="sm"
-                  onClick={() => onRemove(item)}
-                >
-                  - 
-                </OperationButton>
-                <span>{item.quantity >= 0 ? item.quantity : 0}</span>
-                <OperationButton
-                  variant="lightgray"
-                  size="sm"
-                  onClick={() => onOrder(item)}
-                >
-                  +
-                </OperationButton>
-              </div>
-
-          ) : null}
+            {/* Conditionally hide the price if it's 0 */}
+              {item.price > 0 && <b style={{ color }}>{item.price}€</b>}
+              {onOrder && (
+            <div className="d-flex align-items-center">
+              <OperationButton
+                variant="lightgray"
+                size="sm"
+                onClick={() => onRemove(item)}
+                disabled={!currentAvailability || item.quantity <= 0} // Disable if not available or quantity is 0
+              >
+                -
+              </OperationButton>
+              
+              <span>{item.quantity >= 0 ? item.quantity : 0}</span>
+              
+              <OperationButton
+                variant="lightgray"
+                size="sm"
+                onClick={() => onOrder(item)}
+                disabled={!currentAvailability || item.quantity <= 0} // Disable if not available or quantity is 0
+              >
+                +
+              </OperationButton>
+            </div>
+          )}
         </Row>
       </Col>
     </Card.Text>
