@@ -32,16 +32,11 @@ const formatTime = (seconds) => {
 
 const OrderForm = ({amount, items, color, selectedLanguage, isTakeAway, phoneNumber, arrivalTime,comment,customer_name,timeLeftToOrder,enable_ordering}) => {
   const formRef = useRef(null);
-  const history = useHistory(); // Get the history object to navigate
+  // const history = useHistory(); // Get the history object to navigate
   const [loading, setLoading] = useState(false)
   const auth = useContext(AuthContext)
   const params = useParams()
 
-  // const url = `/menu/${params.id}/select_table`
-
-  const url = `/menu/${params.code}/${params.id}/${params.table}`;
-  // const [recaptchaValue, setRecaptchaValue] = useState(null);
-  // const [recaptchaCompleted, setRecaptchaCompleted] = useState(false);
   const renderTotal= (selectedLanguage) => {
     switch (selectedLanguage) {
       case '中文':
@@ -108,7 +103,6 @@ const OrderForm = ({amount, items, color, selectedLanguage, isTakeAway, phoneNum
         arrival_time: arrivalTime,
         language: selectedLanguage,
         customer_name: customer_name,
-        // recaptchaToken: recaptchaValue, // Include the recaptchaValue in the request
       }, auth.token);
   
       // Handle the response
@@ -117,13 +111,12 @@ const OrderForm = ({amount, items, color, selectedLanguage, isTakeAway, phoneNum
           renderOrderSuccessMessage(selectedLanguage, json.order),
           {
             autoClose: false,
-            // Optionally, add other options such as an icon
           }
         );
         // window.location.reload()
         setTimeout(() => {
           formRef.current.submit();
-        }, 10000);
+        }, 500);
       } else if (json?.error) {
         toast(json.error, {type: "error"});
       }
@@ -137,24 +130,9 @@ const OrderForm = ({amount, items, color, selectedLanguage, isTakeAway, phoneNum
 
   };
 
-  // const onChange = (value) => {
-  //   // Update the reCAPTCHA value when it changes
-
-  //   setRecaptchaValue(value);
-  //   setRecaptchaCompleted(true);
-
-  // };
-
   return (
     <Form onSubmit={createOrder} ref={formRef}>
 
-  {/* <div>
-    <ReCAPTCHA
-      sitekey="6LeIxAcTAAAAAJcZVRqyHh71UMIEGNQ_MXjiZKhI"
-      onChange={onChange}
-    />
-    
-  </div> */}
 
     <Button 
       variant='standard' 
@@ -163,7 +141,6 @@ const OrderForm = ({amount, items, color, selectedLanguage, isTakeAway, phoneNum
       block 
       type="submit" 
       disabled={loading || 
-        // !recaptchaCompleted || 
         !enable_ordering} 
     >
       {loading ? renderProcessing(selectedLanguage) : enable_ordering ? renderTotal(selectedLanguage) : `${renderOrderingLimitMessage(selectedLanguage)} ${formatTime(timeLeftToOrder)}`}
