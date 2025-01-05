@@ -1,14 +1,15 @@
 import { IoMdArrowBack } from 'react-icons/io';
-import { Row, Col, Button, Table } from 'react-bootstrap';
+import { Row, Col, Button, Table, Nav } from 'react-bootstrap';
 import { useParams, useHistory } from 'react-router-dom';
 import React, { useState, useEffect, useContext } from 'react';
 import 'react-toastify/dist/ReactToastify.css';
-import { fetchOrders } from '../apis';
+import { fetchOrders, completeOrder } from '../apis'; // Import completeOrder function
 import AuthContext from '../contexts/AuthContext';
 import MainLayout from '../layouts/MainLayout';
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
+  const [selectedTab, setSelectedTab] = useState('processing'); // Added tab state to toggle between orders
   const currentDate = new Date();
 
   const params = useParams();
@@ -20,8 +21,9 @@ const Orders = () => {
   const onFetchOrders = async () => {
     const json = await fetchOrders(params.id, auth.token);
     if (json) {
-      // Filter the orders by status 'processing'
-      const filteredOrders = json.filter(order => order.status === 'processing');
+      const filteredOrders = json.filter(
+        (order) => order.status === selectedTab
+      );
       setOrders(filteredOrders);
     }
   };
@@ -32,7 +34,7 @@ const Orders = () => {
     };
     const interval = setInterval(updateOrders, 2000);
     return () => clearInterval(interval);
-  }, []);
+  }, [selectedTab]); // Fetch orders when the tab changes
 
   const today_orders = orders?.filter((order) => {
     const orderDate = new Date(order.created_at);
@@ -45,7 +47,7 @@ const Orders = () => {
 
   // Group orders by table number and sort them by created_at (desc)
   const groupedByTable = today_orders.reduce((acc, order) => {
-    const tableNumber = order.table; // Assuming `order.table` is the table number
+    const tableNumber = order.table;
     if (!acc[tableNumber]) {
       acc[tableNumber] = [];
     }
@@ -58,22 +60,41 @@ const Orders = () => {
     .map((tableNumber) => {
       return {
         tableNumber,
-        orders: groupedByTable[tableNumber].sort((a, b) => new Date(b.created_at) - new Date(a.created_at)),
+        orders: groupedByTable[tableNumber].sort(
+          (a, b) => new Date(b.created_at) - new Date(a.created_at)
+        ),
       };
     })
     .sort((a, b) => {
-      const latestOrderA = a.orders[0]; // Get the most recent order from table A
-      const latestOrderB = b.orders[0]; // Get the most recent order from table B
-      return new Date(b.created_at) - new Date(a.created_at); // Sort tables by the most recent order
+      const latestOrderA = a.orders[0];
+      const latestOrderB = b.orders[0];
+      return new Date(b.created_at) - new Date(a.created_at);
     });
 
-  // Function to clean up the order detail string
   const cleanDetailString = (detail) => {
     return detail
-      .replace(/True/g, 'true') // Replace True with true
-      .replace(/False/g, 'false') // Replace False with false
-      .replace(/None/g, 'null') // Replace None with null
-      .replace(/'/g, '"'); // Replace single quotes with double quotes
+      .replace(/True/g, 'true')
+      .replace(/False/g, 'false')
+      .replace(/None/g, 'null')
+      .replace(/'/g, '"');
+  };
+
+  const handleUpdateOrderStatus = async (tableNumber) => {
+    try {
+      const tableOrders = groupedByTable[tableNumber];
+      const orderIds = tableOrders.map((order) => order.id);
+
+      const statusData = { status: 'completed' };
+
+      for (const orderId of orderIds) {
+        await completeOrder(orderId, statusData, auth.token);
+      }
+
+      await onFetchOrders();
+      alert(`Table ${tableNumber} orders marked as completed.`);
+    } catch (error) {
+      console.error('Error updating order status:', error);
+    }
   };
 
   return (
@@ -86,12 +107,42 @@ const Orders = () => {
         <h3 className="mb-0 ml-2">Today's Orders</h3>
       </div>
 
+      {/* Tab Navigation */}
+      <Nav variant="tabs" defaultActiveKey="processing">
+        <Nav.Item>
+          <Nav.Link
+            eventKey="processing"
+            onClick={() => setSelectedTab('processing')}
+          >
+            Processing Orders
+          </Nav.Link>
+        </Nav.Item>
+        <Nav.Item>
+          <Nav.Link
+            eventKey="completed"
+            onClick={() => setSelectedTab('completed')}
+          >
+            Done Orders
+          </Nav.Link>
+        </Nav.Item>
+      </Nav>
+
       {/* Orders List in Grid Layout */}
       <Row>
         {sortedGroupedByTable.length > 0 ? (
           sortedGroupedByTable.map(({ tableNumber, orders }, index) => (
             <Col key={tableNumber} md={4} className="mb-4">
-              <h4>Table {tableNumber}</h4>
+              <div className="d-flex justify-content-between align-items-center">
+                <h4>Table {tableNumber}</h4>
+                {selectedTab === 'processing' && (
+                  <Button
+                    variant="success"
+                    onClick={() => handleUpdateOrderStatus(tableNumber)}
+                  >
+                    Mark as Done
+                  </Button>
+                )}
+              </div>
               <Table striped bordered hover responsive>
                 <thead>
                   <tr>
@@ -102,9 +153,10 @@ const Orders = () => {
                 </thead>
                 <tbody>
                   {orders.map((order, orderIndex) => {
-                    // Clean the detail string before parsing it
-                    const orderItems = Array.isArray(JSON.parse(cleanDetailString(order.detail))) 
-                      ? JSON.parse(cleanDetailString(order.detail)) 
+                    const orderItems = Array.isArray(
+                      JSON.parse(cleanDetailString(order.detail))
+                    )
+                      ? JSON.parse(cleanDetailString(order.detail))
                       : [];
 
                     return (
