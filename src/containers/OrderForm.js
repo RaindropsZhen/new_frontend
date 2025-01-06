@@ -23,6 +23,23 @@ const renderOrderingLimitMessage = (selectedLanguage) => {
       return ;
   }
 };
+const renderTableVerificationMessage = (selectedLanguage, tableNumber) => {
+  const tableDisplay = tableNumber === '77' ? 'VIP' : tableNumber;
+
+  switch (selectedLanguage) {
+    case '中文':
+      return `请确认您的桌号是 ${tableDisplay}，以免订单送错桌。`;
+    case 'English':
+      return `Please verify your table number is ${tableDisplay} to avoid order delivery to the wrong table.`;
+    case 'Español':
+      return `Por favor, verifique que su número de mesa es ${tableDisplay} para evitar la entrega incorrecta del pedido.`;
+    case 'Português':
+      return `Por favor, verifique se o número da sua mesa é ${tableDisplay} para evitar a entrega errada do pedido.`;
+    default:
+      return `Please verify your table number is ${tableDisplay} to avoid order delivery to the wrong table.`;
+  }
+};
+
 const formatTime = (seconds) => {
   const minutes = Math.floor(seconds / 60);
   const remainingSeconds = seconds % 60;
@@ -132,8 +149,9 @@ const OrderForm = ({amount, items, color, selectedLanguage, isTakeAway, phoneNum
 
   return (
     <Form onSubmit={createOrder} ref={formRef}>
-
-
+    <div style={{ marginBottom: '10px', color: '#333', fontWeight: 'bold' }}>
+      {renderTableVerificationMessage(selectedLanguage, params.table)}
+    </div>
     <Button 
       variant='standard' 
       style={{backgroundColor: '#FE6C4C'}} 

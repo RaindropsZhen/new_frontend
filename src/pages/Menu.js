@@ -141,7 +141,7 @@ const Menu = () => {
 
   const [selectedCategoryName, setSelectedCategoryName] = useState(categories.length > 0 ? categories[0] : '');
 
-
+  console.log(params.table)
   const handleCategoryClick = (name) => {
     setSelectedCategoryName(name);
   };
@@ -180,7 +180,6 @@ const Menu = () => {
         </Row>
       </StickyFilterContainer>
 
-
       <div style={{
         backgroundColor: '#FE6C4C',
         color: 'white',
@@ -190,8 +189,9 @@ const Menu = () => {
         fontSize: '18px',
         borderRadius: '10px'
       }}>
-        Número de Mesa:  {params.table}
+        Número de Mesa: {params.table === '77' ? 'VIP' : params.table}
       </div>
+
 
       <Row className="justify-content-center m-2">
         {showLanguageModal && (
