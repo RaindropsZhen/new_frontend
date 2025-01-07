@@ -143,10 +143,13 @@ const ShoppingCart = ({ selectedLanguage,items, onAdd, onRemove, color,last_orde
     <hr />
 
     {/* Total Section */}
-    <div className="d-flex justify-content-between mb-4">
-      <h5 style={{ fontWeight: '600' }}>{renderTotal(selectedLanguage)}</h5>
-      <h5 style={{ fontWeight: '600' }}>€{totalPrice}</h5>
-    </div>
+    <hr/>
+      <div className="d-flex justify-content-between">
+        <h5><b>{renderTotal(selectedLanguage)}</b></h5>
+        <h5><b>€{totalPrice.toFixed(1)}</b></h5>
+      </div>
+    <hr className="mb-4" />
+
 
     {/* Divider */}
     <hr className="mb-4" />

@@ -1,72 +1,97 @@
 import React, { useState } from 'react';
 import { Button, Row, Container } from 'react-bootstrap';
-import { useHistory,useParams  } from 'react-router-dom';
+import { useParams } from 'react-router-dom';
+import styled from 'styled-components';
+
+const StyledContainer = styled(Container)`
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  background-color: #f8f9fa;
+`;
+
+const StyledSelect = styled.select`
+  font-size: 1.5rem;
+  height: 4rem;
+  width: 6rem;
+  padding: 0.5rem;
+  border: 2px solid #007bff;
+  border-radius: 5px;
+  background-color: #ffffff;
+  color: #333;
+  margin-bottom: 1rem;
+
+  &:focus {
+    outline: none;
+    border-color: #0056b3;
+    box-shadow: 0 0 5px rgba(0, 123, 255, 0.5);
+  }
+`;
+
+const StyledButton = styled(Button)`
+  height: 3.5rem;
+  width: 14rem;
+  font-size: 1.2rem;
+  font-weight: bold;
+  background-color: #007bff;
+  border: none;
+  border-radius: 5px;
+  cursor: pointer;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  transition: background-color 0.3s, transform 0.2s;
+
+  &:hover {
+    background-color: #0056b3;
+    transform: translateY(-2px);
+  }
+
+  &:active {
+    background-color: #003d80;
+    transform: translateY(1px);
+  }
+`;
+
+const Heading = styled.h1`
+  font-size: 2rem;
+  color: #333;
+  margin-bottom: 2rem;
+  font-weight: bold;
+`;
 
 const TableNumberInput = () => {
   const [tableNumber, setTableNumber] = useState(1);
-  const history = useHistory();
-  const numberOptions = Array.from({ length: 100 }, (_, index) => index + 1);
+  const numberOptions = [...Array(76).keys()].map((num) => num + 1).concat("VIP"); // Generate 1-76 and 'VIP'
   const { id } = useParams(); // Access the id parameter from the URL
 
-  // const handleTableSubmit = () => {
-  //   history.push(`/menu/6/${tableNumber}`);
-  // }
   const handleTableSubmit = () => {
-    history.push(`/menu/0/${id}/${tableNumber}`); // Use id from URL parameter
-  }
-
-  const handleNumberChange = (value) => {
-    setTableNumber(value);
-  }
-
+    const tableValue = tableNumber === "VIP" ? 77 : tableNumber; // Treat "VIP" as 77
+    const newUrl = `/menu/0/${id}/${tableValue}`; // Construct the URL
+    window.open(newUrl, '_blank'); // Open the URL in a new tab
+  };
+  
   return (
-    <Container style={{ height: '100vh', textAlign: 'center' }}>
-      <Row className="h-20 justify-content-center mb-5 mt-5">
-        <h4>Welcome to Our Restaurant😊!</h4>
-        <h4>Bem Vindo 😊!</h4>
-      </Row>
-      <Row className="h-20 justify-content-center mb-5 mt-5">
-        <h4>Please enter your table number to start ordering!</h4>
-        <h4>Insira o número da sua mesa para fazer o pedido!</h4>
-      </Row>
-      <Row className="justify-content-center mb-5">
-        <select
+    <StyledContainer>
+      <Heading>Select Table</Heading>
+      <Row className="justify-content-center mb-3">
+        <StyledSelect
           value={tableNumber}
-          onChange={(e) => handleNumberChange(e.target.value)}
-          style={{
-            fontSize: '2rem',
-            height: '5rem',
-            width: '5rem',
-            padding: '0.5rem'
-          }}
+          onChange={(e) => setTableNumber(e.target.value)}
         >
-          {numberOptions.map((option) => (
-            <option key={option} value={option}>
+          {numberOptions.map((option, index) => (
+            <option key={index} value={option}>
               {option}
             </option>
           ))}
-        </select>
+        </StyledSelect>
       </Row>
-      <Row className="justify-content-center mb-5">
-        <Button
-          variant="primary"
-          type="submit"
-          style={{
-            height: '3rem',
-            width: '12rem',
-            fontSize: '1.2rem',
-            backgroundColor: '#007BFF', // Add a background color
-            border: 'none', // Remove the default button border
-            borderRadius: '0.3rem', // Add some border radius
-            cursor: 'pointer', // Change cursor on hover
-          }}
-          onClick={() => handleTableSubmit(tableNumber)}
-        >
-          Submit/Submeter
-        </Button>
+      <Row className="justify-content-center">
+        <StyledButton onClick={handleTableSubmit}>Submit / Submeter</StyledButton>
       </Row>
-    </Container>
+    </StyledContainer>
   );
-}
+};
 
 export default TableNumberInput;

@@ -71,8 +71,10 @@ const MenuItemCard = ({ language, item, onOrder, onRemove, color }) => {
 
   const [currentOrderingTiming, setCurrentOrderingTiming] = useState('');
   const [currentAvailability, setCurrentAvailability] = useState(false);
-
+  
   useEffect(() => {
+    const currentDay = new Date().getDay(); // 0 = Sunday, 6 = Saturday
+  
     if (item.lunch_time_start <= currentTimeSeconds && currentTimeSeconds <= item.lunch_time_end) {
       setCurrentOrderingTiming('lunch');
     } else if (item.dinne_time_start <= currentTimeSeconds && currentTimeSeconds <= item.dinne_time_end) {
@@ -80,15 +82,22 @@ const MenuItemCard = ({ language, item, onOrder, onRemove, color }) => {
     } else {
       setCurrentOrderingTiming('closes');
     }
-
+  
     if (item.ordering_timing === "lunch_and_dinner") {
       setCurrentAvailability(true);
     } else {
       const is_available = item.ordering_timing === currentOrderingTiming;
-      setCurrentAvailability(is_available);
+  
+      // Check if the current day is Saturday (6) or Sunday (0)
+      if (currentDay === 0 || currentDay === 6) {
+        setCurrentAvailability(true);
+      } else {
+        setCurrentAvailability(is_available);
+      }
     }
   }, [item, currentTimeSeconds, currentOrderingTiming]);
 
+  
   return (
     <>
       <Card className='card' style={{ borderRadius: '10px', overflow: 'hidden' }}>

@@ -1,7 +1,6 @@
 import { useParams, useHistory } from 'react-router-dom';
 import React, { useEffect, useState, useContext } from 'react';
-import { Container, Row, Tab, Tabs } from 'react-bootstrap';
-import MultipleQRCode from '../components/MultipleQRCode';
+import { Container } from 'react-bootstrap';
 import QRCode from '../components/QRCode';
 import styled from 'styled-components';
 
@@ -45,42 +44,10 @@ const QRCodePage = () => {
                 总桌号 <b>{place.number_of_tables}</b>
 
             </h2>
-            <Tabs 
-                defaultActiveKey="MultipleQRCode" 
-                id="qr-tabs"
-                className="mb-3 qrcode-tab" /* Added custom class here */
+            <GridContainer style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
+                <QRCode placeId={place.id} />
+            </GridContainer>
 
-                fill>
-
-                <Tab eventKey="MultipleQRCode" title="多 二维码">
-                    <GridContainer >
-                        {Array.from({ length: place.number_of_tables }, (_, i) => i + 1).map((table) => (
-                        <div 
-                        key={table} 
-                        className="grid-item"
-                        >
-                        <Row style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-                            <h5> 桌号{table}</h5>
-                        </Row>
-
-                        <Row style={{ display: 'flex', justifyContent: 'center', alignItems: 'center' }}>
-
-                            <MultipleQRCode table={table} placeId={place.id} />
-                        </Row>
-                        </div>
-                        ))}
-                    </GridContainer>
-                </Tab>
-
-                <Tab eventKey="uniqueQRCode" title="单 二维码">
-                    <h5 className="mb-0 mr-2">
-                    总桌号 <b>{place.number_of_tables}</b>
-                    </h5>
-                    <GridContainer style={{ display: 'flex', justifyContent: 'center', alignItems: 'center', height: '100%' }}>
-                        <QRCode placeId={place.id} />
-                    </GridContainer>
-                </Tab>
-            </Tabs>
 
         </Container>
     );

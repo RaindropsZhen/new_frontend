@@ -180,10 +180,9 @@ const Place = () => {
               </div>
             </div>
 
-            <Button variant="link" href={`/places/${params.id}/qrcode`} target="_blank" rel="noopener noreferrer">
+            <Button variant="link" href={`/${params.id}/select_table/`} target="_blank" rel="noopener noreferrer">
               <AiOutlineQrcode size={25} />
             </Button>
-
 
             <Button variant="link" onClick={showqrCodeTakeAway} >
               <RiEBike2Fill size={25} />

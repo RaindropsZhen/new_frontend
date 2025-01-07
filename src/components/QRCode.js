@@ -50,25 +50,11 @@ const QRCode = (placeId) => {
 
       <Overlay>
         <div className="d-flex" >
-          <Button variant="standard" onClick={handlePrint} className="mr-2">
-            点击打印
-          </Button>
           <Button variant="standard" href={url} target="_blank">
             <AiOutlineLink size={25}/> 链接 
           </Button>
         </div>  
       </Overlay>
-
-      <div>
-        <ComponentToPrint ref={componentRef} className="printable-section">
-          <h2>Scan for menu</h2>
-          <QRCodeReact
-            value={url}
-            size={700}
-          />
-          <h3>Powered By XXXXXXXX</h3>
-        </ComponentToPrint>
-      </div>
     </Container>
   )
 }

@@ -25,7 +25,7 @@ const LanguageSelectionModal = ({ show, onHide, languages, onLanguageSelect,tabl
     padding: '10px',
     fontSize: '18px'
   }}>
-    Número de Mesa:  {tableNumber}
+    Número de Mesa:  {tableNumber === '77' ? 'VIP' : tableNumber}
   </div>
   <Modal.Header closeButton style={{ padding: '5px' }}>
     <Modal.Title className='languageModalTitle' style={{ padding: '10px' }}>
