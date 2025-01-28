@@ -13,9 +13,9 @@ const MainLayout = ({ children }) => {
     history.replace("/login");
   }
 
-  const onRegister = () => {
-    history.replace("/register");
-  }
+  // const onRegister = () => {
+  //   history.replace("/register");
+  // }
 
   const onSignOut = () => {
     auth.signOut();
@@ -41,7 +41,7 @@ const MainLayout = ({ children }) => {
           ) : (
             [
               <Nav.Link key={1} onClick={onSignIn}>登录</Nav.Link>,
-              <Nav.Link key={2} onClick={onRegister}>注册</Nav.Link>
+              // <Nav.Link key={2} onClick={onRegister}>注册</Nav.Link>
             ]
           )}
         </Nav>

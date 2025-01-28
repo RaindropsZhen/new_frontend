@@ -7,12 +7,11 @@ import PrivateRoute from './PrivateRoute';
 
 import Home from '../pages/Home';
 import Login from '../pages/Login';
-import Register from '../pages/Register';
+// import Register from '../pages/Register';
 import Places from '../pages/Places';
 import Place from '../pages/Place';
 import Menu from '../pages/Menu';
 import Orders from '../pages/Orders';
-import MenuSettings from '../pages/MenuSettings';
 import TableNumberInput from '../pages/SelectTable';
 import QRCode from '../pages/QRCode';
 
@@ -34,10 +33,10 @@ function App() {
               <Route exact path='/login'>
                 <Login/>
               </Route>
-              
+{/*               
               <Route exact path='/register'>
                 <Register/>
-              </Route> 
+              </Route>  */}
 
               <Route exact path='/:id/select_table/'>
                 <TableNumberInput/>
@@ -61,10 +60,6 @@ function App() {
               <PrivateRoute exact path='/places/:id/orders'>
                 <Orders/>
               </PrivateRoute>
-              <PrivateRoute exact path='/places/:id/settings'>
-                <MenuSettings/>
-              </PrivateRoute>
-
               <PrivateRoute exact path='/places/:id/qrcode'>
                 <QRCode/>
               </PrivateRoute>

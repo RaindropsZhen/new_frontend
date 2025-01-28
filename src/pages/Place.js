@@ -1,14 +1,11 @@
 import { IoMdArrowBack } from 'react-icons/io';
 import { AiOutlineDelete, AiOutlineQrcode } from 'react-icons/ai';
 import { RiFileList3Line } from 'react-icons/ri';
-// import { FiSettings } from 'react-icons/fi';
 import { Row, Col, Button, Modal, Dropdown  } from 'react-bootstrap';
 import { useParams, useHistory } from 'react-router-dom';
 import React, { useEffect, useState, useContext } from 'react';
 import styled from 'styled-components';
 import { HiMiniLanguage } from 'react-icons/hi2';
-import { RiEBike2Fill } from "react-icons/ri";
-// import { VscGraph } from "react-icons/vsc";
 import { TiPrinter } from "react-icons/ti";
 import PrintersModal from '../components/Printers';
 import { FaRegEdit } from "react-icons/fa";
@@ -19,16 +16,12 @@ import {
   removePlace, 
   removeCategory, 
   removeMenuItem, 
-  updatePlace,
-  // deleteImage
 } from '../apis';
 
 import AuthContext from '../contexts/AuthContext';
 import MainLayout from '../layouts/MainLayout';
 import MenuItemForm from '../containers/MenuItemForm';
 import MenuItem from '../components/MenuItem';
-import QRCodeModal from '../components/QRCodeModal';
-import QRCodeModalTakeAway from '../components/QRCodeModalTakeAway';
 import EditMenuItemForm from '../containers/EditMenuItemForm';
 
 
@@ -62,15 +55,11 @@ const Place = () => {
   const [place, setPlace] = useState({});
   const [menuItemFormShow, setMenuItemFormShow] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
-  const [qrCode, setQrCode] = useState(false);
-  const [qrCodeTakeAway, setqrCodeTakeAway] = useState(false);
+
   const [EditPlaceFormShow, SetEditPlaceFormShow] = useState(false);
 
   const showModal = () => setMenuItemFormShow(true);
   const hideModal = () => setMenuItemFormShow(false);
-
-  const showQRModal = () => setQrCode(true);
-  const hideQRModal = () => setQrCode(false);
 
   const showEditPlace = () => SetEditPlaceFormShow(true);
   const hideEditPlace = () => SetEditPlaceFormShow(false);
@@ -79,9 +68,6 @@ const Place = () => {
   const showprinterModal = () => setprintersModalShow(true);
   const hideprinterModal = () => setprintersModalShow(false);
   
-  const showqrCodeTakeAway = () => setqrCodeTakeAway(true);
-  const hideqrCodeTakeAway = () => setqrCodeTakeAway(false);
-
   // 语言过滤器
   const [selectedLanguage, setSelectedLanguage] = useState(languages[0].name)
 
@@ -115,15 +101,6 @@ const Place = () => {
     }
   };
 
-  const onRemovePlace = () => {
-    const c = window.confirm("确定要删除餐厅吗？将会丢失所有菜单信息，请确认清楚！");
-    // deleteImage({"public_id":place.image});
-
-    if (c) {
-      removePlace(params.id, auth.token).then(onBack);
-    }
-  };
-
   const onRemoveCategory = (id) => {
     const c = window.confirm("确定要删除菜品分类吗？");
     if (c) {
@@ -137,16 +114,6 @@ const Place = () => {
       removeMenuItem(id, auth.token).then(onFetchPlace);
     }
   };
-
-  const onUpdatePlace = (tables) => {
-    updatePlace(place.id, { number_of_tables: tables }, auth.token).then(
-      (json) => {
-        if (json) {
-          setPlace(json);
-        }
-      }
-    )
-  }
 
   useEffect(() => {
     onFetchPlace();
@@ -170,22 +137,11 @@ const Place = () => {
                     编辑餐厅信息
                   </span>
                 </Button>
-
-                <Button variant="link" onClick={onRemovePlace}>
-                  <AiOutlineDelete size={25} color="red" />
-                  <span style={{ font:'15px',color:'red' }}>
-                    删除餐厅
-                  </span>
-                </Button>
               </div>
             </div>
 
             <Button variant="link" href={`/${params.id}/select_table/`} target="_blank" rel="noopener noreferrer">
               <AiOutlineQrcode size={25} />
-            </Button>
-
-            <Button variant="link" onClick={showqrCodeTakeAway} >
-              <RiEBike2Fill size={25} />
             </Button>
 
             <Button variant="link" href={`/places/${params.id}/orders`} target="_blank" rel="noopener noreferrer">
@@ -264,16 +220,6 @@ const Place = () => {
           />
         </Modal.Body>
       </Modal>
-
-
-
-      <QRCodeModalTakeAway 
-        show={qrCodeTakeAway} 
-        onHide={hideqrCodeTakeAway} 
-        place={place} 
-        centered 
-        onUpdatePlace={onUpdatePlace}
-      />
 
       <PrintersModal
         show={printersModalShow}

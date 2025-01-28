@@ -22,26 +22,9 @@ const Overlay = styled.div`
   }
 `;
 
-const ComponentToPrint = styled.div`
-  text-align: center;
-  margin-top: 200px;
-  h1 {
-    font-size: 100px;
-    font-weight: bold;
-    margin-bottom: 50px;
-  }
-  h2 {
-    font-size: 60px;
-    margin-bottom: 100px
-  }
-`;
-
+// Delete this page later - redirecting to Table Ordering Page- Unnecessary
 const QRCode = (placeId) => {
 
-  const componentRef = useRef();
-  const handlePrint = useReactToPrint({
-    content: () => componentRef.current,
-  });
   const url = `${window.location.origin}/${placeId.placeId}/select_table`;
 
   return (

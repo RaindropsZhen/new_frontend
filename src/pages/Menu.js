@@ -29,7 +29,7 @@ const StickyFilterContainer = styled.div`
       case '中文':
         return '全部';
       case 'English':
-        return 'All';
+        return 'Filter';
       case 'Português':
         return 'Tudo';
       default:
@@ -189,6 +189,7 @@ const Menu = () => {
         fontSize: '18px',
         borderRadius: '10px'
       }}>
+        {/* Render message accordigly to the language selected */}
         Número de Mesa: {params.table === '77' ? 'VIP' : params.table}
       </div>
 
@@ -238,7 +239,6 @@ const Menu = () => {
           variant="standard"
           style={{
              backgroundColor: '#FE6C4C'
-            //  place.color 
             }} 
           onClick={() => setShowShoppingCart(!showShoppingCart)}>
           {showShoppingCart ? <IoCloseOutline size={25} /> : totalQuantity}
