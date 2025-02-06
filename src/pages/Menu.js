@@ -85,6 +85,7 @@ const Menu = () => {
     });
   }
 
+  
 
   const onRemoveItemToShoppingCart = (item) => {
     if (totalQuantity === 1) {
