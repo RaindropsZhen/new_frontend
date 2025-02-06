@@ -1,7 +1,6 @@
 import React, { useState, useContext, useRef } from 'react';
 import { Button, Form } from 'react-bootstrap';
-import { useParams,useHistory  } from 'react-router-dom';
-// import ReCAPTCHA from "react-google-recaptcha";
+import { useParams  } from 'react-router-dom';
 import { toast } from 'react-toastify';
 import { 
     createOrderIntent
@@ -49,7 +48,6 @@ const formatTime = (seconds) => {
 
 const OrderForm = ({amount, items, color, selectedLanguage, isTakeAway, phoneNumber, arrivalTime,comment,customer_name,timeLeftToOrder,enable_ordering}) => {
   const formRef = useRef(null);
-  // const history = useHistory(); // Get the history object to navigate
   const [loading, setLoading] = useState(false)
   const auth = useContext(AuthContext)
   const params = useParams()
@@ -97,29 +95,25 @@ const OrderForm = ({amount, items, color, selectedLanguage, isTakeAway, phoneNum
 
   
   const createOrder = async (e) => {
-    e.preventDefault(); // Prevent the default form submission behavior
-    setLoading(true);   // Start the loading state
+    e.preventDefault(); 
+    setLoading(true);  
   
     try {
-      // Perform validation checks for take-away orders
-      if (isTakeAway && (!phoneNumber || !arrivalTime)) {
-        toast("请确保已输入电话号码或者到达时间", {type: "error"});
-        setLoading(false); // Stop the loading state
-        return; // Exit the function if validation fails
-      }
-  
       // Proceed with creating the order
+
       const json = await createOrderIntent({
         amount,
         place: params.id,
         table: params.table,
         detail: items,
+        // Delete the following Inputs for create Order Intent function
+        language: selectedLanguage,
         isTakeAway: isTakeAway,
         comment: comment,
         phoneNumber: phoneNumber,
         arrival_time: arrivalTime,
-        language: selectedLanguage,
         customer_name: customer_name,
+
       }, auth.token);
   
       // Handle the response

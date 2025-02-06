@@ -1,11 +1,10 @@
-import { Form, Button,InputGroup  } from 'react-bootstrap';
-import React, { useState, useContext,Row } from 'react';
+import { Form, Button  } from 'react-bootstrap';
+import React, { useState, useContext } from 'react';
 import TimePicker from 'react-bootstrap-time-picker';
 import AuthContext from '../contexts/AuthContext';
 
 import ImageDropzone from '../containers/ImageDropzone';
 import { uploadImage,updatePlace } from '../apis';
-import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 
@@ -145,7 +144,7 @@ const EditPlace = ({place}) => {
         <div style={{ marginRight: '10px' }}>
           <TimePicker
             start="8:00"
-            end="23:00"
+            end="23:59"
             step={30}
             value={selectedLunchTimeStart}
             onChange={handleLunchStartChange}
@@ -154,7 +153,7 @@ const EditPlace = ({place}) => {
         <div>
           <TimePicker
             start="8:00"
-            end="23:00"
+            end="23:59"
             step={30}
             value={selectedLunchTimeFinish}
             onChange={handleLunchFinishChange}
@@ -167,7 +166,7 @@ const EditPlace = ({place}) => {
         <div style={{ marginRight: '10px' }}>
           <TimePicker
             start="8:00"
-            end="23:00"
+            end="23:59"
             step={30}
             value={selectedDinnerTimeStart}
             onChange={handleDinnerStartChange}
@@ -176,7 +175,7 @@ const EditPlace = ({place}) => {
         <div>
           <TimePicker
             start="8:00"
-            end="23:00"
+            end="23:59"
             step={30}
             value={selectedDinnerTimeFinish}
             onChange={handleDinnerFinishChange}

@@ -1,6 +1,5 @@
 import React from 'react';
 import { Modal,Card } from 'react-bootstrap';
-import EditPrinter from './EditPrinters';
 
 const PrintersModal = ({ show, onHide, place }) => {
 
@@ -22,11 +21,7 @@ const PrintersModal = ({ show, onHide, place }) => {
                     <p style={{color: printer.printer_status === '1' ? 'green' : (printer.printer_status === '2' ? 'yellow' : 'red')}}>
                       在线状态: {printer.printer_status_info}</p>
                     <p>打印内容: {printer.category_name}</p>
-                    {/* Multi-select component */}
-                    <EditPrinter
-                    printer={printer}
-                    categories={place.categories}
-                    ></EditPrinter>
+
 
                   </Card.Body>
                 </Card>

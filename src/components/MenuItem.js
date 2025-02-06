@@ -51,6 +51,20 @@ const renderMenuItemDescription = (item, selectedLanguage) => {
       return item.description; 
   }
 };
+
+const renderAvailability = (item, selectedLanguage) => {
+  switch (selectedLanguage) {
+    case '中文':
+      return "已断货";
+      case 'English':
+      return "Unavailable";
+      case 'Português':
+      return "Indisponível";
+    default:
+      return "Unavailable"; 
+  }
+};
+
 const MenuItem = ({ language,item, onEdit, onRemove, onOrder, color }) => (
   <Container active={item.is_available}>
 
@@ -96,6 +110,7 @@ const MenuItem = ({ language,item, onEdit, onRemove, onOrder, color }) => (
             <b style={{ color }}>€ {item.price}</b>
           </h5>
 
+          {/* 这是什么东西？ 删除？*/}
           {onOrder ? (
             <Button 
               variant="standard" 
@@ -107,9 +122,11 @@ const MenuItem = ({ language,item, onEdit, onRemove, onOrder, color }) => (
               {!item.quantity ? "Add to shopping cart" : `Add one more (${item.quantity})`}
             </Button>
           ) : null}
+          {/* 这是什么东西？ 删除？*/}
+
         </div>
 
-        {!item.is_available ? (<small className="text-secondary">Not Available</small>) : null}
+        {!item.is_available ? (<small className="text-secondary">{renderAvailability}</small>) : null}
 
       </div>
     </Col>

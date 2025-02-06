@@ -23,13 +23,21 @@ const renderMenuItemName = (item,selectedLanguage) => {
 const ShoppingCart = ({ selectedLanguage,items, onAdd, onRemove, color,last_ordering_timing,orderingInterval }) => {
   const location = useLocation(); // This gives you the location object
   const pathParts = location.pathname.split('/');
+
+
+
+  // Delete this code, no TakeAway Feature implemented
   const isTakeAway = pathParts[pathParts.length - 1].includes('takeaway');
   const [phoneNumber, setPhoneNumber] = useState(0);
   const [arrivalTime, setarrivalTime] = useState(null);  
   const [name, setName] = useState('');
+  // Delete this code, no TakeAway Feature implemented
+
+
+
   const [enableOrdering, setEnableOrdering] = useState(true);
   const [timeLeftToOrder, setTimeLeftToOrder] = useState(0);
-  const [allcomment, setAllComment] = useState({})
+  const [allcomment, setAllComment] = useState({}) // No comment made
 
   const date = new Date()
   const lisbonTime = new Date(date.toLocaleString('en-US', { timeZone: 'Europe/Lisbon' }));
@@ -155,6 +163,11 @@ const ShoppingCart = ({ selectedLanguage,items, onAdd, onRemove, color,last_orde
     <hr className="mb-4" />
 
     {/* Order Form */}
+    {/* 
+    1 - Delete Data Model (Backend): isTakeAway, phoneNumber, arrivalTime, allcomment, customer_name
+    2 - Clear OrderForm Inputs
+    3 - Clean Shopping Cart Inputs.
+    */}
     <OrderForm
       selectedLanguage={selectedLanguage}
       amount={totalPrice}
@@ -168,6 +181,14 @@ const ShoppingCart = ({ selectedLanguage,items, onAdd, onRemove, color,last_orde
       timeLeftToOrder={timeLeftToOrder}
       enable_ordering={enableOrdering}
     />
+    {/* Order Form */}
+    {/* 
+    1 - Delete Data Model (Backend): isTakeAway, phoneNumber, arrivalTime, allcomment, customer_name
+    2 - Clear OrderForm Inputs
+    3 - Clean Shopping Cart Inputs.
+    */}
+
+    
   </Card.Body>
 </Card>
 

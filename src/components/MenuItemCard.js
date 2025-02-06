@@ -129,7 +129,7 @@ const MenuItemCard = ({ language, item, onOrder, onRemove, color }) => {
           />
           <Modal.Body>{renderMenuItemDescription(item, language)}</Modal.Body>
         </Modal>
-        <Row className="d-flex justify-content-end align-items-center">
+        <Row className="d-grid justify-content-end align-items-center">
             {/* Conditionally hide the price if it's 0 */}
               {item.price > 0 && <b style={{ color }}>{item.price}€</b>}
               {onOrder && (
@@ -138,7 +138,7 @@ const MenuItemCard = ({ language, item, onOrder, onRemove, color }) => {
                 variant="lightgray"
                 size="sm"
                 onClick={() => onRemove(item)}
-                disabled={!currentAvailability || item.quantity <= 0} // Disable if not available or quantity is 0
+                disabled={!currentAvailability || item.quantity <= 0}
               >
                 -
               </OperationButton>
@@ -149,7 +149,7 @@ const MenuItemCard = ({ language, item, onOrder, onRemove, color }) => {
                 variant="lightgray"
                 size="sm"
                 onClick={() => onOrder(item)}
-                disabled={!currentAvailability || item.quantity <= 0} // Disable if not available or quantity is 0
+                disabled={!currentAvailability || item.quantity <= 0}
               >
                 +
               </OperationButton>

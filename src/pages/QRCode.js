@@ -6,7 +6,6 @@ import styled from 'styled-components';
 
 import { 
     fetchPlace, 
-    // deleteImage
   } from '../apis';
 
   import AuthContext from '../contexts/AuthContext';
@@ -22,7 +21,6 @@ const QRCodePage = () => {
     const [place, setPlace] = useState({});
     const auth = useContext(AuthContext);
     const params = useParams();
-    const history = useHistory();
     const onFetchPlace = async () => {
         const json = await fetchPlace(params.id, auth.token);
         if (json) {
