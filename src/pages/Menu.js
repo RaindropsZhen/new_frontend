@@ -1,5 +1,4 @@
-// eslint-disable-next-line
-import { Container, Row, Col, Button, Modal } from 'react-bootstrap';
+import { Container, Row, Col, Button } from 'react-bootstrap';
 import { IoCloseOutline } from 'react-icons/io5';
 import { useParams } from 'react-router-dom';
 import React, { useState, useEffect, useMemo } from 'react';
@@ -14,7 +13,7 @@ import ShoppingCart from '../components/ShoppingCart';
 const languages = [
   {value: "en","label":"English"},
   {value:"pt","label":"Português"},
-  { "value": 'cn', "label": '中文' }
+  { value: 'cn', "label": '中文' }
 ];
 
 const StickyFilterContainer = styled.div`
@@ -30,7 +29,7 @@ const StickyFilterContainer = styled.div`
       case '中文':
         return '全部';
       case 'English':
-        return 'Filter';
+        return 'All';
       case 'Português':
         return 'Tudo';
       default:
@@ -48,7 +47,6 @@ const OrderButton = styled(Button)`
   borderRadius: '10px'
 `;
 const Menu = () => {
-  const [showAgreementModal, setShowAgreementModal] = useState(false); // Initially hide agreement modal
 
   const [place, setPlace] = useState({});
   const [shoppingCart, setShoppingCart] = useState({});
@@ -57,91 +55,14 @@ const Menu = () => {
   const params = useParams();
   const [selectedLanguage, setSelectedLanguage] = useState("English");
   const [showLanguageModal, setShowLanguageModal] = useState(true);
-  const [LastOrderingTiming, setLastOrderingTiming] = useState("");
-  const [agreementText, setAgreementText] = useState({
-    en: "Please read and accept the following:<br /><br />To help reduce food waste, we charge <b>8.5€</b> for each <b>takeaway box</b> needed for uneaten food. Please order according to your appetite. Thank you for your understanding.",
-    cn: "请阅读并接受以下协议：<br /><br />为了减少食物浪费，我们会对未食用完需要打包的食物收取<b>8.5欧</b>的<b>外卖盒</b>费用。请根据您的食量点餐。感谢您的理解。",
-    pt: "Por favor, leia e aceite o seguinte:<br /><br />Para ajudar a reduzir o desperdício de alimentos, cobramos <b>8,5€</b> por cada caixa de take-away necessária para a comida não consumida. Por favor, peça de acordo com o seu apetite. Obrigado pela sua compreensão."
-  });
-  const [agreementTitle, setAgreementTitle] = useState({
-    en: "Agreement",
-    cn: "协议",
-    pt: "Acordo"
-  });
-
-  const [agreeButtonText, setAgreeButtonText] = useState({
-    en: "I Agree",
-    cn: "我同意",
-    pt: "Eu Concordo"
-  });
+  const [LastOrderingTiming, setLastOrderingTiming] =useState("");
 
   const handleLanguageSelect = (language) => {
     setSelectedLanguage(language);
-    setShowLanguageModal(false);
-    localStorage.setItem('selectedLanguage', language);
-    setShowAgreementModal(true);
-
-    // Update agreement text based on selected language
-    let newAgreementText = {};
-        let newAgreementTitle = {};
-    let newAgreeButtonText = {};
-    switch (language) {
-      case '中文':
-        newAgreementText = {
-          en: "Please read and accept the following:<br /><br />To help reduce food waste, we charge <b>8.5€</b> for each <b>takeaway box</b> needed for uneaten food. Please order according to your appetite. Thank you for your understanding.",
-          cn: "请阅读并接受以下协议：<br /><br />为了减少食物浪费，我们会对未食用完需要打包的食物收取<b>8.5欧</b>的<b>外卖盒</b>费用。请根据您的食量点餐。感谢您的理解。",
-          pt: "Por favor, leia e aceite o seguinte acordo: <br /> Não incentivamos o desperdício de alimentos. Os alimentos desperdiçados precisam ser comprados com uma caixa para viagem, 8,5 euros por caixa. Por favor, peça de acordo com o seu apetite."
-        };
-                newAgreementTitle = {
-          en: "Agreement",
-          cn: "协议",
-          pt: "Acordo"
-        };
-        newAgreeButtonText = {
-          en: "I Agree",
-          cn: "我同意",
-          pt: "Eu Concordo"
-        };
-        break;
-      case 'Português':
-        newAgreementText = {
-          en: "Please read and accept the following agreement: <br /> We do not encourage food waste. Wasted food needs to be purchased with a takeaway box, 8.5 euros per box. Please order according to your appetite.",
-          cn: "请阅读并接受以下协议：<br /> 我们不提倡浪费食物，浪费的食物需要购买外卖盒带走，8.5欧元每一个盒子。请按照自己的食量点单。",
-          pt: "Por favor, leia e aceite o seguinte acordo: <br /> Não incentivamos o desperdício de alimentos. Os alimentos desperdiçados precisam ser comprados com uma caixa para viagem, 8,5 euros por caixa. Por favor, peça de acordo com o seu apetite."
-        };
-                newAgreementTitle = {
-          en: "Agreement",
-          cn: "协议",
-          pt: "Acordo"
-        };
-        newAgreeButtonText = {
-          en: "I Agree",
-          cn: "我同意",
-          pt: "Eu Concordo"
-        };
-        break;
-      default:
-        newAgreementText = {
-          en: "Please read and accept the following agreement: <br /> We do not encourage food waste. Wasted food needs to be purchased with a takeaway box, 8.5 euros per box. Please order according to your appetite.",
-          cn: "请阅读并接受以下协议：<br /> 我们不提倡浪费食物，浪费的食物需要购买外卖盒带走，8.5欧元每一个盒子。请按照自己的食量点单。",
-          pt: "Por favor, leia e aceite o seguinte acordo: <br /> Não incentivamos o desperdício de alimentos. Os alimentos desperdiçados precisam ser comprados com uma caixa para viagem, 8,5 euros por caixa. Por favor, peça de acordo com o seu apetite."
-        };
-                newAgreementTitle = {
-          en: "Agreement",
-          cn: "协议",
-          pt: "Acordo"
-        };
-        newAgreeButtonText = {
-          en: "I Agree",
-          cn: "我同意",
-          pt: "Eu Concordo"
-        };
-        break;
-    }
-    setAgreementText(newAgreementText);
-        setAgreementTitle(newAgreementTitle);
-    setAgreeButtonText(newAgreeButtonText);
+    setShowLanguageModal(false); 
+    localStorage.setItem('selectedLanguage', selectedLanguage);
   };
+
 
   const onFetchPlace = async () => {
     try {
@@ -164,6 +85,7 @@ const Menu = () => {
     });
   }
 
+  
 
   const onRemoveItemToShoppingCart = (item) => {
     if (totalQuantity === 1) {
@@ -185,9 +107,9 @@ const Menu = () => {
       [shoppingCart]
   );
 
- useEffect(() => {
+  useEffect(() => {
     onFetchPlace();
-
+    
     if (place && place.tables && params && params.table) {
       const tableNumber = parseInt(params.table); // Convert params.table to integer
       // Find the table with table_number equal to 2
@@ -195,15 +117,11 @@ const Menu = () => {
         return parseInt(table.table_number) === tableNumber;
       });
       if (table) {
-        // Set the last ordering timing(table.last_ordering_time);
-      }
+        // Set the last ordering timing if the table is found
+        setLastOrderingTiming(table.last_ordering_time);
+      } 
     }
 
-    if (localStorage.getItem('agreementAccepted') !== 'true' && !localStorage.getItem('selectedLanguage')) {
-      setShowLanguageModal(true);
-    } else {
-      setShowLanguageModal(false);
-    }
   }, [place, params.table]);
 
   const renderCategoryName = (category) => {
@@ -229,42 +147,8 @@ const Menu = () => {
     setSelectedCategoryName(name);
   };
 
- const handleAgreementAccept = () => {
-    localStorage.setItem('agreementAccepted', 'true');
-    setShowAgreementModal(false);
-  };
-
   return (
     <Container fluid className="mt-2 mb-4">
-      {showAgreementModal && (
-        <Modal
-          show={showAgreementModal}
-          backdrop="static"
-          keyboard={false}
-          style={{ borderRadius: '15px', overflow: 'hidden' }}
-          className="agreementModal"
-        >
-          <div style={{
-            backgroundColor: '#FE6C4C',
-            color: 'white',
-            textAlign: 'center',
-            fontWeight: 'bold',
-            padding: '10px',
-            fontSize: '18px'
-          }}>
-            Número de Mesa: {params.table === '77' ? 'VIP' : params.table}
-          </div>
-          <Modal.Header closeButton style={{ padding: '5px' }}>
-            <Modal.Title style={{ padding: '10px' }}>{agreementTitle[selectedLanguage === '中文' ? 'cn' : selectedLanguage === 'Português' ? 'pt' : 'en']}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body className="languageModelBody" dangerouslySetInnerHTML={{ __html: agreementText[selectedLanguage === '中文' ? 'cn' : selectedLanguage === 'Português' ? 'pt' : 'en'] }} />
-          <Modal.Footer>
-            <Button variant="primary" style={{ backgroundColor: '#FE6C4C', borderColor: '#FE6C4C' }} onClick={handleAgreementAccept}>
-              {agreeButtonText[selectedLanguage === '中文' ? 'cn' : selectedLanguage === 'Português' ? 'pt' : 'en']}
-            </Button>
-          </Modal.Footer>
-        </Modal>
-      )}
       {/* Filter */}
       <StickyFilterContainer >
         <Row className="d-flex justify-content-between align-items-center flex-nowrap gap-3">
@@ -275,8 +159,7 @@ const Menu = () => {
             className="custom-dropdown"
           >
             <option value="">{renderFilterAllButton(selectedLanguage)}</option>
-            {categories
-            .map((name) => (
+            {categories?.map((name) => (
               <option key={name} value={name}>
                 {name}
               </option>
@@ -307,11 +190,11 @@ const Menu = () => {
         fontSize: '18px',
         borderRadius: '10px'
       }}>
-        {/* Render message accordigly to the language selected */}
         Número de Mesa: {params.table === '77' ? 'VIP' : params.table}
       </div>
 
-      <Row className="justifyContent-center m-2">
+
+      <Row className="justify-content-center m-2">
         {showLanguageModal && (
           <LanguageSelectionModal
             show={showLanguageModal}
@@ -356,9 +239,10 @@ const Menu = () => {
           variant="standard"
           style={{
              backgroundColor: '#FE6C4C'
+            //  place.color 
             }} 
           onClick={() => setShowShoppingCart(!showShoppingCart)}>
-          <span>{showShoppingCart ? <IoCloseOutline size={25} /> : totalQuantity}</span>
+          {showShoppingCart ? <IoCloseOutline size={25} /> : totalQuantity}
         </OrderButton>
       ) : null}
   </Container>

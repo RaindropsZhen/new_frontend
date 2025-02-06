@@ -2,6 +2,7 @@ import React from 'react';
 import styled from 'styled-components';
 import MenuGrid from './MenuGrid'; 
 
+// Styled components
 const Container = styled.div`
   b, p {
     ${({ font }) => font && `font-family: ${font};`}
@@ -30,8 +31,8 @@ const MenuList = ({
   shoppingCart = {}, 
   onOrder, 
   onRemove,
-  font = "", //remove later
-  color = "", //remove later
+  font = "", 
+  color = "", 
   selectedCategoryName=""
 }) => {
   const renderCategoryName = (category) => {
@@ -48,15 +49,12 @@ const MenuList = ({
   };
 
   return (
-    <Container 
-      font={font} //remove later
-    >
+    <Container font={font}>
       {place?.categories 
         ?.filter(
           (category) => category.menu_items.filter((i) => i.is_available).length
         )
         .filter((category) => !selectedCategoryName || renderCategoryName(category) === selectedCategoryName)
-        .sort((a, b) => a.orders_display - b.orders_display) // Sort by orders_display
         .map((category, index) => (
           <CategoryWrapper key={index}>
             <CategoryHeader color={color}>
