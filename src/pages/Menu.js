@@ -1,8 +1,8 @@
 // eslint-disable-next-line
 import { Container, Row, Col, Button, Modal } from 'react-bootstrap';
 import { IoCloseOutline } from 'react-icons/io5';
-import { useParams } from 'react-router-dom';
-import React, { useState, useEffect, useMemo } from 'react';
+import { useParams, useLocation } from 'react-router-dom';
+import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { fetchPlace } from '../apis';
 import styled from 'styled-components';
 
@@ -57,7 +57,9 @@ const Menu = () => {
   const params = useParams();
   const [selectedLanguage, setSelectedLanguage] = useState("English");
   const [showLanguageModal, setShowLanguageModal] = useState(true);
-  const [LastOrderingTiming, setLastOrderingTiming] = useState("");
+  const [lastOrderingTiming, setLastOrderingTiming] = useState("");
+  const [enableOrdering, setEnableOrdering] = useState(true);
+  const [timeLeftToOrder, setTimeLeftToOrder] = useState(0);
   const [agreementText, setAgreementText] = useState({
     en: "Please read and accept the following:<br /><br />To help reduce food waste, we charge <b>8.5€</b> for each <b>takeaway box</b> needed for uneaten food. Please order according to your appetite. Thank you for your understanding.",
     cn: "请阅读并接受以下协议：<br /><br />为了减少食物浪费，我们会对未食用完需要打包的食物收取<b>8.5欧</b>的<b>外卖盒</b>费用。请根据您的食量点餐。感谢您的理解。",
@@ -143,25 +145,29 @@ const Menu = () => {
     setAgreeButtonText(newAgreeButtonText);
   };
 
-  const onFetchPlace = async () => {
+  const location = useLocation();
+  const pathParts = location.pathname.split('/');
+  const isTakeAway = pathParts[pathParts.length - 1].includes('takeaway');
+
+  const onFetchPlace = useCallback(async () => {
     try {
       const json = await fetchPlace(params.id);
       if (json) {
         setPlace(json);
       }
-    
     } catch (error) {
       console.error('Error fetching place:', error);
     }
-  };
+  }, [params.id]);
+
   const onAddItemtoShoppingCart = (item) => {
-    setShoppingCart({
+    setShoppingCart((prevShoppingCart) => ({
       ...shoppingCart,
       [item.id]: {
         ...item,
         quantity: (shoppingCart[item.id]?.quantity || 0) + 1,
       }
-    });
+    }));
   }
 
 
@@ -170,13 +176,13 @@ const Menu = () => {
       setShowShoppingCart(false);
     }
 
-    setShoppingCart({
+    setShoppingCart((prevShoppingCart) => ({
       ...shoppingCart,
       [item.id]: {
         ...item,
         quantity: (shoppingCart[item.id]?.quantity || 0) - 1,
       }
-    });
+    }));
   }
   const totalQuantity = useMemo(
     () => Object.keys(shoppingCart)
@@ -187,24 +193,28 @@ const Menu = () => {
 
  useEffect(() => {
     onFetchPlace();
+  }, [onFetchPlace]);
 
+  useEffect(() => {
     if (place && place.tables && params && params.table) {
-      const tableNumber = parseInt(params.table); // Convert params.table to integer
-      // Find the table with table_number equal to 2
-      const table = place.tables.find(table => {
-        return parseInt(table.table_number) === tableNumber;
-      });
+      const tableNumber = parseInt(params.table);
+      const table = place.tables.find(
+        (table) => parseInt(table.table_number) === tableNumber
+      );
+
       if (table) {
-        // Set the last ordering timing(table.last_ordering_time);
+        setLastOrderingTiming(table.last_ordering_time);
       }
     }
+  }, [place, params, setLastOrderingTiming]);
 
+  useEffect(() => {
     if (localStorage.getItem('agreementAccepted') !== 'true' && !localStorage.getItem('selectedLanguage')) {
       setShowLanguageModal(true);
     } else {
       setShowLanguageModal(false);
     }
-  }, [place, params.table]);
+  }, []);
 
   const renderCategoryName = (category) => {
     switch (selectedLanguage) {
@@ -233,6 +243,31 @@ const Menu = () => {
     localStorage.setItem('agreementAccepted', 'true');
     setShowAgreementModal(false);
   };
+
+  const date = new Date();
+  const lisbonTime = new Date(date.toLocaleString('en-US', { timeZone: 'Europe/Lisbon' }));
+
+  const hour = lisbonTime.getHours();
+  const minute = lisbonTime.getMinutes();
+  const second = lisbonTime.getSeconds();
+  const currentTimeSeconds = 3600 * hour + 60 * minute + second;
+
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (lastOrderingTiming && place.ordering_limit_interval) {
+        const differenceInSeconds = currentTimeSeconds - lastOrderingTiming;
+        if (differenceInSeconds > place.ordering_limit_interval || differenceInSeconds < 0) {
+          setEnableOrdering(true);
+          setTimeLeftToOrder(0);
+        } else {
+          setEnableOrdering(false);
+          setTimeLeftToOrder(place.ordering_limit_interval - differenceInSeconds);
+        }
+      }
+    }, 500);
+
+    return () => clearInterval(timer);
+  }, [currentTimeSeconds, lastOrderingTiming, place.ordering_limit_interval]);
 
   return (
     <Container fluid className="mt-2 mb-4">
@@ -334,17 +369,19 @@ const Menu = () => {
               onRemove={onRemoveItemToShoppingCart}
               color={place.color}
               table_id={params.table}
-              last_ordering_timing={LastOrderingTiming}
-              orderingInterval = {place.ordering_limit_interval}
+              last_ordering_timing={lastOrderingTiming}
+              orderingInterval={place.ordering_limit_interval}
+              timeLeftToOrder={timeLeftToOrder}
+              enable_ordering={enableOrdering}
             />
           ) : (
-            <MenuList 
+            <MenuList
               selectedLanguage={selectedLanguage}
-              place={place} 
-              shoppingCart={shoppingCart} 
+              place={place}
+              shoppingCart={shoppingCart}
               onOrder={onAddItemtoShoppingCart}
               onRemove={onRemoveItemToShoppingCart}
-              color={place.color} 
+              color={place.color}
               font={place.font}
               selectedCategoryName={selectedCategoryName}
             />
@@ -352,16 +389,16 @@ const Menu = () => {
         </Col>
       </Row>
       {totalQuantity ? (
-        <OrderButton 
+        <OrderButton
           variant="standard"
           style={{
              backgroundColor: '#FE6C4C'
-            }} 
+            }}
           onClick={() => setShowShoppingCart(!showShoppingCart)}>
           <span>{showShoppingCart ? <IoCloseOutline size={25} /> : totalQuantity}</span>
         </OrderButton>
       ) : null}
-  </Container>
+    </Container>
   )
 };
 
