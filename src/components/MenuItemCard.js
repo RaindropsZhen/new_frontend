@@ -138,7 +138,7 @@ const MenuItemCard = ({ language, item, onOrder, onRemove, color }) => {
                 variant="lightgray"
                 size="sm"
                 onClick={() => onRemove(item)}
-                disabled={!currentAvailability || item.quantity <= 0} // Disable if not available or quantity is 0
+                disabled={!currentAvailability} // Disable only if not available
               >
                 -
               </OperationButton>
@@ -149,7 +149,7 @@ const MenuItemCard = ({ language, item, onOrder, onRemove, color }) => {
                 variant="lightgray"
                 size="sm"
                 onClick={() => onOrder(item)}
-                disabled={!currentAvailability || item.quantity <= 0} // Disable if not available or quantity is 0
+                disabled={!currentAvailability}
               >
                 +
               </OperationButton>
