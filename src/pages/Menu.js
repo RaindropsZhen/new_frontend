@@ -13,6 +13,16 @@ import LanguageSelectionModal from '../components/LanguageSelectionModal';
 import MenuList from '../components/MenuList';
 import ShoppingCart from '../components/ShoppingCart';
 
+const BottomTabContainer = styled.div`
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  background-color: white;
+  z-index: 1000;
+  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
+`;
+
 const StyledTabs = styled(Tabs)`
   width: 100%;
 `;
@@ -25,6 +35,12 @@ const StyledTabList = styled(TabList)`
   justify-content: space-around;
   background-color: #f0f0f0;
   border-radius: 5px;
+`;
+
+const StickyTabListWrapper = styled.div`
+  position: sticky;
+  bottom: 0;
+  z-index: 1;
 `;
 
 const StyledTab = styled(Tab)`
@@ -402,15 +418,11 @@ const Menu = () => {
             tableNumber={params.table}
           />
         )}
-        <Col lg={8}>
-          <Tabs onSelect={handleTabSelect}>
-            <TabList>
-              <Tab>Menu</Tab>
-              <Tab>Cart</Tab>
-              <Tab>History</Tab>
-            </TabList>
 
-            <TabPanel>
+      </Row>
+
+          <Tabs onSelect={handleTabSelect}>
+                        <TabPanel>
               <MenuList
                 selectedLanguage={selectedLanguage}
                 place={place}
@@ -442,9 +454,16 @@ const Menu = () => {
             <TabPanel>
               <OrderHistory />
             </TabPanel>
+
+            <BottomTabContainer>
+              <TabList style={{ display: "flex", justifyContent: "space-around", padding: "10px 0" }}>
+                <Tab>Menu</Tab>
+                <Tab>Cart</Tab>
+                <Tab>History</Tab>
+              </TabList>
+            </BottomTabContainer>
           </Tabs>
-        </Col>
-      </Row>
+        
     </Container>
   );
 };
