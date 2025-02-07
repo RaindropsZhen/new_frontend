@@ -281,20 +281,42 @@ const handleSelectTab = (tabName) => {
 }
 
 const OrderHistory = ({ orderHistory }) => {
+  const totalCost = orderHistory.reduce((sum, order) => sum + order.price * order.quantity, 0);
+
   return (
-    <div>
-      <h2 style={{ fontSize: '18px' }}>Order History</h2>
+    <div style={{ width: '100%', maxWidth: '600px', margin: '0 auto' }}>
+      <h2 style={{ fontSize: '20px', marginBottom: '10px', textAlign: 'center'  }}>Order History</h2>
       {orderHistory.length === 0 ? (
-        <p style={{ fontSize: '14px' }}>No orders yet</p>
+        <p style={{ fontSize: '16px', textAlign: 'center' }}>No orders yet</p>
       ) : (
-        <ul style={{ fontSize: '14px' }}>
-          {orderHistory.map((order, index) => (
-            <li key={index}>
-              {order.name} - €{order.price.toFixed(1)} X {order.quantity}
-            </li>
-          ))}
-        </ul>
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '16px' }}>
+          <thead style={{backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>
+            <tr>
+              <th style={{ padding: '8px', textAlign: 'left' }}>Item</th>
+              <th style={{ padding: '8px', textAlign: 'right' }}>Price</th>
+              <th style={{ padding: '8px', textAlign: 'right' }}>Quantity</th>
+              <th style={{ padding: '8px', textAlign: 'right' }}>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {orderHistory.map((order, index) => (
+              <tr key={index} style={{borderBottom: '1px solid #dee2e6'}}>
+                <td style={{ padding: '8px' }}>{order.name}</td>
+                <td style={{ padding: '8px', textAlign: 'right' }}>€{order.price.toFixed(1)}</td>
+                <td style={{ padding: '8px', textAlign: 'right' }}>{order.quantity}</td>
+                <td style={{ padding: '8px', textAlign: 'right' }}>€{(order.price * order.quantity).toFixed(1)}</td>
+              </tr>
+            ))}
+            <tr style={{borderTop: '2px solid #dee2e6', fontWeight: 'bold'}}>
+              <td colSpan="3" style={{ padding: '8px', textAlign: 'right' }}>Total:</td>
+              <td style={{ padding: '8px', textAlign: 'right' }}>€{totalCost.toFixed(1)}</td>
+            </tr>
+          </tbody>
+        </table>
       )}
+      <p style={{ fontSize: '14px', marginTop: '15px', textAlign: 'center', color: '#6c757d' }}>
+        Please note that buffet per person is not included yet to the total price.
+      </p>
     </div>
   );
 };
