@@ -8,59 +8,12 @@ import styled from 'styled-components';
 import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 
+import BottomTabBar from '../components/BottomTabBar';
+
 import LanguageSelectionModal from '../components/LanguageSelectionModal';
 
 import MenuList from '../components/MenuList';
 import ShoppingCart from '../components/ShoppingCart';
-
-const BottomTabContainer = styled.div`
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: 100%;
-  background-color: white;
-  z-index: 1000;
-  box-shadow: 0 -2px 5px rgba(0, 0, 0, 0.1);
-`;
-
-const StyledTabs = styled(Tabs)`
-  width: 100%;
-`;
-
-const StyledTabList = styled(TabList)`
-  list-style: none;
-  padding: 0;
-  margin: 0;
-  display: flex;
-  justify-content: space-around;
-  background-color: #f0f0f0;
-  border-radius: 5px;
-`;
-
-const StickyTabListWrapper = styled.div`
-  position: sticky;
-  bottom: 0;
-  z-index: 1;
-`;
-
-const StyledTab = styled(Tab)`
-  padding: 10px 20px;
-  cursor: pointer;
-  border: none;
-  background: none;
-  font-size: 16px;
-  color: #333;
-  border-bottom: 2px solid transparent;
-
-  &:focus {
-    outline: none;
-  }
-
-  &.is-selected {
-    color: #FE6C4C;
-    border-bottom: 2px solid #FE6C4C;
-  }
-`;
 
 const StyledTabPanel = styled(TabPanel)`
   padding: 20px;
@@ -314,21 +267,25 @@ const Menu = () => {
     return () => clearInterval(timer);
   }, [currentTimeSeconds, lastOrderingTiming, place.ordering_limit_interval]);
 
-  const [activeTab, setActiveTab] = useState('menu');
+const [activeTab, setActiveTab] = useState('menu');
 
-  const handleTabSelect = (index) => {
-    const tabNames = ['menu', 'cart', 'history'];
-    setActiveTab(tabNames[index]);
-  };
+const handleTabSelect = (index) => {
+  const tabNames = ['menu', 'cart', 'history'];
+  setActiveTab(tabNames[index]);
+};
 
-  const OrderHistory = () => {
-    return (
-      <div>
-        <h2>Order History</h2>
-        <p>This is where the order history will be displayed.</p>
-      </div>
-    );
-  };
+const handleSelectTab = (tabName) => {
+    setActiveTab(tabName);
+}
+
+const OrderHistory = () => {
+  return (
+    <div>
+      <h2>Order History</h2>
+      <p>This is where the order history will be displayed.</p>
+    </div>
+  );
+};
 
   return (
     <Container fluid className="mt-2 mb-4">
@@ -416,56 +373,45 @@ const Menu = () => {
             selectedLanguage={selectedLanguage}
             onLanguageSelect={handleLanguageSelect}
             tableNumber={params.table}
-          />
-        )}
+        />
+      )}
 
-      </Row>
-
-          <Tabs onSelect={handleTabSelect}>
-                        <TabPanel>
-              <MenuList
-                selectedLanguage={selectedLanguage}
-                place={place}
-                shoppingCart={shoppingCart}
-                onOrder={onAddItemtoShoppingCart}
-                onRemove={onRemoveItemToShoppingCart}
-                color={place.color}
-                font={place.font}
-                selectedCategoryName={selectedCategoryName}
-              />
-            </TabPanel>
-            <TabPanel>
-              <ShoppingCart
-                items={Object.keys(shoppingCart)
-                  .map((key) => shoppingCart[key])
-                  .filter((item) => item.quantity > 0)
-                }
-                selectedLanguage={selectedLanguage}
-                onAdd={onAddItemtoShoppingCart}
-                onRemove={onRemoveItemToShoppingCart}
-                color={place.color}
-                table_id={params.table}
-                last_ordering_timing={lastOrderingTiming}
-                orderingInterval={place.ordering_limit_interval}
-                timeLeftToOrder={timeLeftToOrder}
-                enable_ordering={enableOrdering}
-              />
-            </TabPanel>
-            <TabPanel>
-              <OrderHistory />
-            </TabPanel>
-
-            <BottomTabContainer>
-              <TabList style={{ display: "flex", justifyContent: "space-around", padding: "10px 0" }}>
-                <Tab>Menu</Tab>
-                <Tab>Cart</Tab>
-                <Tab>History</Tab>
-              </TabList>
-            </BottomTabContainer>
-          </Tabs>
-        
-    </Container>
-  );
+</Row>
+    {activeTab === 'menu' && (
+      <MenuList
+        selectedLanguage={selectedLanguage}
+        place={place}
+        shoppingCart={shoppingCart}
+        onOrder={onAddItemtoShoppingCart}
+        onRemove={onRemoveItemToShoppingCart}
+        color={place.color}
+        font={place.font}
+        selectedCategoryName={selectedCategoryName}
+        activeTab={activeTab}
+      />
+    )}
+    {activeTab === 'cart' && (
+      <ShoppingCart
+        items={Object.keys(shoppingCart)
+          .map((key) => shoppingCart[key])
+          .filter((item) => item.quantity > 0)
+        }
+        selectedLanguage={selectedLanguage}
+        onAdd={onAddItemtoShoppingCart}
+        onRemove={onRemoveItemToShoppingCart}
+        color={place.color}
+        table_id={params.table}
+        last_ordering_timing={lastOrderingTiming}
+        orderingInterval={place.ordering_limit_interval}
+        timeLeftToOrder={timeLeftToOrder}
+        enable_ordering={enableOrdering}
+        activeTab={activeTab}
+      />
+    )}
+    {activeTab === 'history' && <OrderHistory activeTab={activeTab} />}
+    <BottomTabBar activeTab={activeTab} onSelectTab={handleSelectTab} />
+  </Container>
+);
 };
 
 export default Menu;
