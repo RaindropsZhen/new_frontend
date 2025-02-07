@@ -281,12 +281,23 @@ const handleSelectTab = (tabName) => {
 }
 
 const OrderHistory = ({ orderHistory }) => {
-  const totalCost = orderHistory.reduce((sum, order) => sum + order.price * order.quantity, 0);
+    // Group items by name
+    const groupedItems = orderHistory.reduce((acc, order) => {
+        const key = order.name; // Use item name as the key
+        if (!acc[key]) {
+            acc[key] = { ...order, quantity: 0 };
+        }
+        acc[key].quantity += order.quantity;
+        return acc;
+    }, {});
+
+  const totalCost = Object.values(groupedItems).reduce((sum, order) => sum + order.price * order.quantity, 0);
+
 
   return (
     <div style={{ width: '100%', maxWidth: '600px', margin: '0 auto' }}>
       <h2 style={{ fontSize: '20px', marginBottom: '10px', textAlign: 'center'  }}>Order History</h2>
-      {orderHistory.length === 0 ? (
+      {Object.keys(groupedItems).length === 0 ? (
         <p style={{ fontSize: '16px', textAlign: 'center' }}>No orders yet</p>
       ) : (
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '16px' }}>
@@ -299,7 +310,7 @@ const OrderHistory = ({ orderHistory }) => {
             </tr>
           </thead>
           <tbody>
-            {orderHistory.map((order, index) => (
+            {Object.values(groupedItems).map((order, index) => (
               <tr key={index} style={{borderBottom: '1px solid #dee2e6'}}>
                 <td style={{ padding: '8px' }}>{order.name}</td>
                 <td style={{ padding: '8px', textAlign: 'right' }}>€{order.price.toFixed(1)}</td>
