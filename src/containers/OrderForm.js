@@ -83,32 +83,30 @@ const OrderForm = ({amount, items, color, selectedLanguage, isTakeAway, phoneNum
   const renderOrderSuccessMessage = (selectedLanguage, orderNumber) => {
     switch (selectedLanguage) {
       case '中文':
-        return `成功下单：订单号 ${orderNumber}`;
+        return `成功下单：订单号 ${orderNumber || ''}`;
       case 'English':
-        return `Successfully placed an order: Order #${orderNumber}`;
+        return `Successfully placed an order: Order #${orderNumber || ''}`;
       case 'Español':
-        return `Pedido realizado con éxito: Orden #${orderNumber}`;
+        return `Pedido realizado con éxito: Orden #${orderNumber || ''}`;
       case 'Português':
-        return `Pedido realizado com sucesso: Pedido #${orderNumber}`;
+        return `Pedido realizado com sucesso: Pedido #${orderNumber || ''}`;
       default:
-        return `Successfully placed an order: Order #${orderNumber}`;
+        return `Successfully placed an order: Order #${orderNumber || ''}`;
     }
   };
 
   
   const createOrder = async (e) => {
-    e.preventDefault(); // Prevent the default form submission behavior
-    setLoading(true);   // Start the loading state
-  
+    e.preventDefault();
+    setLoading(true);
+
     try {
-      // Perform validation checks for take-away orders
       if (isTakeAway && (!phoneNumber || !arrivalTime)) {
-        toast("请确保已输入电话号码或者到达时间", {type: "error"});
-        setLoading(false); // Stop the loading state
-        return; // Exit the function if validation fails
+        toast("请确保已输入电话号码或者到达时间", { type: "error" });
+        setLoading(false);
+        return;
       }
-  
-      // Proceed with creating the order
+
       const json = await createOrderIntent({
         amount,
         place: params.id,
@@ -121,27 +119,28 @@ const OrderForm = ({amount, items, color, selectedLanguage, isTakeAway, phoneNum
         language: selectedLanguage,
         customer_name: customer_name,
       }, auth.token);
-  
-      // Handle the response
-      if (json?.success) {
+
+      if (json?.success && json.order) {
         toast.success(
           renderOrderSuccessMessage(selectedLanguage, json.order),
           {
             autoClose: false,
           }
         );
-        onOrderSuccess();
+        onOrderSuccess(items);
       } else if (json?.error) {
         toast(json.error, {type: "error"});
+        onOrderSuccess(items);
+      } else {
+        toast.error("Failed to create order. Please try again.", { type: "error" });
+        onOrderSuccess(items);
       }
+
     } catch (error) {
-      // Handle any errors that occur during the order creation
-      toast(error.message || "Error processing order", {type: "error"});
+      toast(error.message || "Error processing order", { type: "error" });
     } finally {
-      setLoading(false); // Ensure loading state is stopped in all cases
-
+      setLoading(false);
     }
-
   };
 
   return (
