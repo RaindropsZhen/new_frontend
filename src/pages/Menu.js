@@ -24,7 +24,7 @@ const StickyFilterContainer = styled.div`
   top: 0; // Adjust this value as needed
   z-index: 1020; // Ensures it's above other content
   padding: 10px 20px; // Optional padding for better spacing
-  background-color: #fff; // Use an appropriate background color
+  background-color: #f8f9fa; // Use an appropriate background color
 `;
 
 const renderFilterAllButton = (selectedLanguage) => {
