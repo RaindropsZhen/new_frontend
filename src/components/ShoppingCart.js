@@ -20,9 +20,9 @@ const renderMenuItemName = (item,selectedLanguage) => {
   }
 };
 
-const ShoppingCart = ({ selectedLanguage, items, onAdd, onRemove, color, last_ordering_timing, orderingInterval, timeLeftToOrder, enable_ordering }) => {
+const ShoppingCart = ({ selectedLanguage, items, onAdd, onRemove, color, last_ordering_timing, orderingInterval, timeLeftToOrder, enable_ordering, onOrderSuccess }) => {
   const location = useLocation(); // This gives you the location object
-  const pathParts = location.pathname.split('/');
+    const pathParts = location.pathname.split('/');
 
   // Delete this code, no TakeAway Feature implemented
   const isTakeAway = pathParts[pathParts.length - 1].includes('takeaway');
@@ -158,6 +158,7 @@ const ShoppingCart = ({ selectedLanguage, items, onAdd, onRemove, color, last_or
             customer_name={name}
             timeLeftToOrder={timeLeftToOrder}
             enable_ordering={enable_ordering}
+            onOrderSuccess={onOrderSuccess}
           />
           {/* Order Form */}
         </Card.Body>

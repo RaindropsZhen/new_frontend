@@ -401,9 +401,10 @@ const OrderHistory = () => {
         timeLeftToOrder={timeLeftToOrder}
         enable_ordering={enableOrdering}
         activeTab={activeTab}
+        onOrderSuccess={() => setShoppingCart({})}
       />
     )}
-    {activeTab === 'history' && <OrderHistory activeTab={activeTab} />}
+      {activeTab === 'history' && <OrderHistory activeTab={activeTab} />}
     <BottomTabBar activeTab={activeTab} onSelectTab={handleSelectTab} totalQuantity={totalQuantity} />
   </Container>
 );

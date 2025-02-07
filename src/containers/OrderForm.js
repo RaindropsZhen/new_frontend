@@ -47,9 +47,9 @@ const formatTime = (seconds) => {
   return formattedTime;
 };
 
-const OrderForm = ({amount, items, color, selectedLanguage, isTakeAway, phoneNumber, arrivalTime,comment,customer_name,timeLeftToOrder,enable_ordering}) => {
+const OrderForm = ({amount, items, color, selectedLanguage, isTakeAway, phoneNumber, arrivalTime,comment,customer_name,timeLeftToOrder,enable_ordering, onOrderSuccess}) => {
   const formRef = useRef(null);
-  // const history = useHistory(); // Get the history object to navigate
+    // const history = useHistory(); // Get the history object to navigate
   const [loading, setLoading] = useState(false)
   const auth = useContext(AuthContext)
   const params = useParams()
@@ -130,16 +130,13 @@ const OrderForm = ({amount, items, color, selectedLanguage, isTakeAway, phoneNum
             autoClose: false,
           }
         );
-        // window.location.reload()
-        setTimeout(() => {
-          formRef.current.submit();
-        }, 500);
+        onOrderSuccess();
       } else if (json?.error) {
         toast(json.error, {type: "error"});
       }
     } catch (error) {
       // Handle any errors that occur during the order creation
-      toast("Error processing order", {type: "error"});
+      toast(error.message || "Error processing order", {type: "error"});
     } finally {
       setLoading(false); // Ensure loading state is stopped in all cases
 
