@@ -61,9 +61,9 @@ const Menu = () => {
   const params = useParams();
   const [selectedLanguage, setSelectedLanguage] = useState("English");
   const [showLanguageModal, setShowLanguageModal] = useState(true);
-  const [lastOrderingTiming, setLastOrderingTiming] = useState("");
-  const [enableOrdering, setEnableOrdering] = useState(true);
-  const [timeLeftToOrder, setTimeLeftToOrder] = useState(0);
+  const [nextOrderingTime, setNextOrderingTime] = useState(0);
+    const [enableOrdering, setEnableOrdering] = useState(true);
+    const [timeLeftToOrder, setTimeLeftToOrder] = useState(0); //in millisecond
   const [agreementText, setAgreementText] = useState({
     en: "Please read and accept the following:<br /><br />To help reduce food waste, we charge <b>8.5€</b> for each <b>takeaway box</b> needed for uneaten food. Please order according to your appetite. Thank you for your understanding.",
     cn: "请阅读并接受以下协议：<br /><br />为了减少食物浪费，我们会对未食用完需要打包的食物收取<b>8.5欧</b>的<b>外卖盒</b>费用。请根据您的食量点餐。感谢您的理解。",
@@ -207,14 +207,22 @@ const Menu = () => {
       );
 
       if (table) {
-        setLastOrderingTiming(table.last_ordering_time);
+                // Convert the last ordering time to milliseconds since epoch
+                const lastOrderingTimeInSeconds = table.last_ordering_time;
+                const placeCreatedAt = new Date(place.createdAt).getTime();
+                
+                const lastOrderingTimeInMilliseconds =  placeCreatedAt + lastOrderingTimeInSeconds * 1000;
+
+                // Calculate the next allowed ordering time
+                const nextAllowedTime = lastOrderingTimeInMilliseconds + place.ordering_limit_interval * 1000;
+                setNextOrderingTime(nextAllowedTime);
       }
     }
-  }, [place, params, setLastOrderingTiming]);
+  }, [place, params]);
 
-  useEffect(() => {
-    if (localStorage.getItem('agreementAccepted') !== 'true' && !localStorage.getItem('selectedLanguage')) {
-      setShowLanguageModal(true);
+    useEffect(() => {
+        if (localStorage.getItem('agreementAccepted') !== 'true' && !localStorage.getItem('selectedLanguage')) {
+            setShowLanguageModal(true);
     } else {
       setShowLanguageModal(false);
     }
@@ -239,41 +247,29 @@ const Menu = () => {
   const [selectedCategoryName, setSelectedCategoryName] = useState(categories.length > 0 ? categories[0] : '');
 
   console.log(params.table)
-  const handleCategoryClick = (name) => {
-    setSelectedCategoryName(name);
-  };
+    const handleCategoryClick = (name) => {
+        setSelectedCategoryName(name);
+    };
 
- const handleAgreementAccept = () => {
-    localStorage.setItem('agreementAccepted', 'true');
-    setShowAgreementModal(false);
-  };
+    const handleAgreementAccept = () => {
+        localStorage.setItem('agreementAccepted', 'true');
+        setShowAgreementModal(false);
+    };
 
-  const date = new Date();
-  const lisbonTime = new Date(date.toLocaleString('en-US', { timeZone: 'Europe/Lisbon' }));
+    useEffect(() => {
+        const timer = setInterval(() => {
+            if (nextOrderingTime > 0) {
+                const now = Date.now();
+                const timeLeft = Math.max(0, nextOrderingTime - now); // Ensure timeLeft is not negative
+                setTimeLeftToOrder(timeLeft);
+                setEnableOrdering(timeLeft === 0);
+            }
+        }, 500);
 
-  const hour = lisbonTime.getHours();
-  const minute = lisbonTime.getMinutes();
-  const second = lisbonTime.getSeconds();
-  const currentTimeSeconds = 3600 * hour + 60 * minute + second;
+        return () => clearInterval(timer);
+    }, [nextOrderingTime]);
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      if (lastOrderingTiming && place.ordering_limit_interval) {
-        const differenceInSeconds = currentTimeSeconds - lastOrderingTiming;
-        if (differenceInSeconds > place.ordering_limit_interval || differenceInSeconds < 0) {
-          setEnableOrdering(true);
-          setTimeLeftToOrder(0);
-        } else {
-          setEnableOrdering(false);
-          setTimeLeftToOrder(place.ordering_limit_interval - differenceInSeconds);
-        }
-      }
-    }, 500);
-
-    return () => clearInterval(timer);
-  }, [currentTimeSeconds, lastOrderingTiming, place.ordering_limit_interval]);
-
-const [activeTab, setActiveTab] = useState('menu');
+    const [activeTab, setActiveTab] = useState('menu');
 
 const handleTabSelect = (index) => {
   const tabNames = ['menu', 'cart', 'history'];
@@ -294,7 +290,7 @@ const OrderHistory = ({ orderHistory }) => {
         <ul style={{ fontSize: '14px' }}>
           {orderHistory.map((order, index) => (
             <li key={index}>
-              {order.quantity} x {order.name} - €{order.price.toFixed(1)}
+              {order.name} - €{order.price.toFixed(1)} X {order.quantity}
             </li>
           ))}
         </ul>
@@ -418,33 +414,27 @@ const OrderHistory = ({ orderHistory }) => {
         onRemove={onRemoveItemToShoppingCart}
         color={place.color}
         table_id={params.table}
-        last_ordering_timing={lastOrderingTiming}
         orderingInterval={place.ordering_limit_interval}
         timeLeftToOrder={timeLeftToOrder}
         enable_ordering={enableOrdering}
         activeTab={activeTab}
-                onOrderSuccess={(items) => {
-                    setShoppingCart({});
-                    const orderDetails = items.map(item => ({
-                        name: item.name,
-                        price: item.price,
-                        quantity: item.quantity
-                    }));
-                    setOrderHistory(prevHistory => [...prevHistory, ...orderDetails]);
-                    const date = new Date();
-                    const lisbonTime = new Date(date.toLocaleString('en-US', { timeZone: 'Europe/Lisbon' }));
-                    const hour = lisbonTime.getHours();
-                    const minute = lisbonTime.getMinutes();
-                    const second = lisbonTime.getSeconds();
-                    const currentTimeSeconds = 3600 * hour + 60 * minute + second;
-                    setLastOrderingTiming(currentTimeSeconds);
-                }}
+        onOrderSuccess={(items) => {
+          setShoppingCart({});
+          const orderDetails = items.map(item => ({
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity
+          }));
+          setOrderHistory(prevHistory => [...prevHistory, ...orderDetails]);
+          // Set next ordering time
+          setNextOrderingTime(Date.now() + place.ordering_limit_interval * 1000);
+        }}
       />
     )}
-        {activeTab === 'history' && <OrderHistory activeTab={activeTab} orderHistory={orderHistory} />}
+    {activeTab === 'history' && <OrderHistory activeTab={activeTab} orderHistory={orderHistory} />}
     <BottomTabBar activeTab={activeTab} onSelectTab={handleSelectTab} totalQuantity={totalQuantity} />
   </Container>
-);
+  );
 };
 
 export default Menu;

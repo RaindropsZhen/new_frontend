@@ -40,14 +40,14 @@ const renderTableVerificationMessage = (selectedLanguage, tableNumber) => {
   }
 };
 
-const formatTime = (seconds) => {
-  const minutes = Math.floor(seconds / 60);
-  const remainingSeconds = seconds % 60;
-  const formattedTime = `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
-  return formattedTime;
-};
-
 const OrderForm = ({amount, items, color, selectedLanguage, isTakeAway, phoneNumber, arrivalTime,comment,customer_name,timeLeftToOrder,enable_ordering, onOrderSuccess}) => {
+    const formatTime = (milliseconds) => {
+      const totalSeconds = Math.floor(milliseconds / 1000);
+      const minutes = Math.floor(totalSeconds / 60);
+      const remainingSeconds = totalSeconds % 60;
+      const formattedTime = `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+      return formattedTime;
+    };
   const formRef = useRef(null);
     // const history = useHistory(); // Get the history object to navigate
   const [loading, setLoading] = useState(false)
