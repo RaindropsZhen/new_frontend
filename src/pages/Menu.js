@@ -44,7 +44,19 @@ const Menu = () => {
 
   const [place, setPlace] = useState({});
   const [shoppingCart, setShoppingCart] = useState({});
+    const [orderHistory, setOrderHistory] = useState([]);
   const [showShoppingCart, setShowShoppingCart] = useState(false);
+
+    useEffect(() => {
+        const storedOrderHistory = localStorage.getItem('orderHistory');
+        if (storedOrderHistory) {
+            setOrderHistory(JSON.parse(storedOrderHistory));
+        }
+    }, []);
+
+    useEffect(() => {
+        localStorage.setItem('orderHistory', JSON.stringify(orderHistory));
+    }, [orderHistory]);
 
   const params = useParams();
   const [selectedLanguage, setSelectedLanguage] = useState("English");
@@ -272,11 +284,21 @@ const handleSelectTab = (tabName) => {
     setActiveTab(tabName);
 }
 
-const OrderHistory = () => {
+const OrderHistory = ({ orderHistory }) => {
   return (
     <div>
-      <h2 style={{fontSize: '18px'}}>Order History</h2>
-      <p style={{fontSize: '14px'}}>This is where the order history will be displayed.</p>
+      <h2 style={{ fontSize: '18px' }}>Order History</h2>
+      {orderHistory.length === 0 ? (
+        <p style={{ fontSize: '14px' }}>No orders yet</p>
+      ) : (
+        <ul style={{ fontSize: '14px' }}>
+          {orderHistory.map((order, index) => (
+            <li key={index}>
+              {order.quantity} x {order.name} - €{order.price.toFixed(1)}
+            </li>
+          ))}
+        </ul>
+      )}
     </div>
   );
 };
@@ -401,10 +423,25 @@ const OrderHistory = () => {
         timeLeftToOrder={timeLeftToOrder}
         enable_ordering={enableOrdering}
         activeTab={activeTab}
-        onOrderSuccess={() => setShoppingCart({})}
+                onOrderSuccess={(items) => {
+                    setShoppingCart({});
+                    const orderDetails = items.map(item => ({
+                        name: item.name,
+                        price: item.price,
+                        quantity: item.quantity
+                    }));
+                    setOrderHistory(prevHistory => [...prevHistory, ...orderDetails]);
+                    const date = new Date();
+                    const lisbonTime = new Date(date.toLocaleString('en-US', { timeZone: 'Europe/Lisbon' }));
+                    const hour = lisbonTime.getHours();
+                    const minute = lisbonTime.getMinutes();
+                    const second = lisbonTime.getSeconds();
+                    const currentTimeSeconds = 3600 * hour + 60 * minute + second;
+                    setLastOrderingTiming(currentTimeSeconds);
+                }}
       />
     )}
-      {activeTab === 'history' && <OrderHistory activeTab={activeTab} />}
+        {activeTab === 'history' && <OrderHistory activeTab={activeTab} orderHistory={orderHistory} />}
     <BottomTabBar activeTab={activeTab} onSelectTab={handleSelectTab} totalQuantity={totalQuantity} />
   </Container>
 );

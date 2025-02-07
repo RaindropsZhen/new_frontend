@@ -158,7 +158,7 @@ const ShoppingCart = ({ selectedLanguage, items, onAdd, onRemove, color, last_or
             customer_name={name}
             timeLeftToOrder={timeLeftToOrder}
             enable_ordering={enable_ordering}
-            onOrderSuccess={onOrderSuccess}
+            onOrderSuccess={() => onOrderSuccess(items)}
           />
           {/* Order Form */}
         </Card.Body>
