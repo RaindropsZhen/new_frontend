@@ -129,33 +129,39 @@ const MenuItemCard = ({ language, item, onOrder, onRemove, color }) => {
           />
           <Modal.Body>{renderMenuItemDescription(item, language)}</Modal.Body>
         </Modal>
-        <Row className="d-flex justify-content-end align-items-center">
-            {/* Conditionally hide the price if it's 0 */}
-              {item.price > 0 && <b style={{ color }}>{item.price}€</b>}
-              {onOrder && (
-            <div className="d-flex align-items-center">
-              <OperationButton
-                variant="lightgray"
-                size="sm"
-                onClick={() => onRemove(item)}
-                disabled={!currentAvailability} // Disable only if not available
-              >
-                -
-              </OperationButton>
-              
-              <span>{item.quantity >= 0 ? item.quantity : 0}</span>
-              
-              <OperationButton
-                variant="lightgray"
-                size="sm"
-                onClick={() => onOrder(item)}
-                disabled={!currentAvailability}
-              >
-                +
-              </OperationButton>
-            </div>
-          )}
+        {/* Price */}
+        <Row className="d-flex justify-content-start align-items-center">
+          <Col className="d-flex justify-content-end">
+            {item.price > 0 && <b style={{ color, fontSize: '1rem', fontWeight: 'bold' }}>{item.price}€</b>}
+          </Col>
         </Row>
+
+        {/* Buttons */}
+        {onOrder && (
+        <Row className="d-flex justify-content-end align-items-center">
+          <Col className="d-flex justify-content-end align-items-center">
+            <OperationButton
+              variant="lightgray"
+              size="sm"
+              onClick={() => onRemove(item)}
+              disabled={!currentAvailability}
+            >
+              -
+            </OperationButton>
+            
+            <span>{item.quantity >= 0 ? item.quantity : 0}</span>
+            
+            <OperationButton
+              variant="lightgray"
+              size="sm"
+              onClick={() => onOrder(item)}
+              disabled={!currentAvailability}
+            >
+              +
+            </OperationButton>
+          </Col>
+        </Row>
+        )}
       </Col>
     </Card.Text>
   </Card.Body>

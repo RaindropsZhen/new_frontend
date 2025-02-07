@@ -404,7 +404,7 @@ const OrderHistory = () => {
       />
     )}
     {activeTab === 'history' && <OrderHistory activeTab={activeTab} />}
-    <BottomTabBar activeTab={activeTab} onSelectTab={handleSelectTab} />
+    <BottomTabBar activeTab={activeTab} onSelectTab={handleSelectTab} totalQuantity={totalQuantity} />
   </Container>
 );
 };

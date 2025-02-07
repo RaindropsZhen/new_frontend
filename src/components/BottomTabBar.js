@@ -34,23 +34,42 @@ const TabItem = styled.div`
 `;
 
 const TabIcon = styled.div`
-  font-size: 18px; /* Further reduced font-size */
-  margin-bottom: 2px; /* Reduced margin */
+  font-size: 18px;
+  margin-bottom: 2px;
+  position: relative; /* Added for positioning the badge */
 `;
 
-const TabNavigationBar = ({ activeTab, onSelectTab }) => {
+const Badge = styled.span`
+  position: absolute;
+  top: -5px;
+  right: -5px;
+  background-color: red;
+  color: white;
+  border-radius: 50%;
+  padding: 2px 5px;
+  font-size: 12px;
+`;
+
+const TabNavigationBar = ({ activeTab, onSelectTab, totalQuantity }) => {
   return (
     <BottomTabContainer>
       <TabItem active={activeTab === "menu"} onClick={() => onSelectTab("menu")}>
-        <TabIcon><FaUtensils /></TabIcon>
+        <TabIcon>
+          <FaUtensils />
+        </TabIcon>
         Menu
       </TabItem>
       <TabItem active={activeTab === "cart"} onClick={() => onSelectTab("cart")}>
-        <TabIcon><FaShoppingCart /></TabIcon>
+        <TabIcon>
+          <FaShoppingCart />
+          {totalQuantity > 0 && <Badge>{totalQuantity}</Badge>}
+        </TabIcon>
         Cart
       </TabItem>
       <TabItem active={activeTab === "history"} onClick={() => onSelectTab("history")}>
-        <TabIcon><FaHistory /></TabIcon>
+        <TabIcon>
+          <FaHistory />
+        </TabIcon>
         History
       </TabItem>
     </BottomTabContainer>
