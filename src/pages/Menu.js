@@ -1,11 +1,9 @@
 // eslint-disable-next-line
 import { Container, Row, Col, Button, Modal } from 'react-bootstrap';
-import { IoCloseOutline } from 'react-icons/io5';
 import { useParams, useLocation } from 'react-router-dom';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { fetchPlace } from '../apis';
 import styled from 'styled-components';
-import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import 'react-tabs/style/react-tabs.css';
 
 import BottomTabBar from '../components/BottomTabBar';
@@ -14,10 +12,6 @@ import LanguageSelectionModal from '../components/LanguageSelectionModal';
 
 import MenuList from '../components/MenuList';
 import ShoppingCart from '../components/ShoppingCart';
-
-const StyledTabPanel = styled(TabPanel)`
-  padding: 20px;
-`;
 
 const languages = [
   {value: "en","label":"English"},
@@ -281,8 +275,8 @@ const handleSelectTab = (tabName) => {
 const OrderHistory = () => {
   return (
     <div>
-      <h2>Order History</h2>
-      <p>This is where the order history will be displayed.</p>
+      <h2 style={{fontSize: '18px'}}>Order History</h2>
+      <p style={{fontSize: '14px'}}>This is where the order history will be displayed.</p>
     </div>
   );
 };
@@ -308,11 +302,11 @@ const OrderHistory = () => {
             Número de Mesa: {params.table === '77' ? 'VIP' : params.table}
           </div>
           <Modal.Header closeButton style={{ padding: '5px' }}>
-            <Modal.Title style={{ padding: '10px' }}>{agreementTitle[selectedLanguage === '中文' ? 'cn' : selectedLanguage === 'Português' ? 'pt' : 'en']}</Modal.Title>
+            <Modal.Title style={{ padding: '10px', fontSize: '16px'  }}>{agreementTitle[selectedLanguage === '中文' ? 'cn' : selectedLanguage === 'Português' ? 'pt' : 'en']}</Modal.Title>
           </Modal.Header>
-          <Modal.Body className="languageModelBody" dangerouslySetInnerHTML={{ __html: agreementText[selectedLanguage === '中文' ? 'cn' : selectedLanguage === 'Português' ? 'pt' : 'en'] }} />
+          <Modal.Body style={{fontSize: '14px'}} className="languageModelBody" dangerouslySetInnerHTML={{ __html: agreementText[selectedLanguage === '中文' ? 'cn' : selectedLanguage === 'Português' ? 'pt' : 'en'] }} />
           <Modal.Footer>
-            <Button variant="primary" style={{ backgroundColor: '#FE6C4C', borderColor: '#FE6C4C' }} onClick={handleAgreementAccept}>
+            <Button variant="primary" style={{ backgroundColor: '#FE6C4C', borderColor: '#FE6C4C', fontSize: '14px' }} onClick={handleAgreementAccept}>
               {agreeButtonText[selectedLanguage === '中文' ? 'cn' : selectedLanguage === 'Português' ? 'pt' : 'en']}
             </Button>
           </Modal.Footer>
@@ -326,6 +320,7 @@ const OrderHistory = () => {
             value={selectedCategoryName}
             onChange={(e) => handleCategoryClick(e.target.value)}
             className="custom-dropdown"
+            style={{ fontSize: '14px' }}
           >
             <option value="">{renderFilterAllButton(selectedLanguage)}</option>
             {categories
@@ -357,7 +352,7 @@ const OrderHistory = () => {
         textAlign: 'center',
         fontWeight: 'bold',
         padding: '10px',
-        fontSize: '18px',
+        fontSize: '16px', /* Reduced font size */
         borderRadius: '10px'
       }}>
         {/* Render message accordigly to the language selected */}

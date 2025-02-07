@@ -21,9 +21,8 @@ const TabItem = styled.div`
   padding: 5px 0;
   font-size: 10px; /* Further reduced font-size */
   color: ${({ active }) => (active ? "#FE6C4C" : "#666")};
-    background-color: ${({ active }) => (active ? "#e9ecef" : "transparent")};
   font-weight: ${({ active }) => (active ? "bold" : "normal")};
-  transition: color 0.3s, background-color 0.3s; /* Added background-color transition */
+  transition: color 0.3s;
   cursor: pointer;
   display: flex;
   flex-direction: column;
@@ -31,7 +30,6 @@ const TabItem = styled.div`
 
   &:hover {
     color: #FE6C4C;
-    background-color: #e9ecef; /* Subtle background color on hover */
   }
 `;
 

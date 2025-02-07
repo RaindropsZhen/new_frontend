@@ -9,11 +9,11 @@ const Container = styled.div`
 `;
 
 const CategoryHeader = styled.h4`
-  font-size: 1.8em;
+  font-size: 1.0em;
   font-weight: bold;
   text-align: center;
   color: ${({ color }) => color || '#333'};
-  margin: 20px 0;
+  margin: 5px 0;
   padding: 10px;
   background-color: ${({ bgColor }) => bgColor || '#f8f9fa'};
   border-radius: 8px;
