@@ -49,17 +49,29 @@ const Menu = () => {
 
     useEffect(() => {
         const storedOrderHistory = localStorage.getItem('orderHistory');
-        if (storedOrderHistory) {
-            setOrderHistory(JSON.parse(storedOrderHistory));
+        const storedTimestamp = localStorage.getItem('orderHistoryTimestamp');
+
+        if (storedOrderHistory && storedTimestamp) {
+            const now = Date.now();
+            const timestamp = parseInt(storedTimestamp, 10);
+            if (now - timestamp < 4 * 60 * 60 * 1000) { // 4 hours in milliseconds
+                setOrderHistory(JSON.parse(storedOrderHistory));
+            } else {
+                localStorage.removeItem('orderHistory');
+                localStorage.removeItem('orderHistoryTimestamp');
+            }
         }
     }, []);
 
-    useEffect(() => {
-        localStorage.setItem('orderHistory', JSON.stringify(orderHistory));
+      useEffect(() => {
+        if(orderHistory.length > 0){
+            localStorage.setItem('orderHistory', JSON.stringify(orderHistory));
+            localStorage.setItem('orderHistoryTimestamp', Date.now().toString()); // Store as string
+        }
     }, [orderHistory]);
 
-  const params = useParams();
-  const [selectedLanguage, setSelectedLanguage] = useState("English");
+    const params = useParams();
+    const [selectedLanguage, setSelectedLanguage] = useState("English");
   const [showLanguageModal, setShowLanguageModal] = useState(true);
   const [nextOrderingTime, setNextOrderingTime] = useState(0);
     const [enableOrdering, setEnableOrdering] = useState(true);
