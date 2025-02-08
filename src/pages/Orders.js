@@ -147,6 +147,7 @@ const Orders = () => {
                                             onClick={async () => {
                                                 const orderData = {
                                                     place: params.id,
+                                                    place: params.id,
                                                     table: selectedTable,
                                                     detail: orders.flatMap(order => JSON.parse(cleanDetailString(order.detail))),
                                                     isTakeAway: false,
@@ -154,6 +155,7 @@ const Orders = () => {
                                                     comment: 'Reprint',
                                                     arrival_time:'',
                                                     customer_name: '',
+                                                    daily_id: dailyId, // Add dailyId here
                                                 };
                                                 const result = await reprintOrder(orderData, auth.token);
                                                 if (result) {

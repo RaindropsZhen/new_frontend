@@ -111,7 +111,7 @@ export function addCategory(data, token) {
 }
 
 export function reprintOrder(data, token) {
-  return request("/api/create_order_intent/", { data, token, method: "POST" });
+  return request("/api/reprint_order/", { data, token, method: "POST" });
 }
 
 export function updatePrinters(id,data, token) {
