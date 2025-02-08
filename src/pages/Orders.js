@@ -1,9 +1,8 @@
 import { IoMdArrowBack } from 'react-icons/io';
-import { Row, Col, Button, Table, Modal } from 'react-bootstrap'; // Import Modal
+import { Row, Col, Button, Table, Modal } from 'react-bootstrap';
 import { useParams, useHistory } from 'react-router-dom';
 import React, { useState, useEffect, useContext } from 'react';
-import 'react-toastify/dist/ReactToastify.css';
-import { fetchOrders, completeOrder } from '../apis';
+import { fetchOrders, completeOrder, reprintOrder } from '../apis';
 import AuthContext from '../contexts/AuthContext';
 import MainLayout from '../layouts/MainLayout';
 
@@ -142,9 +141,31 @@ const Orders = () => {
                             <div key={dailyId}>
                                 <div className="d-flex justify-content-between align-items-center">
                                     <h4>Order ID: {dailyId} - {firstOrderTime}</h4>
+                                        <Button
+                                            variant="info"
+                                            size="sm"
+                                            onClick={async () => {
+                                                const orderData = {
+                                                    place: params.id,
+                                                    table: selectedTable,
+                                                    detail: orders.flatMap(order => JSON.parse(cleanDetailString(order.detail))),
+                                                    isTakeAway: false,
+                                                    phoneNumber: '',
+                                                    comment: 'Reprint',
+                                                    arrival_time:'',
+                                                    customer_name: '',
+                                                };
+                                                const result = await reprintOrder(orderData, auth.token);
+                                                if (result) {
+                                                  alert("Reprint order sent!");
+                                                }
+                                            }}
+                                        >
+                                            Reprint
+                                        </Button>
                                 </div>
                                 <Table striped bordered hover responsive>
-                                   <thead>
+                                    <thead>
                                         <tr>
                                             <th>Item Name</th>
                                             <th>Quantity</th>

@@ -104,11 +104,18 @@ export function uploadImage(image, folder_name) {
 
 export function fetchPlace(id, token) {
     return request(`/api/places/${id}`, { token });
-  }
-
+}
 
 export function addCategory(data, token) {
     return request("/api/create_category_intent/", { data, token, method: "POST" });
+}
+
+export function reprintOrder(data, token) {
+  return request("/api/create_order_intent/", { data, token, method: "POST" });
+}
+
+export function updatePrinters(id,data, token) {
+    return request(`/api/printers/${id}`, { data, token, method: "PATCH" });
 }
 
 export function addMenuItems(data, token) {
@@ -147,10 +154,6 @@ export function completeOrder(id, data, token) {
     return request(`/api/orders/${id}`, { data, token, method: "PATCH" });
 }
 
-export function updatePrinters(id,data, token) {
-    return request(`/api/printers/${id}`, { data, token, method: "PATCH" });
-}
-
 export const updateOrderStatus = async (orderIds, token) => {
     try {
       const response = await fetch('/api/orders/update-status', {
@@ -172,4 +175,3 @@ export const updateOrderStatus = async (orderIds, token) => {
       return null;
     }
   };
-  
