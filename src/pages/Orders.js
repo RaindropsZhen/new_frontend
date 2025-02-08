@@ -1,9 +1,8 @@
 import { IoMdArrowBack } from 'react-icons/io';
-import { Row, Col, Button, Table, Modal } from 'react-bootstrap'; // Import Modal
+import { Row, Col, Button, Table, Modal } from 'react-bootstrap';
 import { useParams, useHistory } from 'react-router-dom';
 import React, { useState, useEffect, useContext } from 'react';
-import 'react-toastify/dist/ReactToastify.css';
-import { fetchOrders, completeOrder } from '../apis';
+import { fetchOrders, completeOrder, reprintOrder } from '../apis';
 import AuthContext from '../contexts/AuthContext';
 import MainLayout from '../layouts/MainLayout';
 
@@ -86,7 +85,7 @@ const Orders = () => {
       }
 
       await onFetchOrders();
-      alert(`Table ${tableNumber}, Order ID ${dailyId} marked as completed.`);
+      alert(`桌号 ${tableNumber}, 订单号 ${dailyId} 已标记为已完成。`);
     } catch (error) {
       console.error('Error updating order status:', error);
     }
@@ -99,7 +98,7 @@ const Orders = () => {
                 <Button variant="link" onClick={onBack}>
                 <IoMdArrowBack size={25} color="black" />
                 </Button>
-                <h3 className="mb-0 ml-2">Today's Orders</h3>
+                <h3 className="mb-0 ml-2">今日订单</h3>
             </div>
 
             {/* Table Buttons */}
@@ -116,13 +115,13 @@ const Orders = () => {
                             setShowModal(true);
                         }}
                     >
-                        Table {tableNumber}
+                        桌号 {tableNumber}
                     </Button>
                     </Col>
                 ))
                 ) : (
                 <Col>
-                    <p className="text-center">No orders found for today.</p>
+                    <p className="text-center">今天没有订单。</p>
                 </Col>
                 )}
             </Row>
@@ -131,67 +130,87 @@ const Orders = () => {
             <Modal show={showModal} onHide={() => setShowModal(false)} size="lg">
                 <Modal.Header closeButton>
                   <Modal.Title>
-                    Orders for Table {selectedTable}
+                    桌号订单 {selectedTable}
                   </Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     {Object.keys(selectedTableOrders).length > 0 ? (
-                        Object.entries(selectedTableOrders).map(([dailyId, orders]) => {
+                        Object.entries(selectedTableOrders)
+                        .sort(([, ordersA], [, ordersB]) => {
+                            // Handle cases where ordersA or ordersB might be undefined or empty
+                            const timeA = ordersA[0] ? new Date(ordersA[0].created_at).getTime() : 0;
+                            const timeB = ordersB[0] ? new Date(ordersB[0].created_at).getTime() : 0;
+                            return timeB - timeA;
+                        })
+                        .map(([dailyId, orders]) => {
                           const firstOrderTime = orders[0] ? new Date(orders[0].created_at).toLocaleTimeString() : '';
                           return (
                             <div key={dailyId}>
                                 <div className="d-flex justify-content-between align-items-center">
-                                    <h4>Order ID: {dailyId} - {firstOrderTime}</h4>
+                                    <h4>订单号: {dailyId} - {firstOrderTime}</h4>
+                                        <Button
+                                            variant="info"
+                                            size="lg"
+                                            onClick={async () => {
+                                                const orderData = {
+                                                    place: params.id,
+                                                    table: selectedTable,
+                                                    detail: orders.flatMap(order => JSON.parse(cleanDetailString(order.detail))),
+                                                    isTakeAway: false,
+                                                    phoneNumber: '',
+                                                    comment: 'Reprint',
+                                                    arrival_time:'',
+                                                    customer_name: '',
+                                                    daily_id: dailyId,
+                                                };
+                                                const result = await reprintOrder(orderData, auth.token);
+                                                if (result) {
+                                                  alert("重打请求已发送！");
+                                                }
+                                            }}
+                                        >
+                                            重新打印
+                                        </Button>
                                 </div>
                                 <Table striped bordered hover responsive>
-                                   <thead>
-                                        <tr>
-                                            <th>Item Name</th>
-                                            <th>Quantity</th>
-                                            <th>Status</th>
-                                            <th>Action</th>
-                                        </tr>
+                                    <thead>
+                                    <tr>
+                                        <th>菜品名称</th>
+                                        <th>数量</th>
+                                        <th>单价</th>
+                                        <th>操作</th>
+                                    </tr>
                                     </thead>
                                     <tbody>
-                                        {orders.map((order, orderIndex) => {
-                                          const orderItems = Array.isArray(JSON.parse(cleanDetailString(order.detail)))
-                                              ? JSON.parse(cleanDetailString(order.detail))
-                                              : [];
+                                    {orders.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).map((order, orderIndex) => {
+                                      const orderItems = Array.isArray(JSON.parse(cleanDetailString(order.detail)))
+                                          ? JSON.parse(cleanDetailString(order.detail))
+                                          : [];
 
-                                          return (
-                                              <React.Fragment key={orderIndex}>
-                                                  {orderItems.map((item, itemIndex) => (
-                                                  <tr key={`${orderIndex}-${itemIndex}`}>
-                                                      <td>{item.name}</td>
-                                                      <td>{item.quantity}</td>
-                                                      <td>{order.status}</td>
-                                                      <td>
-                                                          {order.status === 'processing' && (
-                                                          <Button
-                                                              variant="success"
-                                                              size="sm"
-                                                              onClick={() => handleUpdateOrderStatus(selectedTable, dailyId)}
-                                                          >
-                                                              Mark as Done
-                                                          </Button>
-                                                          )}
-                                                      </td>
-                                                  </tr>
-                                                  ))}
-                                              </React.Fragment>
-                                          );
-                                          })}
-                                      </tbody>
+                                      return (
+                                        <React.Fragment key={orderIndex}>
+                                            {orderItems.map((item, itemIndex) => (
+                                            <tr key={`${orderIndex}-${itemIndex}`}>
+                                                <td>{item.name}</td>
+                                                <td>{item.quantity}</td>
+                                                <td>{item.price}</td>
+                                                <td></td>
+                                            </tr>
+                                            ))}
+                                        </React.Fragment>
+                                      );
+                                    })}
+                                    </tbody>
                                 </Table>
                             </div>
                         );})
                     ) : (
-                        <p>No orders for this table yet.</p>
+                        <p>该桌还没有订单。</p>
                     )}
                 </Modal.Body>
-            </Modal>
-        </MainLayout>
-    );
-};
+              </Modal>
+            </MainLayout>
+          );
+        };
 
 export default Orders;
