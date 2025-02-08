@@ -1,10 +1,12 @@
 // eslint-disable-next-line
 import { Container, Row, Col, Button, Modal } from 'react-bootstrap';
-import { IoCloseOutline } from 'react-icons/io5';
 import { useParams, useLocation } from 'react-router-dom';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { fetchPlace } from '../apis';
 import styled from 'styled-components';
+import 'react-tabs/style/react-tabs.css';
+
+import BottomTabBar from '../components/BottomTabBar';
 
 import LanguageSelectionModal from '../components/LanguageSelectionModal';
 
@@ -12,8 +14,8 @@ import MenuList from '../components/MenuList';
 import ShoppingCart from '../components/ShoppingCart';
 
 const languages = [
-  {value: "en","label":"English"},
-  {value:"pt","label":"Português"},
+  { value: "en", label: "English" },
+  { value: "pt", label: "Português" },
   { "value": 'cn', "label": '中文' }
 ];
 
@@ -22,44 +24,34 @@ const StickyFilterContainer = styled.div`
   top: 0; // Adjust this value as needed
   z-index: 1020; // Ensures it's above other content
   padding: 10px 20px; // Optional padding for better spacing
-  background-color: #fff; // Use an appropriate background color
+  background-color: #f8f9fa; // Use an appropriate background color
 `;
- 
-  const renderFilterAllButton = (selectedLanguage) => {
-    switch (selectedLanguage) {
-      case '中文':
-        return '全部';
-      case 'English':
-        return 'Filter';
-      case 'Português':
-        return 'Tudo';
-      default:
-        return '全部';
-    }
-  };
-const OrderButton = styled(Button)`
-  position: fixed;
-  bottom: 20px;
-  right: 20px;
-  border-radius: 50%;
-  box-shadow: 1px 1px 8px rgba(0,0,0,0.2);
-  width: 60px;
-  height: 60px;
-  borderRadius: '10px'
-`;
+
+const renderFilterAllButton = (selectedLanguage) => {
+  switch (selectedLanguage) {
+    case '中文':
+      return '全部';
+    case 'English':
+      return 'Filter';
+    case 'Português':
+      return 'Tudo';
+    default:
+      return '全部';
+  }
+};
 const Menu = () => {
   const [showAgreementModal, setShowAgreementModal] = useState(false); // Initially hide agreement modal
 
   const [place, setPlace] = useState({});
   const [shoppingCart, setShoppingCart] = useState({});
+  const [orderHistory, setOrderHistory] = useState([]);
   const [showShoppingCart, setShowShoppingCart] = useState(false);
-
   const params = useParams();
   const [selectedLanguage, setSelectedLanguage] = useState("English");
   const [showLanguageModal, setShowLanguageModal] = useState(true);
-  const [lastOrderingTiming, setLastOrderingTiming] = useState("");
+  const [nextOrderingTime, setNextOrderingTime] = useState(0);
   const [enableOrdering, setEnableOrdering] = useState(true);
-  const [timeLeftToOrder, setTimeLeftToOrder] = useState(0);
+  const [timeLeftToOrder, setTimeLeftToOrder] = useState(0); //in millisecond
   const [agreementText, setAgreementText] = useState({
     en: "Please read and accept the following:<br /><br />To help reduce food waste, we charge <b>8.5€</b> for each <b>takeaway box</b> needed for uneaten food. Please order according to your appetite. Thank you for your understanding.",
     cn: "请阅读并接受以下协议：<br /><br />为了减少食物浪费，我们会对未食用完需要打包的食物收取<b>8.5欧</b>的<b>外卖盒</b>费用。请根据您的食量点餐。感谢您的理解。",
@@ -77,6 +69,29 @@ const Menu = () => {
     pt: "Eu Concordo"
   });
 
+  useEffect(() => {
+    const storedOrderHistory = localStorage.getItem(`orderHistory-${params.table}`);
+    const storedTimestamp = localStorage.getItem(`orderHistoryTimestamp-${params.table}`);
+
+    if (storedOrderHistory && storedTimestamp) {
+      const now = Date.now();
+      const timestamp = parseInt(storedTimestamp, 10);
+      if (now - timestamp < 4 * 60 * 60 * 1000) { // 4 hours in milliseconds
+        setOrderHistory(JSON.parse(storedOrderHistory));
+      } else {
+        localStorage.removeItem(`orderHistory-${params.table}`);
+        localStorage.removeItem(`orderHistoryTimestamp-${params.table}`);
+      }
+    }
+  }, [params.table]);
+
+  useEffect(() => {
+    if (orderHistory.length > 0) {
+      localStorage.setItem(`orderHistory-${params.table}`, JSON.stringify(orderHistory));
+      localStorage.setItem(`orderHistoryTimestamp-${params.table}`, Date.now().toString()); // Store as string
+    }
+  }, [orderHistory, params.table]);
+
   const handleLanguageSelect = (language) => {
     setSelectedLanguage(language);
     setShowLanguageModal(false);
@@ -85,7 +100,7 @@ const Menu = () => {
 
     // Update agreement text based on selected language
     let newAgreementText = {};
-        let newAgreementTitle = {};
+    let newAgreementTitle = {};
     let newAgreeButtonText = {};
     switch (language) {
       case '中文':
@@ -94,7 +109,7 @@ const Menu = () => {
           cn: "请阅读并接受以下协议：<br /><br />为了减少食物浪费，我们会对未食用完需要打包的食物收取<b>8.5欧</b>的<b>外卖盒</b>费用。请根据您的食量点餐。感谢您的理解。",
           pt: "Por favor, leia e aceite o seguinte acordo: <br /> Não incentivamos o desperdício de alimentos. Os alimentos desperdiçados precisam ser comprados com uma caixa para viagem, 8,5 euros por caixa. Por favor, peça de acordo com o seu apetite."
         };
-                newAgreementTitle = {
+        newAgreementTitle = {
           en: "Agreement",
           cn: "协议",
           pt: "Acordo"
@@ -111,7 +126,7 @@ const Menu = () => {
           cn: "请阅读并接受以下协议：<br /> 我们不提倡浪费食物，浪费的食物需要购买外卖盒带走，8.5欧元每一个盒子。请按照自己的食量点单。",
           pt: "Por favor, leia e aceite o seguinte acordo: <br /> Não incentivamos o desperdício de alimentos. Os alimentos desperdiçados precisam ser comprados com uma caixa para viagem, 8,5 euros por caixa. Por favor, peça de acordo com o seu apetite."
         };
-                newAgreementTitle = {
+        newAgreementTitle = {
           en: "Agreement",
           cn: "协议",
           pt: "Acordo"
@@ -128,7 +143,7 @@ const Menu = () => {
           cn: "请阅读并接受以下协议：<br /> 我们不提倡浪费食物，浪费的食物需要购买外卖盒带走，8.5欧元每一个盒子。请按照自己的食量点单。",
           pt: "Por favor, leia e aceite o seguinte acordo: <br /> Não incentivamos o desperdício de alimentos. Os alimentos desperdiçados precisam ser comprados com uma caixa para viagem, 8,5 euros por caixa. Por favor, peça de acordo com o seu apetite."
         };
-                newAgreementTitle = {
+        newAgreementTitle = {
           en: "Agreement",
           cn: "协议",
           pt: "Acordo"
@@ -141,7 +156,7 @@ const Menu = () => {
         break;
     }
     setAgreementText(newAgreementText);
-        setAgreementTitle(newAgreementTitle);
+    setAgreementTitle(newAgreementTitle);
     setAgreeButtonText(newAgreeButtonText);
   };
 
@@ -186,12 +201,12 @@ const Menu = () => {
   }
   const totalQuantity = useMemo(
     () => Object.keys(shoppingCart)
-            .map((i) => shoppingCart[i].quantity)
-            .reduce((a,b) => a + b, 0),
-      [shoppingCart]
+      .map((i) => shoppingCart[i].quantity)
+      .reduce((a, b) => a + b, 0),
+    [shoppingCart]
   );
 
- useEffect(() => {
+  useEffect(() => {
     onFetchPlace();
   }, [onFetchPlace]);
 
@@ -203,10 +218,18 @@ const Menu = () => {
       );
 
       if (table) {
-        setLastOrderingTiming(table.last_ordering_time);
+        // Convert the last ordering time to milliseconds since epoch
+        const lastOrderingTimeInSeconds = table.last_ordering_time;
+        const placeCreatedAt = new Date(place.createdAt).getTime();
+
+        const lastOrderingTimeInMilliseconds = placeCreatedAt + lastOrderingTimeInSeconds * 1000;
+
+        // Calculate the next allowed ordering time
+        const nextAllowedTime = lastOrderingTimeInMilliseconds + place.ordering_limit_interval * 1000;
+        setNextOrderingTime(nextAllowedTime);
       }
     }
-  }, [place, params, setLastOrderingTiming]);
+  }, [place, params]);
 
   useEffect(() => {
     if (localStorage.getItem('agreementAccepted') !== 'true' && !localStorage.getItem('selectedLanguage')) {
@@ -239,35 +262,81 @@ const Menu = () => {
     setSelectedCategoryName(name);
   };
 
- const handleAgreementAccept = () => {
+  const handleAgreementAccept = () => {
     localStorage.setItem('agreementAccepted', 'true');
     setShowAgreementModal(false);
   };
 
-  const date = new Date();
-  const lisbonTime = new Date(date.toLocaleString('en-US', { timeZone: 'Europe/Lisbon' }));
-
-  const hour = lisbonTime.getHours();
-  const minute = lisbonTime.getMinutes();
-  const second = lisbonTime.getSeconds();
-  const currentTimeSeconds = 3600 * hour + 60 * minute + second;
-
   useEffect(() => {
     const timer = setInterval(() => {
-      if (lastOrderingTiming && place.ordering_limit_interval) {
-        const differenceInSeconds = currentTimeSeconds - lastOrderingTiming;
-        if (differenceInSeconds > place.ordering_limit_interval || differenceInSeconds < 0) {
-          setEnableOrdering(true);
-          setTimeLeftToOrder(0);
-        } else {
-          setEnableOrdering(false);
-          setTimeLeftToOrder(place.ordering_limit_interval - differenceInSeconds);
-        }
+      if (nextOrderingTime > 0) {
+        const now = Date.now();
+        const timeLeft = Math.max(0, nextOrderingTime - now); // Ensure timeLeft is not negative
+        setTimeLeftToOrder(timeLeft);
+        setEnableOrdering(timeLeft === 0);
       }
     }, 500);
 
     return () => clearInterval(timer);
-  }, [currentTimeSeconds, lastOrderingTiming, place.ordering_limit_interval]);
+  }, [nextOrderingTime]);
+
+  const [activeTab, setActiveTab] = useState('menu');
+
+  const handleSelectTab = (tabName) => {
+    setActiveTab(tabName);
+  };
+
+  const OrderHistory = ({ orderHistory }) => {
+    // Group items by name
+    const groupedItems = orderHistory.reduce((acc, order) => {
+      const key = order.name; // Use item name as the key
+      if (!acc[key]) {
+        acc[key] = { ...order, quantity: 0 };
+      }
+      acc[key].quantity += order.quantity;
+      return acc;
+    }, {});
+
+    const totalCost = Object.values(groupedItems).reduce((sum, order) => sum + order.price * order.quantity, 0);
+
+
+    return (
+    <div style={{ width: '100%', maxWidth: '600px', margin: '0 auto' }}>
+      <h2 style={{ fontSize: '20px', marginBottom: '10px', textAlign: 'center' }}>Order History</h2>
+      {Object.keys(groupedItems).length === 0 ? (
+        <p style={{ fontSize: '16px', textAlign: 'center' }}>No orders yet</p>
+      ) : (
+        <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '16px' }}>
+          <thead style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>
+            <tr>
+              <th style={{ padding: '8px', textAlign: 'left' }}>Item</th>
+              <th style={{ padding: '8px', textAlign: 'right' }}>Price</th>
+              <th style={{ padding: '8px', textAlign: 'right' }}>Quantity</th>
+              <th style={{ padding: '8px', textAlign: 'right' }}>Total</th>
+            </tr>
+          </thead>
+          <tbody>
+            {Object.values(groupedItems).map((order, index) => (
+              <tr key={index} style={{ borderBottom: '1px solid #dee2e6' }}>
+                <td style={{ padding: '8px' }}>{order.name}</td>
+                <td style={{ padding: '8px', textAlign: 'right' }}>€{order.price.toFixed(1)}</td>
+                <td style={{ padding: '8px', textAlign: 'right' }}>{order.quantity}</td>
+                <td style={{ padding: '8px', textAlign: 'right' }}>€{(order.price * order.quantity).toFixed(1)}</td>
+              </tr>
+            ))}
+            <tr style={{ borderTop: '2px solid #dee2e6', fontWeight: 'bold' }}>
+              <td colSpan="3" style={{ padding: '8px', textAlign: 'right' }}>Total:</td>
+              <td style={{ padding: '8px', textAlign: 'right' }}>€{totalCost.toFixed(1)}</td>
+            </tr>
+          </tbody>
+        </table>
+      )}
+      <p style={{ fontSize: '14px', marginTop: '15px', textAlign: 'center', color: '#6c757d' }}>
+        Please note that buffet per person is not included yet to the total price.
+      </p>
+    </div>
+  );
+};
 
   return (
     <Container fluid className="mt-2 mb-4">
@@ -290,11 +359,11 @@ const Menu = () => {
             Número de Mesa: {params.table === '77' ? 'VIP' : params.table}
           </div>
           <Modal.Header closeButton style={{ padding: '5px' }}>
-            <Modal.Title style={{ padding: '10px' }}>{agreementTitle[selectedLanguage === '中文' ? 'cn' : selectedLanguage === 'Português' ? 'pt' : 'en']}</Modal.Title>
+            <Modal.Title style={{ padding: '10px', fontSize: '16px'  }}>{agreementTitle[selectedLanguage === '中文' ? 'cn' : selectedLanguage === 'Português' ? 'pt' : 'en']}</Modal.Title>
           </Modal.Header>
-          <Modal.Body className="languageModelBody" dangerouslySetInnerHTML={{ __html: agreementText[selectedLanguage === '中文' ? 'cn' : selectedLanguage === 'Português' ? 'pt' : 'en'] }} />
+          <Modal.Body style={{fontSize: '14px'}} className="languageModelBody" dangerouslySetInnerHTML={{ __html: agreementText[selectedLanguage === '中文' ? 'cn' : selectedLanguage === 'Português' ? 'pt' : 'en'] }} />
           <Modal.Footer>
-            <Button variant="primary" style={{ backgroundColor: '#FE6C4C', borderColor: '#FE6C4C' }} onClick={handleAgreementAccept}>
+            <Button variant="primary" style={{ backgroundColor: '#FE6C4C', borderColor: '#FE6C4C', fontSize: '14px' }} onClick={handleAgreementAccept}>
               {agreeButtonText[selectedLanguage === '中文' ? 'cn' : selectedLanguage === 'Português' ? 'pt' : 'en']}
             </Button>
           </Modal.Footer>
@@ -308,6 +377,7 @@ const Menu = () => {
             value={selectedCategoryName}
             onChange={(e) => handleCategoryClick(e.target.value)}
             className="custom-dropdown"
+            style={{ fontSize: '14px' }}
           >
             <option value="">{renderFilterAllButton(selectedLanguage)}</option>
             {categories
@@ -339,7 +409,7 @@ const Menu = () => {
         textAlign: 'center',
         fontWeight: 'bold',
         padding: '10px',
-        fontSize: '18px',
+        fontSize: '16px', /* Reduced font size */
         borderRadius: '10px'
       }}>
         {/* Render message accordigly to the language selected */}
@@ -355,51 +425,55 @@ const Menu = () => {
             selectedLanguage={selectedLanguage}
             onLanguageSelect={handleLanguageSelect}
             tableNumber={params.table}
-          />
-        )}
-        <Col lg={8}>
-        {showShoppingCart ? (
-            <ShoppingCart
-              items={Object.keys(shoppingCart)
-                .map((key) => shoppingCart[key])
-                .filter((item) => item.quantity > 0)
-              }
-              selectedLanguage={selectedLanguage}
-              onAdd={onAddItemtoShoppingCart}
-              onRemove={onRemoveItemToShoppingCart}
-              color={place.color}
-              table_id={params.table}
-              last_ordering_timing={lastOrderingTiming}
-              orderingInterval={place.ordering_limit_interval}
-              timeLeftToOrder={timeLeftToOrder}
-              enable_ordering={enableOrdering}
-            />
-          ) : (
-            <MenuList
-              selectedLanguage={selectedLanguage}
-              place={place}
-              shoppingCart={shoppingCart}
-              onOrder={onAddItemtoShoppingCart}
-              onRemove={onRemoveItemToShoppingCart}
-              color={place.color}
-              font={place.font}
-              selectedCategoryName={selectedCategoryName}
-            />
-          )}
-        </Col>
-      </Row>
-      {totalQuantity ? (
-        <OrderButton
-          variant="standard"
-          style={{
-             backgroundColor: '#FE6C4C'
-            }}
-          onClick={() => setShowShoppingCart(!showShoppingCart)}>
-          <span>{showShoppingCart ? <IoCloseOutline size={25} /> : totalQuantity}</span>
-        </OrderButton>
-      ) : null}
-    </Container>
-  )
+        />
+      )}
+
+</Row>
+    {activeTab === 'menu' && (
+      <MenuList
+        selectedLanguage={selectedLanguage}
+        place={place}
+        shoppingCart={shoppingCart}
+        onOrder={onAddItemtoShoppingCart}
+        onRemove={onRemoveItemToShoppingCart}
+        color={place.color}
+        font={place.font}
+        selectedCategoryName={selectedCategoryName}
+        activeTab={activeTab}
+      />
+    )}
+    {activeTab === 'cart' && (
+      <ShoppingCart
+        items={Object.keys(shoppingCart)
+          .map((key) => shoppingCart[key])
+          .filter((item) => item.quantity > 0)
+        }
+        selectedLanguage={selectedLanguage}
+        onAdd={onAddItemtoShoppingCart}
+        onRemove={onRemoveItemToShoppingCart}
+        color={place.color}
+        table_id={params.table}
+        orderingInterval={place.ordering_limit_interval}
+        timeLeftToOrder={timeLeftToOrder}
+        enable_ordering={enableOrdering}
+        activeTab={activeTab}
+        onOrderSuccess={(items) => {
+          setShoppingCart({});
+          const orderDetails = items.map(item => ({
+            name: item.name,
+            price: item.price,
+            quantity: item.quantity
+          }));
+          setOrderHistory(prevHistory => [...prevHistory, ...orderDetails]);
+          // Set next ordering time
+          setNextOrderingTime(Date.now() + place.ordering_limit_interval * 1000);
+        }}
+      />
+    )}
+    {activeTab === 'history' && <OrderHistory activeTab={activeTab} orderHistory={orderHistory} />}
+    <BottomTabBar activeTab={activeTab} onSelectTab={handleSelectTab} totalQuantity={totalQuantity} />
+  </Container>
+  );
 };
 
 export default Menu;
