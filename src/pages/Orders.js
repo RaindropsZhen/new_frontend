@@ -1,10 +1,10 @@
-import { IoMdArrowBack } from 'react-icons/io';
-import { Row, Col, Button, Table, Modal } from 'react-bootstrap';
-import { useParams, useHistory } from 'react-router-dom';
-import React, { useState, useEffect, useContext } from 'react';
-import { fetchOrders, completeOrder, reprintOrder } from '../apis';
-import AuthContext from '../contexts/AuthContext';
-import MainLayout from '../layouts/MainLayout';
+import { IoMdArrowBack } from "react-icons/io";
+import { Row, Col, Button, Table, Modal } from "react-bootstrap";
+import { useParams, useHistory } from "react-router-dom";
+import React, { useState, useEffect, useContext } from "react";
+import { fetchOrders, completeOrder, reprintOrder } from "../apis";
+import AuthContext from "../contexts/AuthContext";
+import MainLayout from "../layouts/MainLayout";
 
 const Orders = () => {
   const [orders, setOrders] = useState([]);
@@ -12,9 +12,10 @@ const Orders = () => {
   const [showModal, setShowModal] = useState(false); // State for modal visibility
   const [selectedTable, setSelectedTable] = useState(null); // State for selected table
   const [selectedTableOrders, setSelectedTableOrders] = useState({}); // State for selected table's orders
+  const [reprintChecked, setReprintChecked] = useState({}); // new state
 
-    const params = useParams();
-    const history = useHistory();
+  const params = useParams();
+  const history = useHistory();
   const auth = useContext(AuthContext);
 
   const onBack = () => history.push(`/places/${params.id}`);
@@ -23,16 +24,15 @@ const Orders = () => {
     const json = await fetchOrders(params.id, auth.token);
     if (json) {
       setOrders(json);
-      }
+    }
   };
 
-    useEffect(() => {
+  useEffect(() => {
     const updateOrders = async () => {
       await onFetchOrders();
     };
 
-        const interval = setInterval(updateOrders, 2000);
-
+    const interval = setInterval(updateOrders, 2000);
 
     return () => clearInterval(interval);
   }, []);
@@ -126,91 +126,151 @@ const Orders = () => {
                 )}
             </Row>
 
-            {/* Modal for displaying orders */}
-            <Modal show={showModal} onHide={() => setShowModal(false)} size="lg">
-                <Modal.Header closeButton>
-                  <Modal.Title>
-                    桌号订单 {selectedTable}
-                  </Modal.Title>
-                </Modal.Header>
-                <Modal.Body>
-                    {Object.keys(selectedTableOrders).length > 0 ? (
-                        Object.entries(selectedTableOrders)
-                        .sort(([, ordersA], [, ordersB]) => {
-                            // Handle cases where ordersA or ordersB might be undefined or empty
-                            const timeA = ordersA[0] ? new Date(ordersA[0].created_at).getTime() : 0;
-                            const timeB = ordersB[0] ? new Date(ordersB[0].created_at).getTime() : 0;
-                            return timeB - timeA;
-                        })
-                        .map(([dailyId, orders]) => {
-                          const firstOrderTime = orders[0] ? new Date(orders[0].created_at).toLocaleTimeString() : '';
-                          return (
-                            <div key={dailyId}>
-                                <div className="d-flex justify-content-between align-items-center">
-                                    <h4>订单号: {dailyId} - {firstOrderTime}</h4>
-                                        <Button
-                                            variant="info"
-                                            size="lg"
-                                            onClick={async () => {
-                                                const orderData = {
-                                                    place: params.id,
-                                                    table: selectedTable,
-                                                    detail: orders.flatMap(order => JSON.parse(cleanDetailString(order.detail))),
-                                                    isTakeAway: false,
-                                                    phoneNumber: '',
-                                                    comment: 'Reprint',
-                                                    arrival_time:'',
-                                                    customer_name: '',
-                                                    daily_id: dailyId,
-                                                };
-                                                const result = await reprintOrder(orderData, auth.token);
-                                                if (result) {
-                                                  alert("重打请求已发送！");
-                                                }
-                                            }}
-                                        >
-                                            重新打印
-                                        </Button>
-                                </div>
-                                <Table striped bordered hover responsive>
-                                    <thead>
-                                    <tr>
-                                        <th>菜品名称</th>
-                                        <th>数量</th>
-                                        <th>单价</th>
-                                        <th>操作</th>
-                                    </tr>
-                                    </thead>
-                                    <tbody>
-                                    {orders.sort((a, b) => new Date(b.created_at) - new Date(a.created_at)).map((order, orderIndex) => {
-                                      const orderItems = Array.isArray(JSON.parse(cleanDetailString(order.detail)))
-                                          ? JSON.parse(cleanDetailString(order.detail))
-                                          : [];
+      {/* Modal for displaying orders */}
+      <Modal show={showModal} onHide={() => setShowModal(false)} size="lg">
+        <Modal.Header closeButton>
+          <Modal.Title>桌号订单 {selectedTable}</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>
+          {Object.keys(selectedTableOrders).length > 0 ? (
+            Object.entries(selectedTableOrders)
+              .sort(([, ordersA], [, ordersB]) => {
+                // Handle cases where ordersA or ordersB might be undefined or empty
+                const timeA = ordersA[0]
+                  ? new Date(ordersA[0].created_at).getTime()
+                  : 0;
+                const timeB = ordersB[0]
+                  ? new Date(ordersB[0].created_at).getTime()
+                  : 0;
+                return timeB - timeA;
+              })
+              .map(([dailyId, orders]) => {
+                const firstOrderTime = orders[0]
+                  ? new Date(orders[0].created_at).toLocaleTimeString()
+                  : "";
+                return (
+                  <div key={dailyId}>
+                    <div className="d-flex justify-content-between align-items-center">
+                      <h4>
+                        订单号: {dailyId} - {firstOrderTime}
+                      </h4>
+                      <Button
+                        variant="info"
+                        size="lg"
+                        onClick={async () => {
+                          // Prepare the order data for reprinting
+                          const ordersToReprint = orders.filter(
+                            (order) =>
+                              reprintChecked[selectedTable]?.[dailyId]?.[
+                                order.id
+                              ] !== false
+                          ); // Filter based on checkbox state
 
-                                      return (
-                                        <React.Fragment key={orderIndex}>
-                                            {orderItems.map((item, itemIndex) => (
-                                            <tr key={`${orderIndex}-${itemIndex}`}>
-                                                <td>{item.name}</td>
-                                                <td>{item.quantity}</td>
-                                                <td>{item.price}</td>
-                                                <td></td>
-                                            </tr>
-                                            ))}
-                                        </React.Fragment>
-                                      );
-                                    })}
-                                    </tbody>
-                                </Table>
-                            </div>
-                        );})
-                    ) : (
-                        <p>该桌还没有订单。</p>
-                    )}
-                </Modal.Body>
-              </Modal>
-            </MainLayout>
-          );
-        };
+                          if (ordersToReprint.length === 0) {
+                            alert("没有选中任何订单来重新打印。");
+                            return;
+                          }
+
+                          const orderData = {
+                            place: params.id,
+                            table: selectedTable,
+                            detail: ordersToReprint.flatMap((order) =>
+                              JSON.parse(cleanDetailString(order.detail))
+                            ),
+                            isTakeAway: false,
+                            phoneNumber: "",
+                            comment: "Reprint",
+                            arrival_time: "",
+                            customer_name: "",
+                            daily_id: dailyId,
+                          };
+                          const result = await reprintOrder(
+                            orderData,
+                            auth.token
+                          );
+                          if (result) {
+                            alert("重打请求已发送！");
+                          }
+                        }}
+                      >
+                        重新打印
+                      </Button>
+                    </div>
+                    <Table striped bordered hover responsive>
+                      <thead>
+                        <tr>
+                          <th>菜品名称</th>
+                          <th>数量</th>
+                          <th>单价</th>
+                          <th>操作</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {orders
+                          .sort(
+                            (a, b) =>
+                              new Date(b.created_at) - new Date(a.created_at)
+                          )
+                          .map((order, orderIndex) => {
+                            const orderItems = Array.isArray(
+                              JSON.parse(cleanDetailString(order.detail))
+                            )
+                              ? JSON.parse(cleanDetailString(order.detail))
+                              : [];
+
+                            return (
+                              <React.Fragment key={order.id}>
+                                {orderItems.map((item, itemIndex) => (
+                                  <tr key={`${order.id}-${itemIndex}`}>
+                                    <td>{item.name}</td>
+                                    <td>{item.quantity}</td>
+                                    <td>{item.price}</td>
+                                     <td>
+                                      <input
+                                        type="checkbox"
+                                        checked={
+                                          reprintChecked[selectedTable]?.[
+                                            dailyId
+                                          ]?.[order.id] !== false
+                                        }
+                                        onChange={(e) => {
+                                          setReprintChecked((prev) => {
+                                            const newTableState = {
+                                              ...(prev[selectedTable] || {}),
+                                              [dailyId]: {
+                                                ...(prev[selectedTable]?.[
+                                                  dailyId
+                                                ] || {}),
+                                                [order.id]:
+                                                  e.target.checked,
+                                              },
+                                            };
+
+                                            return {
+                                              ...prev,
+                                              [selectedTable]: newTableState,
+                                            };
+                                          });
+                                        }}
+                                      />
+                                    </td>
+                                  </tr>
+                                ))}
+                              </React.Fragment>
+                            );
+                          })}
+                      </tbody>
+                    </Table>
+                  </div>
+                );
+              })
+          ) : (
+            <p>该桌还没有订单。</p>
+          )}
+        </Modal.Body>
+      </Modal>
+    </MainLayout>
+  );
+};
 
 export default Orders;
