@@ -2,11 +2,12 @@ import { IoMdArrowBack } from "react-icons/io";
 import { Row, Col, Button, Table, Modal } from "react-bootstrap";
 import { useParams, useHistory } from "react-router-dom";
 import React, { useState, useEffect, useContext } from "react";
-import { fetchOrders, completeOrder, reprintOrder } from "../apis";
+import { fetchOrders, completeOrder, reprintOrder, fetchPlace } from "../apis";
 import AuthContext from "../contexts/AuthContext";
 import MainLayout from "../layouts/MainLayout";
 
 const Orders = () => {
+  const [place, setPlace] = useState(null);
   const [orders, setOrders] = useState([]);
   const currentDate = new Date();
   const [showModal, setShowModal] = useState(false); // State for modal visibility
@@ -26,6 +27,17 @@ const Orders = () => {
       setOrders(json);
     }
   };
+
+    useEffect(() => {
+        const onFetchPlace = async () => {
+            const json = await fetchPlace(params.id, auth.token);
+            if (json) {
+                setPlace(json);
+            }
+        };
+    onFetchPlace();
+  }, [params.id, auth.token]);
+
 
   useEffect(() => {
     const updateOrders = async () => {
@@ -103,26 +115,29 @@ const Orders = () => {
 
             {/* Table Buttons */}
             <Row>
-                {sortedTableNumbers.length > 0 ? (
-                sortedTableNumbers.map((tableNumber) => (
-                    <Col key={tableNumber} xs={6} sm={4} md={3} lg={2} className="mb-4">
-                    <Button
-                        variant="outline-primary"
-                        block
-                        onClick={() => {
-                            setSelectedTable(tableNumber);
-                            setSelectedTableOrders(groupedByTable[tableNumber]);
-                            setShowModal(true);
-                        }}
-                    >
-                        桌号 {tableNumber}
-                    </Button>
-                    </Col>
-                ))
+                {place ? (
+                    place.tables.sort((a, b) => a.table_number - b.table_number).map((table) => (
+                        <Col key={table.id} xs={6} sm={4} md={3} lg={2} className="mb-4">
+                            <Button
+                                variant={groupedByTable[table.table_number] ? "outline-primary" : "outline-secondary"}
+                                block
+                                onClick={() => {
+                                    setSelectedTable(table.table_number);
+                                    // Find orders for the selected table
+                                    const ordersForTable = groupedByTable[table.table_number] || {};
+                                    setSelectedTableOrders(ordersForTable);
+                                    setShowModal(true);
+                                }}
+                                disabled={!groupedByTable[table.table_number]}
+                            >
+                                桌号 {table.table_number}
+                            </Button>
+                        </Col>
+                    ))
                 ) : (
-                <Col>
-                    <p className="text-center">今天没有订单。</p>
-                </Col>
+                    <Col>
+                        <p className="text-center">没有桌子。</p>
+                    </Col>
                 )}
             </Row>
 
@@ -224,7 +239,7 @@ const Orders = () => {
                                 {orderItems.map((item, itemIndex) => (
                                   <tr key={`${order.id}-${itemIndex}`}>
                                     <td>{item.name}</td>
-                                    <td>{item.category}</td>
+                                    <td>{categoryMap[item.category]}</td>
                                     <td>{item.quantity}</td>
                                     <td>{item.price}</td>
                                     <td>
@@ -269,6 +284,23 @@ const Orders = () => {
       </Modal>
     </MainLayout>
   );
+};
+
+const categoryMap = {
+    1: "Sushi",
+    2: "寿司套餐",
+    3: "中餐",
+    4: "甜品",
+    5: "饮料",
+    6: "啤酒/酒",
+    7: "水果酒",
+    8: "红酒",
+    9: "绿酒",
+    10: "白酒",
+    11: "粉红酒",
+    12: "威士忌",
+    13: "开胃酒",
+    14: "咖啡"
 };
 
 export default Orders;
