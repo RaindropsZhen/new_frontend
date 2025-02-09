@@ -225,32 +225,28 @@ const Orders = () => {
                                     <td>{item.name}</td>
                                     <td>{item.quantity}</td>
                                     <td>{item.price}</td>
-                                     <td>
+                                    <td>
                                       <input
                                         type="checkbox"
+                                        style={{ width: "20px", height: "20px" }}
                                         checked={
                                           reprintChecked[selectedTable]?.[
                                             dailyId
                                           ]?.[order.id] !== false
                                         }
                                         onChange={(e) => {
-                                          setReprintChecked((prev) => {
-                                            const newTableState = {
+                                          setReprintChecked((prev) => ({
+                                            ...prev,
+                                            [selectedTable]: {
                                               ...(prev[selectedTable] || {}),
                                               [dailyId]: {
                                                 ...(prev[selectedTable]?.[
                                                   dailyId
                                                 ] || {}),
-                                                [order.id]:
-                                                  e.target.checked,
+                                                [order.id]: e.target.checked,
                                               },
-                                            };
-
-                                            return {
-                                              ...prev,
-                                              [selectedTable]: newTableState,
-                                            };
-                                          });
+                                            },
+                                          }));
                                         }}
                                       />
                                     </td>
