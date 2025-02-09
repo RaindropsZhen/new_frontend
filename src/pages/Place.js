@@ -65,22 +65,22 @@ const Place = () => {
             <ButtonGrid>
               <Button variant="link" onClick={() => { history.push(`/${params.id}/select_table/`) }}>
                 <AiOutlineQrcode size={50} style={{ color: '#444', lineHeight: 0, padding: 0, margin: 0 }} />
-                <div style={{ fontSize: '24px', marginTop: '5px' }}>QR Code</div>
+                <div style={{ fontSize: '24px', marginTop: '5px' }}>点单链接</div>
               </Button>
 
               <Button variant="link" onClick={() => { history.push(`/places/${params.id}/orders`) }}>
                 <RiFileList3Line size={50} style={{ color: '#444', lineHeight: 0, padding: 0, margin: 0 }} />
-                <div style={{ fontSize: '24px', marginTop: '5px' }}>Orders</div>
+                <div style={{ fontSize: '24px', marginTop: '5px' }}>今日订单</div>
               </Button>
 
               <Button variant="link" >
                 <RiEBike2Fill size={50} style={{ color: '#444', lineHeight: 0, padding: 0, margin: 0 }} />
-                <div style={{ fontSize: '24px', marginTop: '5px' }}>Take Away</div>
+                <div style={{ fontSize: '24px', marginTop: '5px' }}>外卖订单</div>
               </Button>
 
               <Button variant="link" >
                 <TiPrinter size={50} style={{ color: '#444', lineHeight: 0, padding: 0, margin: 0 }} />
-                <div style={{ fontSize: '24px', marginTop: '5px' }}>Printers</div>
+                <div style={{ fontSize: '24px', marginTop: '5px' }}>打印机</div>
               </Button>
             </ButtonGrid>
           </div>
