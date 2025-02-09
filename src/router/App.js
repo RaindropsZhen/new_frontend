@@ -24,53 +24,52 @@ function App() {
 
     return (
         <AuthProvider>
-          <BrowserRouter>
-            <Switch>
-          
-              <Route exact path='/'>
-                <Home/>
-              </Route>
+            <BrowserRouter>
+                <Switch>
+                    <Route exact path='/'>
+                        <Home/>
+                    </Route>
 
-              <Route exact path='/login'>
-                <Login/>
-              </Route>
-              
-              <Route exact path='/register'>
-                <Register/>
-              </Route> 
+                    <Route exact path='/login'>
+                        <Login/>
+                    </Route>
+                    
+                    <Route exact path='/register'>
+                        <Register/>
+                    </Route> 
 
-              <Route exact path='/:id/select_table/'>
-                <TableNumberInput/>
-              </Route>
+                    <Route exact path='/:id/select_table/'>
+                        <TableNumberInput/>
+                    </Route>
 
-              <Route exact path='/menu/:code/:id/:table/'>
-                <Menu/>
-              </Route>
+                    <Route exact path='/menu/:code/:id/:table/'>
+                        <Menu/>
+                    </Route>
 
-              <Route exact path='/menu/:id/takeaway'>
-                <Menu/>
-              </Route>
+                    <Route exact path='/menu/:id/takeaway'>
+                        <Menu/>
+                    </Route>
 
-              <PrivateRoute exact path='/places/:id'>
-                <Place/>
-              </PrivateRoute>
+                    <PrivateRoute exact path='/places/:id'>
+                        <Place/>
+                    </PrivateRoute>
 
-              <PrivateRoute exact path='/places'>
-                <Places/>
-              </PrivateRoute>
-              <PrivateRoute exact path='/places/:id/orders'>
-                <Orders/>
-              </PrivateRoute>
-              <PrivateRoute exact path='/places/:id/settings'>
-                <MenuSettings/>
-              </PrivateRoute>
+                    <PrivateRoute exact path='/places'>
+                        <Places/>
+                    </PrivateRoute>
+                    <PrivateRoute exact path='/places/:id/orders'>
+                        <Orders/>
+                    </PrivateRoute>
+                    <PrivateRoute exact path='/places/:id/settings'>
+                        <MenuSettings/>
+                    </PrivateRoute>
 
-              <PrivateRoute exact path='/places/:id/qrcode'>
-                <QRCode/>
-              </PrivateRoute>
+                    <PrivateRoute exact path='/places/:id/qrcode'>
+                        <QRCode/>
+                    </PrivateRoute>
 
-            </Switch>
-          </BrowserRouter>
+                </Switch>
+            </BrowserRouter>
           <ToastContainer/>
         </AuthProvider>
 

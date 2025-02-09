@@ -154,6 +154,14 @@ export function completeOrder(id, data, token) {
     return request(`/api/orders/${id}`, { data, token, method: "PATCH" });
 }
 
+export function updateTableBlockedStatus(tableId, blocked, token) {
+    return request(`/api/tables/${tableId}/`, {
+        data: { blocked },
+        token,
+        method: "PATCH",
+    });
+}
+
 export const updateOrderStatus = async (orderIds, token) => {
     try {
       const response = await fetch('/api/orders/update-status', {
@@ -164,11 +172,11 @@ export const updateOrderStatus = async (orderIds, token) => {
         },
         body: JSON.stringify({ orderIds, status: 'done' }),
       });
-  
+
       if (!response.ok) {
         throw new Error('Failed to update order status');
       }
-  
+
       return await response.json();
     } catch (error) {
       console.error('Error updating order status:', error);

@@ -40,9 +40,10 @@ const renderFilterAllButton = (selectedLanguage) => {
   }
 };
 const Menu = () => {
-  const [showAgreementModal, setShowAgreementModal] = useState(false); // Initially hide agreement modal
+    const { table } = useParams();
+  const [showAgreementModal, setShowAgreementModal] = useState(false);
 
-  const [place, setPlace] = useState({});
+    const [place, setPlace] = useState({});
   const [shoppingCart, setShoppingCart] = useState({});
   const [orderHistory, setOrderHistory] = useState([]);
   const [showShoppingCart, setShowShoppingCart] = useState(false);
@@ -340,8 +341,14 @@ const Menu = () => {
 
   return (
     <Container fluid className="mt-2 mb-4">
+        {place && place.tables && place.tables.find(t => parseInt(t.table_number) === parseInt(params.table))?.blocked ? (
+            <div className="text-center p-4 mt-4 bg-warning border border-warning rounded">
+                <h4 className="mb-0">This table is currently unavailable. Please contact a staff member for assistance.</h4>
+            </div>
+        ) : (
+            <>
       {showAgreementModal && (
-        <Modal
+        <Modal>
           show={showAgreementModal}
           backdrop="static"
           keyboard={false}
@@ -472,7 +479,9 @@ const Menu = () => {
     )}
     {activeTab === 'history' && <OrderHistory activeTab={activeTab} orderHistory={orderHistory} />}
     <BottomTabBar activeTab={activeTab} onSelectTab={handleSelectTab} totalQuantity={totalQuantity} />
-  </Container>
+  </>
+        )}
+    </Container>
   );
 };
 
