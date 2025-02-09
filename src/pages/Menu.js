@@ -40,10 +40,11 @@ const renderFilterAllButton = (selectedLanguage) => {
   }
 };
 const Menu = () => {
-    const { table } = useParams();
+  const { table } = useParams();
   const [showAgreementModal, setShowAgreementModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(true); // Add loading state
 
-    const [place, setPlace] = useState({});
+  const [place, setPlace] = useState({});
   const [shoppingCart, setShoppingCart] = useState({});
   const [orderHistory, setOrderHistory] = useState([]);
   const [showShoppingCart, setShowShoppingCart] = useState(false);
@@ -173,6 +174,8 @@ const Menu = () => {
       }
     } catch (error) {
       console.error('Error fetching place:', error);
+    } finally {
+      setIsLoading(false); // Set loading to false after fetch
     }
   }, [params.id]);
 
@@ -341,146 +344,146 @@ const Menu = () => {
 
   return (
     <Container fluid className="mt-2 mb-4">
-        {place && place.tables && place.tables.find(t => parseInt(t.table_number) === parseInt(params.table))?.blocked ? (
-            <div className="text-center p-4 mt-4 bg-warning border border-warning rounded">
-                <h4 className="mb-0">This table is currently unavailable. Please contact a staff member for assistance.</h4>
-            </div>
-        ) : (
-            <>
-      {showAgreementModal && (
-        <Modal>
-          show={showAgreementModal}
-          backdrop="static"
-          keyboard={false}
-          style={{ borderRadius: '15px', overflow: 'hidden' }}
-          className="agreementModal"
-        >
+      {isLoading ? ( // Show loading message while fetching data
+        <div className="text-center p-4">Loading...</div>
+      ) : place && place.tables && place.tables.find(t => parseInt(t.table_number) === parseInt(params.table))?.blocked ? (
+        <div className="text-center p-4 mt-4 bg-warning border border-warning rounded">
+          <h4 className="mb-0">This table is currently unavailable. Please contact a staff member for assistance.</h4>
+        </div>
+      ) : (
+        <>
+          {showAgreementModal && (
+            <Modal show={showAgreementModal}
+              backdrop="static"
+              keyboard={false}
+              style={{ borderRadius: '15px', overflow: 'hidden' }}
+              className="agreementModal">
+              <div style={{
+                backgroundColor: '#FE6C4C',
+                color: 'white',
+                textAlign: 'center',
+                fontWeight: 'bold',
+                padding: '10px',
+                fontSize: '18px'
+              }}>
+                Número de Mesa: {params.table === '77' ? 'VIP' : params.table}
+              </div>
+              <Modal.Header closeButton style={{ padding: '5px' }}>
+                <Modal.Title style={{ padding: '10px', fontSize: '16px' }}>{agreementTitle[selectedLanguage === '中文' ? 'cn' : selectedLanguage === 'Português' ? 'pt' : 'en']}</Modal.Title>
+              </Modal.Header>
+              <Modal.Body style={{ fontSize: '14px' }} className="languageModelBody" dangerouslySetInnerHTML={{ __html: agreementText[selectedLanguage === '中文' ? 'cn' : selectedLanguage === 'Português' ? 'pt' : 'en'] }} />
+              <Modal.Footer>
+                <Button variant="primary" style={{ backgroundColor: '#FE6C4C', borderColor: '#FE6C4C', fontSize: '14px' }} onClick={handleAgreementAccept}>
+                  {agreeButtonText[selectedLanguage === '中文' ? 'cn' : selectedLanguage === 'Português' ? 'pt' : 'en']}
+                </Button>
+              </Modal.Footer>
+            </Modal>
+          )}
+
+          {/* Filter */}
+          <StickyFilterContainer>
+            <Row className="d-flex justify-content-between align-items-center flex-nowrap gap-3">
+              {/* Category Dropdown */}
+              <select
+                value={selectedCategoryName}
+                onChange={(e) => handleCategoryClick(e.target.value)}
+                className="custom-dropdown"
+                style={{ fontSize: '14px' }}
+              >
+                <option value="">{renderFilterAllButton(selectedLanguage)}</option>
+                {categories
+                  .map((name) => (
+                    <option key={name} value={name}>
+                      {name}
+                    </option>
+                  ))}
+              </select>
+
+              {/* Language Dropdown */}
+              <select
+                value={selectedLanguage}
+                onChange={(e) => handleLanguageSelect(e.target.value)}
+                className="custom-dropdown"
+              >
+                {languages.map((language) => (
+                  <option key={language.label} value={language.label}>
+                    {language.label}
+                  </option>
+                ))}
+              </select>
+            </Row>
+          </StickyFilterContainer>
+
           <div style={{
             backgroundColor: '#FE6C4C',
             color: 'white',
             textAlign: 'center',
             fontWeight: 'bold',
             padding: '10px',
-            fontSize: '18px'
+            fontSize: '16px',
+            borderRadius: '10px'
           }}>
             Número de Mesa: {params.table === '77' ? 'VIP' : params.table}
           </div>
-          <Modal.Header closeButton style={{ padding: '5px' }}>
-            <Modal.Title style={{ padding: '10px', fontSize: '16px'  }}>{agreementTitle[selectedLanguage === '中文' ? 'cn' : selectedLanguage === 'Português' ? 'pt' : 'en']}</Modal.Title>
-          </Modal.Header>
-          <Modal.Body style={{fontSize: '14px'}} className="languageModelBody" dangerouslySetInnerHTML={{ __html: agreementText[selectedLanguage === '中文' ? 'cn' : selectedLanguage === 'Português' ? 'pt' : 'en'] }} />
-          <Modal.Footer>
-            <Button variant="primary" style={{ backgroundColor: '#FE6C4C', borderColor: '#FE6C4C', fontSize: '14px' }} onClick={handleAgreementAccept}>
-              {agreeButtonText[selectedLanguage === '中文' ? 'cn' : selectedLanguage === 'Português' ? 'pt' : 'en']}
-            </Button>
-          </Modal.Footer>
-        </Modal>
+
+          <Row className="justifyContent-center m-2">
+            {showLanguageModal && (
+              <LanguageSelectionModal
+                show={showLanguageModal}
+                onHide={() => setShowLanguageModal(false)}
+                languages={languages}
+                selectedLanguage={selectedLanguage}
+                onLanguageSelect={handleLanguageSelect}
+                tableNumber={params.table}
+              />
+            )}
+          </Row>
+
+          {activeTab === 'menu' && (
+            <MenuList
+              selectedLanguage={selectedLanguage}
+              place={place}
+              shoppingCart={shoppingCart}
+              onOrder={onAddItemtoShoppingCart}
+              onRemove={onRemoveItemToShoppingCart}
+              color={place.color}
+              font={place.font}
+              selectedCategoryName={selectedCategoryName}
+              activeTab={activeTab}
+            />
+          )}
+          {activeTab === 'cart' && (
+            <ShoppingCart
+              items={Object.keys(shoppingCart)
+                .map((key) => shoppingCart[key])
+                .filter((item) => item.quantity > 0)
+              }
+              selectedLanguage={selectedLanguage}
+              onAdd={onAddItemtoShoppingCart}
+              onRemove={onRemoveItemToShoppingCart}
+              color={place.color}
+              table_id={params.table}
+              orderingInterval={place.ordering_limit_interval}
+              timeLeftToOrder={timeLeftToOrder}
+              enable_ordering={enableOrdering}
+              activeTab={activeTab}
+              onOrderSuccess={(items) => {
+                setShoppingCart({});
+                const orderDetails = items.map(item => ({
+                  name: item.name,
+                  price: item.price,
+                  quantity: item.quantity
+                }));
+                setOrderHistory(prevHistory => [...prevHistory, ...orderDetails]);
+                // Set next ordering time
+                setNextOrderingTime(Date.now() + place.ordering_limit_interval * 1000);
+              }}
+            />
+          )}
+          {activeTab === 'history' && <OrderHistory activeTab={activeTab} orderHistory={orderHistory} />}
+          <BottomTabBar activeTab={activeTab} onSelectTab={handleSelectTab} totalQuantity={totalQuantity} />
+        </>
       )}
-      {/* Filter */}
-      <StickyFilterContainer >
-        <Row className="d-flex justify-content-between align-items-center flex-nowrap gap-3">
-          {/* Category Dropdown */}
-          <select
-            value={selectedCategoryName}
-            onChange={(e) => handleCategoryClick(e.target.value)}
-            className="custom-dropdown"
-            style={{ fontSize: '14px' }}
-          >
-            <option value="">{renderFilterAllButton(selectedLanguage)}</option>
-            {categories
-            .map((name) => (
-              <option key={name} value={name}>
-                {name}
-              </option>
-            ))}
-          </select>
-
-          {/* Language Dropdown */}
-          <select
-            value={selectedLanguage}
-            onChange={(e) => handleLanguageSelect(e.target.value)}
-            className="custom-dropdown"
-          >
-            {languages.map((language) => (
-              <option key={language.label} value={language.label}>
-                {language.label}
-              </option>
-            ))}
-          </select>
-        </Row>
-      </StickyFilterContainer>
-
-      <div style={{
-        backgroundColor: '#FE6C4C',
-        color: 'white',
-        textAlign: 'center',
-        fontWeight: 'bold',
-        padding: '10px',
-        fontSize: '16px', /* Reduced font size */
-        borderRadius: '10px'
-      }}>
-        {/* Render message accordigly to the language selected */}
-        Número de Mesa: {params.table === '77' ? 'VIP' : params.table}
-      </div>
-
-      <Row className="justifyContent-center m-2">
-        {showLanguageModal && (
-          <LanguageSelectionModal
-            show={showLanguageModal}
-            onHide={() => setShowLanguageModal(false)}
-            languages={languages}
-            selectedLanguage={selectedLanguage}
-            onLanguageSelect={handleLanguageSelect}
-            tableNumber={params.table}
-        />
-      )}
-
-</Row>
-    {activeTab === 'menu' && (
-      <MenuList
-        selectedLanguage={selectedLanguage}
-        place={place}
-        shoppingCart={shoppingCart}
-        onOrder={onAddItemtoShoppingCart}
-        onRemove={onRemoveItemToShoppingCart}
-        color={place.color}
-        font={place.font}
-        selectedCategoryName={selectedCategoryName}
-        activeTab={activeTab}
-      />
-    )}
-    {activeTab === 'cart' && (
-      <ShoppingCart
-        items={Object.keys(shoppingCart)
-          .map((key) => shoppingCart[key])
-          .filter((item) => item.quantity > 0)
-        }
-        selectedLanguage={selectedLanguage}
-        onAdd={onAddItemtoShoppingCart}
-        onRemove={onRemoveItemToShoppingCart}
-        color={place.color}
-        table_id={params.table}
-        orderingInterval={place.ordering_limit_interval}
-        timeLeftToOrder={timeLeftToOrder}
-        enable_ordering={enableOrdering}
-        activeTab={activeTab}
-        onOrderSuccess={(items) => {
-          setShoppingCart({});
-          const orderDetails = items.map(item => ({
-            name: item.name,
-            price: item.price,
-            quantity: item.quantity
-          }));
-          setOrderHistory(prevHistory => [...prevHistory, ...orderDetails]);
-          // Set next ordering time
-          setNextOrderingTime(Date.now() + place.ordering_limit_interval * 1000);
-        }}
-      />
-    )}
-    {activeTab === 'history' && <OrderHistory activeTab={activeTab} orderHistory={orderHistory} />}
-    <BottomTabBar activeTab={activeTab} onSelectTab={handleSelectTab} totalQuantity={totalQuantity} />
-  </>
-        )}
     </Container>
   );
 };
