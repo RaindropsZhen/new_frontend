@@ -1,5 +1,5 @@
 import { IoMdArrowBack } from "react-icons/io";
-import { Row, Col, Button, Table, Modal } from "react-bootstrap";
+import { Row, Col, Button, Table, Modal, ToggleButton } from "react-bootstrap";
 import { useParams, useHistory } from "react-router-dom";
 import React, { useState, useEffect, useContext } from "react";
 import { fetchOrders, completeOrder, reprintOrder, fetchPlace } from "../apis";
@@ -12,12 +12,21 @@ const Orders = () => {
   const currentDate = new Date();
   const [showModal, setShowModal] = useState(false); // State for modal visibility
   const [selectedTable, setSelectedTable] = useState(null); // State for selected table
-  const [selectedTableOrders, setSelectedTableOrders] = useState({}); // State for selected table's orders
-  const [reprintChecked, setReprintChecked] = useState({}); // new state
+  const [selectedTableOrders, setSelectedTableOrders] = useState({});
+  const [reprintChecked, setReprintChecked] = useState({});
+    const [blockedTables, setBlockedTables] = useState(() => {
+    const saved = localStorage.getItem("blockedTables");
+    const initialValue = JSON.parse(saved);
+    return initialValue || {};
+  });
 
   const params = useParams();
   const history = useHistory();
   const auth = useContext(AuthContext);
+
+  useEffect(() => {
+    localStorage.setItem("blockedTables", JSON.stringify(blockedTables));
+  }, [blockedTables]);
 
   const onBack = () => history.push(`/places/${params.id}`);
 
@@ -118,21 +127,42 @@ const Orders = () => {
                 {place ? (
                     place.tables.sort((a, b) => a.table_number - b.table_number).map((table) => (
                         <Col key={table.id} xs={6} sm={4} md={3} lg={2} className="mb-4">
-                            <Button
-                                variant={groupedByTable[table.table_number] ? "outline-primary" : "outline-secondary"}
-                                block
-                                onClick={() => {
-                                    setSelectedTable(table.table_number);
-                                    // Find orders for the selected table
-                                    const ordersForTable = groupedByTable[table.table_number] || {};
-                                    setSelectedTableOrders(ordersForTable);
-                                    setShowModal(true);
-                                }}
-                                disabled={!groupedByTable[table.table_number]}
-                            >
-                                桌号 {table.table_number}
-                            </Button>
-                        </Col>
+                            <div className="d-flex flex-column gap-2">
+                              <Button
+                                  variant={groupedByTable[table.table_number] ? "outline-primary" : "outline-secondary"}
+                                  block
+                                  onClick={() => {
+                                      if (!blockedTables[table.table_number]) {
+                                        setSelectedTable(table.table_number);
+                                        const ordersForTable = groupedByTable[table.table_number] || {};
+                                        setSelectedTableOrders(ordersForTable);
+                                        setShowModal(true);
+                                      } else {
+                                        alert("This table is currently blocked.");
+                                      }
+                                  }}
+                                  disabled={!groupedByTable[table.table_number]}
+                              >
+                                  桌号 {table.table_number}
+                              </Button>
+                              <ToggleButton
+                                  className="mb-2"
+                                  id={`toggle-check-${table.table_number}`}
+                                  type="checkbox"
+                                  variant="outline-warning"
+                                  checked={blockedTables[table.table_number] || false}
+                                  value={table.table_number}
+                                  onChange={(e) => {
+                                    setBlockedTables((prev) => ({
+                                      ...prev,
+                                      [table.table_number]: !prev[table.table_number],
+                                    }));
+                                  }}
+                              >
+                                  {blockedTables[table.table_number] ? "Block" : "Unblock"}
+                              </ToggleButton>
+                            </div>
+                      </Col>
                     ))
                 ) : (
                     <Col>
