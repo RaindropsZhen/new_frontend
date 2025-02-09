@@ -200,6 +200,7 @@ const Orders = () => {
                       <thead>
                         <tr>
                           <th>菜品名称</th>
+                          <th>分类</th>
                           <th>数量</th>
                           <th>单价</th>
                           <th>操作</th>
@@ -223,6 +224,7 @@ const Orders = () => {
                                 {orderItems.map((item, itemIndex) => (
                                   <tr key={`${order.id}-${itemIndex}`}>
                                     <td>{item.name}</td>
+                                    <td>{item.category}</td>
                                     <td>{item.quantity}</td>
                                     <td>{item.price}</td>
                                     <td>
