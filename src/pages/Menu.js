@@ -181,6 +181,7 @@ const Menu = () => {
       [item.id]: {
         ...item,
         quantity: (shoppingCart[item.id]?.quantity || 0) + 1,
+        created_at: new Date().toLocaleString('en-US', { timeZone: 'Atlantic/Azores' }),
       }
     }));
   }
@@ -257,7 +258,6 @@ const Menu = () => {
 
   const [selectedCategoryName, setSelectedCategoryName] = useState(categories.length > 0 ? categories[0] : '');
 
-  console.log(params.table)
   const handleCategoryClick = (name) => {
     setSelectedCategoryName(name);
   };

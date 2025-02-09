@@ -8,7 +8,8 @@ import {
   } from '../apis';
 
 import AuthContext from '../contexts/AuthContext';
-
+const createdAt = new Date().toLocaleString('en-US', { timeZone: 'Atlantic/Azores' });
+console.log(createdAt)
 const renderOrderingLimitMessage = (selectedLanguage) => {
   switch (selectedLanguage) {
     case '中文':
@@ -118,6 +119,7 @@ const OrderForm = ({amount, items, color, selectedLanguage, isTakeAway, phoneNum
         arrival_time: arrivalTime,
         language: selectedLanguage,
         customer_name: customer_name,
+        created_at: createdAt,
       }, auth.token);
 
       if (json?.success && json.order) {
