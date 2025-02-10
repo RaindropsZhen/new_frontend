@@ -2,6 +2,7 @@ import { IoMdArrowBack } from "react-icons/io";
 import { Row, Col, Button, Table, Modal, ToggleButton } from "react-bootstrap";
 import { useParams, useHistory } from "react-router-dom";
 import React, { useState, useEffect, useContext, useCallback } from "react";
+import DropdownTableNumberPicker from "../components/DropdownTableNumberPicker";
 import { fetchOrders, completeOrder, reprintOrder, fetchPlace, updateTableBlockedStatus } from "../apis";
 import AuthContext from "../contexts/AuthContext";
 import MainLayout from "../layouts/MainLayout";
@@ -121,18 +122,26 @@ const Orders = () => {
                     place.tables.sort((a, b) => a.table_number - b.table_number).map((table) => (
                         <Col key={table.id} xs={6} sm={4} md={3} lg={2} className="mb-4">
                             <div className="d-flex flex-column gap-2">
-                                <Button
-                                    variant={groupedByTable[table.table_number] ? "outline-primary" : "outline-secondary"}
-                                    block
-                                    onClick={() => {
-                                    setSelectedTable(table.table_number);
-                                    const ordersForTable = groupedByTable[table.table_number] || {};
-                                    setSelectedTableOrders(ordersForTable);
-                                    setShowModal(true);
-                                  }}
-                                >
-                                  桌号 {table.table_number}
-                              </Button>
+                                <div className="d-flex align-items-stretch">
+                                    <Button
+                                        variant={groupedByTable[table.table_number] ? "outline-primary" : "outline-secondary"}
+                                        block
+                                        onClick={() => {
+                                        setSelectedTable(table.table_number);
+                                        const ordersForTable = groupedByTable[table.table_number] || {};
+                                        setSelectedTableOrders(ordersForTable);
+                                        setShowModal(true);
+                                    }}
+                                    >
+                                        {table.table_number === "77" ? "VIP" : `桌号 ${table.table_number}`}
+                                    </Button>
+                                    <DropdownTableNumberPicker
+                                        min={1}
+                                        max={40}
+                                        initialValue={1}
+                                        onChange={(value) => console.log(value)}
+                                    />
+                                </div>
                             <ToggleButton
                                 className="mb-2"
                                 id={`toggle-check-${table.table_number}`}
