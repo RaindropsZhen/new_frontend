@@ -5,6 +5,8 @@ import React, { useState, useEffect, useContext, useCallback } from "react";
 import { fetchOrders, completeOrder, reprintOrder, fetchPlace, updateTableBlockedStatus } from "../apis";
 import AuthContext from "../contexts/AuthContext";
 import MainLayout from "../layouts/MainLayout";
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Orders = () => {
   const [place, setPlace] = useState(null);
@@ -139,12 +141,18 @@ const Orders = () => {
                                 value={table.table_number}
                                 checked={table.blocked}
                                 onChange={async (e) => {
-                                  await updateTableBlockedStatus(table.id, e.currentTarget.checked, auth.token);
-                                  onFetchPlace(); // Refresh the place data after updating the blocked status
-                                }}
-                            >
-                                {table.blocked ? "解除封锁" : "封锁"}
-                            </ToggleButton>
+                                  if (e.currentTarget) {
+                                    const isChecked = e.currentTarget.checked;
+                                    if (table) {
+          await updateTableBlockedStatus(table.id, isChecked, auth.token);
+          onFetchPlace(); // Refresh the place data after updating the blocked status
+          toast.success(isChecked ? `桌号 ${table.table_number} 已封锁。` : `桌号 ${table.table_number} 已解除封锁。`);
+        }
+      }
+    }}
+>
+    {table.blocked ? "解除封锁" : "封锁"}
+</ToggleButton>
                             </div>
                         </Col>
                     ))
@@ -296,6 +304,7 @@ const Orders = () => {
                     )}
                 </Modal.Body>
             </Modal>
+            <ToastContainer />
         </MainLayout>
     );
 };
