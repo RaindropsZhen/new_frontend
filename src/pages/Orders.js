@@ -132,6 +132,7 @@ const Orders = () => {
                 {place ? (
                     place.tables.sort((a, b) => a.table_number - b.table_number).map((table) => (
                         <Col key={table.id} xs={6} sm={4} md={3} lg={2} className="mb-4">
+                            {console.log(table)}
                             <div className="d-flex flex-column gap-2">
                                 <div className="d-flex align-items-stretch">
                                     <Button
@@ -145,7 +146,7 @@ const Orders = () => {
                                         }}
                                         disabled={table.blocked}
                                     >
-                                        {table.table_number === "77" ? "VIP" : `桌号 ${table.table_number}`}
+                                        {String(table.table_number) === "77" ? "VIP" : `桌号 ${table.table_number}`}
                                     </Button>
                                     <DropdownTableNumberPicker
                                         min={1}
@@ -199,9 +200,9 @@ const Orders = () => {
             </Row>
 
             {/* Modal for displaying orders */}
-            <Modal show={showModal} onHide={() => setShowModal(false)} size="lg">
+            <Modal show={showModal} onHide={() => setShowModal(false)} size="xl">
                 <Modal.Header closeButton>
-                    <Modal.Title>桌号订单 {selectedTable}</Modal.Title>
+                    <Modal.Title>{String(selectedTable) === "77" ? "桌号订单  VIP" : `桌号订单 ${selectedTable}`}</Modal.Title>
                 </Modal.Header>
                 <Modal.Body>
                     {Object.keys(selectedTableOrders).length > 0 ? (
