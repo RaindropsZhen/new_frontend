@@ -15,13 +15,7 @@ import Orders from '../pages/Orders';
 import MenuSettings from '../pages/MenuSettings';
 import TableNumberInput from '../pages/SelectTable';
 import QRCode from '../pages/QRCode';
-
-import { useTranslation, initReactI18next } from "react-i18next";
-
-
 function App() {
-  const { t } = useTranslation();
-
     return (
         <AuthProvider>
             <BrowserRouter>
