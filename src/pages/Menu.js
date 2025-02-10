@@ -345,7 +345,11 @@ const Menu = () => {
   return (
     <Container fluid className="mt-2 mb-4">
       {isLoading ? ( // Show loading message while fetching data
-        <div className="text-center p-4">Loading...</div>
+        <div className="text-center p-4 d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
+          <div className="spinner-border text-primary" role="status">
+          </div>
+          Loading...
+        </div>
       ) : place && place.tables && place.tables.find(t => parseInt(t.table_number) === parseInt(params.table))?.blocked ? (
         <div className="text-center p-4 mt-4 bg-warning border border-warning rounded">
           <h4 className="mb-0">This table is currently unavailable. Please contact a staff member for assistance.</h4>
