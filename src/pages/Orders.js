@@ -3,7 +3,7 @@ import { Row, Col, Button, Table, Modal, ToggleButton } from "react-bootstrap";
 import { useParams, useHistory } from "react-router-dom";
 import React, { useState, useEffect, useContext, useCallback } from "react";
 import DropdownTableNumberPicker from "../components/DropdownTableNumberPicker";
-import { fetchOrders, completeOrder, reprintOrder, fetchPlace, updateTableBlockedStatus } from "../apis";
+import { fetchOrders, completeOrder, reprintOrder, fetchPlace, updateTableBlockedStatus, updateTableNumberPeople } from "../apis";
 import AuthContext from "../contexts/AuthContext";
 import MainLayout from "../layouts/MainLayout";
 import { ToastContainer, toast } from 'react-toastify';
@@ -11,6 +11,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const Orders = () => {
   const [place, setPlace] = useState(null);
+  const [selectedNumbers, setSelectedNumbers] = useState({});
   const [orders, setOrders] = useState([]);
   const currentDate = new Date();
   const [showModal, setShowModal] = useState(false);
@@ -22,60 +23,70 @@ const Orders = () => {
   const history = useHistory();
   const auth = useContext(AuthContext);
 
-    const onBack = () => history.push(`/places/${params.id}`);
+  const onBack = () => history.push(`/places/${params.id}`);
 
-  const onFetchOrders = async () => {
-    const json = await fetchOrders(params.id, auth.token);
-    if (json) {
-      setOrders(json);
-    }
-  };
+    const onFetchOrders = async () => {
+        const json = await fetchOrders(params.id, auth.token);
+        if (json) {
+            setOrders(json);
+        }
+    };
 
   const onFetchPlace = useCallback(async () => {
-    const json = await fetchPlace(params.id, auth.token);
-    if (json) {
-      setPlace(json);
-    }
-  }, [params.id, auth.token]);
+        const json = await fetchPlace(params.id, auth.token);
+        if (json) {
+            setPlace(json);
+        }
+    }, [params.id, auth.token]);
 
     useEffect(() => {
         onFetchPlace();
     }, [onFetchPlace]);
 
-  useEffect(() => {
-    const updateOrders = async () => {
-      await onFetchOrders();
-    };
-
-    const interval = setInterval(updateOrders, 2000);
-
-    return () => clearInterval(interval);
-  }, []);
-
-    const today_orders = orders?.filter((order) => {
-        const orderDate = new Date(order.created_at);
-        return (
-            orderDate.getDate() === currentDate.getDate() &&
-            orderDate.getMonth() === currentDate.getMonth() &&
-            orderDate.getFullYear() === currentDate.getFullYear()
-        );
-    });
-
-    // Group orders by table number and daily_id
-    const groupedByTable = today_orders.reduce((acc, order) => {
-        const tableNumber = order.table;
-        const dailyId = order.daily_id;
-        if (!acc[tableNumber]) {
-            acc[tableNumber] = {};
+    useEffect(() => {
+        if (place) {
+            const initialSelectedNumbers = {};
+            place.tables.forEach(table => {
+                initialSelectedNumbers[table.id] = table.number_people || 1;
+            });
+            setSelectedNumbers(initialSelectedNumbers);
         }
-        if (!acc[tableNumber][dailyId]) {
-            acc[tableNumber][dailyId] = [];
-        }
-        acc[tableNumber][dailyId].push(order);
-        return acc;
-    }, {});
+    }, [place]);
 
-    const sortedTableNumbers = Object.keys(groupedByTable).sort((a, b) => a - b);
+    useEffect(() => {
+        const updateOrders = async () => {
+            await onFetchOrders();
+        };
+
+        const interval = setInterval(updateOrders, 2000);
+
+        return () => clearInterval(interval);
+    }, []);
+
+  const today_orders = orders?.filter((order) => {
+    const orderDate = new Date(order.created_at);
+    return (
+      orderDate.getDate() === currentDate.getDate() &&
+      orderDate.getMonth() === currentDate.getMonth() &&
+      orderDate.getFullYear() === currentDate.getFullYear()
+    );
+  });
+
+  // Group orders by table number and daily_id
+  const groupedByTable = today_orders.reduce((acc, order) => {
+    const tableNumber = order.table;
+    const dailyId = order.daily_id;
+    if (!acc[tableNumber]) {
+      acc[tableNumber] = {};
+    }
+    if (!acc[tableNumber][dailyId]) {
+      acc[tableNumber][dailyId] = [];
+    }
+    acc[tableNumber][dailyId].push(order);
+    return acc;
+  }, {});
+
+  const sortedTableNumbers = Object.keys(groupedByTable).sort((a, b) => a - b);
 
     const cleanDetailString = (detail) => {
         return detail
@@ -127,19 +138,25 @@ const Orders = () => {
                                         variant={groupedByTable[table.table_number] ? "outline-primary" : "outline-secondary"}
                                         block
                                         onClick={() => {
-                                        setSelectedTable(table.table_number);
-                                        const ordersForTable = groupedByTable[table.table_number] || {};
-                                        setSelectedTableOrders(ordersForTable);
-                                        setShowModal(true);
-                                    }}
+                                            setSelectedTable(table.table_number);
+                                            const ordersForTable = groupedByTable[table.table_number] || {};
+                                            setSelectedTableOrders(ordersForTable);
+                                            setShowModal(true);
+                                        }}
                                     >
                                         {table.table_number === "77" ? "VIP" : `桌号 ${table.table_number}`}
                                     </Button>
                                     <DropdownTableNumberPicker
                                         min={1}
                                         max={40}
-                                        initialValue={1}
-                                        onChange={(value) => console.log(value)}
+                                        initialValue={table.number_people || 1}
+                                        onChange={async (value) => {
+                                          const response = await updateTableNumberPeople(table.id, value, auth.token);
+                                          if (response) {
+                                            toast.success(`已更新桌号 ${table.table_number} 的人数为 ${value}`);
+                                            onFetchPlace();
+                                          }
+                                        }}
                                     />
                                 </div>
                             <ToggleButton

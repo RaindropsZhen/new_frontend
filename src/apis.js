@@ -162,6 +162,14 @@ export function updateTableBlockedStatus(tableId, blocked, token) {
     });
 }
 
+export function updateTableNumberPeople(tableId, numberPeople, token) {
+    return request(`/api/tables/${tableId}/`, {
+        data: { number_people: numberPeople },
+        token,
+        method: "PATCH",
+    });
+}
+
 export const updateOrderStatus = async (orderIds, token) => {
     try {
       const response = await fetch('/api/orders/update-status', {
