@@ -137,12 +137,13 @@ const Orders = () => {
                                 type="checkbox"
                                 variant="outline-warning"
                                 value={table.table_number}
+                                checked={table.blocked}
                                 onChange={async (e) => {
                                   await updateTableBlockedStatus(table.id, e.currentTarget.checked, auth.token);
                                   onFetchPlace(); // Refresh the place data after updating the blocked status
                                 }}
                             >
-                                {table.blocked ? "Unblock" : "Block"}
+                                {table.blocked ? "解除封锁" : "封锁"}
                             </ToggleButton>
                             </div>
                         </Col>
