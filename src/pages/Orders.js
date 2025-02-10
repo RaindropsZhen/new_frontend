@@ -143,19 +143,28 @@ const Orders = () => {
                                             setSelectedTableOrders(ordersForTable);
                                             setShowModal(true);
                                         }}
+                                        disabled={table.blocked}
                                     >
                                         {table.table_number === "77" ? "VIP" : `桌号 ${table.table_number}`}
                                     </Button>
                                     <DropdownTableNumberPicker
                                         min={1}
                                         max={40}
-                                        initialValue={table.number_people || 1}
-                                        onChange={async (value) => {
-                                          const response = await updateTableNumberPeople(table.id, value, auth.token);
-                                          if (response) {
-                                            toast.success(`已更新桌号 ${table.table_number} 的人数为 ${value}`);
-                                            onFetchPlace();
-                                          }
+                                        initialValue={selectedNumbers[table.id] || 1}
+                                        onChange={(value) => {
+                                          setSelectedNumbers(prev => ({ ...prev, [table.id]: value }));
+                                          updateTableNumberPeople(table.id, value, auth.token)
+                                            .then(response => {
+                                              if (response) {
+                                                toast.success(
+                                                  `已更新桌号 ${table.table_number} 的人数为 ${value}`
+                                                );
+                                              }
+                                            })
+                                            .catch(error => {
+                                              console.error("Error updating table number of people:", error);
+                                              toast.error("更新人数失败");
+                                            });
                                         }}
                                     />
                                 </div>
