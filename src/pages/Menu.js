@@ -52,14 +52,7 @@ const Menu = () => {
   const [showShoppingCart, setShowShoppingCart] = useState(false);
   const params = useParams();
   const [selectedLanguage, setSelectedLanguage] = useState("en");
-  const [showLanguageModal, setShowLanguageModal] = useState(true);
-    useEffect(() => {
-    const storedLanguage = localStorage.getItem('selectedLanguage');
-    if (storedLanguage) {
-        setSelectedLanguage(storedLanguage);
-        setShowLanguageModal(false);
-    }
-  }, []);
+  const [showLanguageModal, setShowLanguageModal] = useState(false);
   const [nextOrderingTime, setNextOrderingTime] = useState(0);
   const [enableOrdering, setEnableOrdering] = useState(true);
   const [timeLeftToOrder, setTimeLeftToOrder] = useState(0); //in millisecond
@@ -114,7 +107,7 @@ const Menu = () => {
   const [agreeButtonText, setAgreeButtonText] = useState({
     'English': "I Agree",
     '中文': "我同意",
-    'Português': "Eu Concordo"
+    'Português': "Acordo"
   });
 
     useEffect(() => {
@@ -142,9 +135,9 @@ const Menu = () => {
 
   const handleLanguageSelect = (language) => {
     setSelectedLanguage(language);
-    setShowLanguageModal(false);
+    // setShowLanguageModal(false); // Don't hide - always show agreement after language select
     localStorage.setItem('selectedLanguage', language);
-    setShowAgreementModal(true);
+    setShowAgreementModal(true); // Show agreement modal after language selection
 };
 
 const location = useLocation();
@@ -262,13 +255,29 @@ const location = useLocation();
     }
   }, [place, params]);
 
+    // New useEffect for agreement modal logic
   useEffect(() => {
-    if (localStorage.getItem('agreementAccepted') !== 'true' && !localStorage.getItem('selectedLanguage')) {
+    const storedLanguage = localStorage.getItem('selectedLanguage');
+    const agreementTimestamp = localStorage.getItem('agreementTimestamp');
+    const now = Date.now();
+    const twoHours = 2 * 60 * 60 * 1000; // Two hours in milliseconds
+
+    if (storedLanguage) {
+        setSelectedLanguage(storedLanguage);
+    }
+
+    if (!storedLanguage) {
       setShowLanguageModal(true);
-    } else {
-      setShowLanguageModal(false);
+    } else if (!agreementTimestamp || (now - parseInt(agreementTimestamp, 10) > twoHours)) {
+      setShowAgreementModal(true);
     }
   }, []);
+
+  const [activeTab, setActiveTab] = useState('menu');
+
+    const handleSelectTab = (tabName) => {
+      setActiveTab(tabName);
+    };
 
   const renderCategoryName = (category) => {
     switch (selectedLanguage) {
@@ -292,10 +301,11 @@ const location = useLocation();
     setSelectedCategoryName(name);
   };
 
-  const handleAgreementAccept = () => {
-    localStorage.setItem('agreementAccepted', 'true');
+const handleAgreementAccept = () => {
+    const now = Date.now();
+    localStorage.setItem('agreementTimestamp', now.toString());
     setShowAgreementModal(false);
-  };
+};
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -310,11 +320,7 @@ const location = useLocation();
     return () => clearInterval(timer);
   }, [nextOrderingTime]);
 
-  const [activeTab, setActiveTab] = useState('menu');
 
-  const handleSelectTab = (tabName) => {
-    setActiveTab(tabName);
-  };
 
   const OrderHistory = ({ orderHistory }) => {
     // Group items by name
