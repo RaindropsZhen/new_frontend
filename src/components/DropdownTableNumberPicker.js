@@ -11,7 +11,7 @@ const StyledSelect = styled.select`
   border-radius: 0.25rem;
   background-color: #ffffff;
   color: #495057;
-  width: 100%;
+  width: 70%;
 
   &:focus {
     outline: none;

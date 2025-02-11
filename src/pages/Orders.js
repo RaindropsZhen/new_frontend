@@ -68,23 +68,31 @@ const Orders = () => {
     return (
       orderDate.getDate() === currentDate.getDate() &&
       orderDate.getMonth() === currentDate.getMonth() &&
+      orderDate.getMonth() === currentDate.getMonth() &&
       orderDate.getFullYear() === currentDate.getFullYear()
     );
   });
 
-  // Group orders by table number and daily_id
-  const groupedByTable = today_orders.reduce((acc, order) => {
-    const tableNumber = order.table;
-    const dailyId = order.daily_id;
-    if (!acc[tableNumber]) {
-      acc[tableNumber] = {};
-    }
-    if (!acc[tableNumber][dailyId]) {
-      acc[tableNumber][dailyId] = [];
-    }
-    acc[tableNumber][dailyId].push(order);
-    return acc;
-  }, {});
+    // Group orders by table number and daily_id
+    const groupedByTable = today_orders.reduce((acc, order) => {
+        const tableNumber = order.table;
+        const dailyId = order.daily_id;
+        if (!acc[tableNumber]) {
+            acc[tableNumber] = {};
+        }
+        if (!acc[tableNumber][dailyId]) {
+            acc[tableNumber][dailyId] = [];
+        }
+        acc[tableNumber][dailyId].push(order);
+        return acc;
+    }, {});
+
+    useEffect(() => {
+        if (showModal && selectedTable) {
+          const ordersForTable = groupedByTable[selectedTable] || {};
+          setSelectedTableOrders(ordersForTable);
+        }
+      }, [orders, showModal, selectedTable, groupedByTable]);
 
   const sortedTableNumbers = Object.keys(groupedByTable).sort((a, b) => a - b);
 
@@ -109,13 +117,31 @@ const Orders = () => {
             for (const orderId of orderIds) {
                 await completeOrder(orderId, statusData, auth.token);
             }
-
             await onFetchOrders();
+
             alert(`桌号 ${tableNumber}, 订单号 ${dailyId} 已标记为已完成。`);
         } catch (error) {
             console.error('Error updating order status:', error);
         }
     };
+
+  const handleCompleteAllOrders = async (tableNumber) => {
+    try {
+      // Iterate through all dailyIds for the selected table
+      for (const dailyId in groupedByTable[tableNumber]) {
+        // Iterate through all orders for the current dailyId
+        for (const order of groupedByTable[tableNumber][dailyId]) {
+          // Update the status of each order to 'completed'
+          await completeOrder(order.id, { status: 'completed' }, auth.token);
+        }
+      }
+      // Re-fetch orders to update the UI
+      await onFetchOrders();
+      alert(`桌号 ${tableNumber} 的所有订单已标记为已完成。`);
+    } catch (error) {
+      console.error('Error updating all orders to completed:', error);
+    }
+  };
 
     return (
         <MainLayout>
@@ -202,139 +228,144 @@ const Orders = () => {
             {/* Modal for displaying orders */}
             <Modal show={showModal} onHide={() => setShowModal(false)} size="xl">
                 <Modal.Header closeButton>
-                    <Modal.Title>{String(selectedTable) === "77" ? "桌号订单  VIP" : `桌号订单 ${selectedTable}`}</Modal.Title>
+                <Modal.Title>
+                    {String(selectedTable) === "77" ? "桌号订单  VIP" : `桌号订单 ${selectedTable}`}
+                  </Modal.Title>
+                  &nbsp;&nbsp;&nbsp;
+                  <Button
+                    variant="success"
+                    onClick={() => handleCompleteAllOrders(selectedTable)}
+                  >
+                    翻桌
+                  </Button>
+
                 </Modal.Header>
                 <Modal.Body>
                     {Object.keys(selectedTableOrders).length > 0 ? (
-                        Object.entries(selectedTableOrders)
+                        (() => {
+                          const filteredAndSortedOrders = Object.entries(selectedTableOrders)
                             .sort(([, ordersA], [, ordersB]) => {
-                                // Handle cases where ordersA or ordersB might be undefined or empty
-                                const timeA = ordersA[0]
-                                    ? new Date(ordersA[0].created_at).getTime()
-                                    : 0;
-                                const timeB = ordersB[0]
-                                    ? new Date(ordersB[0].created_at).getTime()
-                                    : 0;
-                                return timeB - timeA;
-                            })
-                            .map(([dailyId, orders]) => {
-                                const firstOrderTime = orders[0]
-                                    ? new Date(orders[0].created_at).toLocaleTimeString()
-                                    : "";
-                                return (
-                                    <div key={dailyId}>
-                                        <div className="d-flex justify-content-between align-items-center">
-                                            <h4>
-                                                订单号: {dailyId} - {firstOrderTime}
-                                            </h4>
-                                            <Button
-                                                variant="info"
-                                                size="lg"
-                                                onClick={async () => {
-                                                    // Prepare the order data for reprinting
-                                                    const ordersToReprint = orders.filter(
-                                                        (order) =>
-                                                            reprintChecked[selectedTable]?.[dailyId]?.[
-                                                            order.id
-                                                            ] !== false
-                                                    ); // Filter based on checkbox state
+                              const timeA = ordersA[0]?.created_at ? new Date(ordersA[0].created_at).getTime() : 0;
+                              const timeB = ordersB[0]?.created_at ? new Date(ordersB[0].created_at).getTime() : 0;
+                              return timeB - timeA;
+                            });
 
-                                                    if (ordersToReprint.length === 0) {
-                                                        alert("没有选中任何订单来重新打印。");
-                                                        return;
+                            return filteredAndSortedOrders.map(([dailyId, orders]) => {
+                            const firstOrderTime = orders[0] ? new Date(orders[0].created_at).toLocaleTimeString() : "";
+
+                            if (!orders.some((order) => order.status === "processing")) {
+                              return null; // Don't render anything if no orders are in processing state
+                            }
+
+                            return (
+                              <div key={dailyId}>
+                                <div className="d-flex justify-content-between align-items-center">
+                                  <h4>订单号: {dailyId} - {firstOrderTime}</h4>
+                                  <Button
+                                    variant="info"
+                                    
+                                    onClick={async () => {
+                                      // Prepare the order data for reprinting
+                                      const ordersToReprint = orders.filter(
+                                        (order) =>
+                                          reprintChecked[selectedTable]?.[dailyId]?.[order.id] !== false &&
+                                          order.status === "processing"
+                                      ); // Filter based on checkbox state and order status
+
+                                      if (ordersToReprint.length === 0) {
+                                        alert("没有选中任何订单来重新打印。");
+                                        return;
+                                      }
+
+                                      const orderData = {
+                                        place: params.id,
+                                        table: selectedTable,
+                                        detail: ordersToReprint.flatMap((order) =>
+                                          JSON.parse(cleanDetailString(order.detail))
+                                        ),
+                                        isTakeAway: false,
+                                        phoneNumber: "",
+                                        comment: "Reprint",
+                                        arrival_time: "",
+                                        customer_name: "",
+                                        daily_id: dailyId,
+                                      };
+                                      const result = await reprintOrder(orderData, auth.token);
+                                      if (result) {
+                                        alert("重打请求已发送！");
+                                      }
+                                    }}
+                                  >
+                                    重新打印
+                                  </Button>
+                                  <Button
+                                    variant="success"
+                                    
+                                    onClick={() => handleUpdateOrderStatus(selectedTable, dailyId)}
+                                    disabled={!orders.some((order) => order.status === "processing")}
+                                  >
+                                    完成订单
+                                  </Button>
+                                </div>
+                                <Table striped bordered hover responsive>
+                                  <thead>
+                                    <tr>
+                                      <th>菜品名称</th>
+                                      <th>分类</th>
+                                      <th>数量</th>
+                                      <th>单价</th>
+                                      <th>操作</th>
+                                    </tr>
+                                  </thead>
+                                  <tbody>
+                                    {orders
+                                      .filter((order) => order.status === "processing")
+                                      .sort((a, b) => new Date(b.created_at) - new Date(a.created_at))
+                                      .map((order, orderIndex) => {
+                                        const orderItems = Array.isArray(JSON.parse(cleanDetailString(order.detail)))
+                                          ? JSON.parse(cleanDetailString(order.detail))
+                                          : [];
+
+                                        return (
+                                          <React.Fragment key={order.id}>
+                                            {orderItems.map((item, itemIndex) => (
+                                              <tr key={`${order.id}-${itemIndex}`}>
+                                                <td>{item.name}</td>
+                                                <td>{categoryMap[item.category]}</td>
+                                                <td>{item.quantity}</td>
+                                                <td>{item.price}</td>
+                                                <td>
+                                                  <input
+                                                    type="checkbox"
+                                                    style={{ width: "20px", height: "20px" }}
+                                                    checked={
+                                                      reprintChecked[selectedTable]?.[dailyId]?.[order.id] !== false
                                                     }
-
-                                                    const orderData = {
-                                                        place: params.id,
-                                                        table: selectedTable,
-                                                        detail: ordersToReprint.flatMap((order) =>
-                                                            JSON.parse(cleanDetailString(order.detail))
-                                                        ),
-                                                        isTakeAway: false,
-                                                        phoneNumber: "",
-                                                        comment: "Reprint",
-                                                        arrival_time: "",
-                                                        customer_name: "",
-                                                        daily_id: dailyId,
-                                                    };
-                                                    const result = await reprintOrder(
-                                                        orderData,
-                                                        auth.token
-                                                    );
-                                                    if (result) {
-                                                        alert("重打请求已发送！");
-                                                    }
-                                                }}
-                                            >
-                                                重新打印
-                                            </Button>
-                                        </div>
-                                        <Table striped bordered hover responsive>
-                                            <thead>
-                                                <tr>
-                                                    <th>菜品名称</th>
-                                                    <th>分类</th>
-                                                    <th>数量</th>
-                                                    <th>单价</th>
-                                                    <th>操作</th>
-                                                </tr>
-                                            </thead>
-                                            <tbody>
-                                                {orders
-                                                    .sort(
-                                                        (a, b) =>
-                                                            new Date(b.created_at) - new Date(a.created_at)
-                                                    )
-                                                    .map((order, orderIndex) => {
-                                                        const orderItems = Array.isArray(
-                                                            JSON.parse(cleanDetailString(order.detail))
-                                                        )
-                                                            ? JSON.parse(cleanDetailString(order.detail))
-                                                            : [];
-
-                                                        return (
-                                                            <React.Fragment key={order.id}>
-                                                                {orderItems.map((item, itemIndex) => (
-                                                                    <tr key={`${order.id}-${itemIndex}`}>
-                                                                        <td>{item.name}</td>
-                                                                        <td>{categoryMap[item.category]}</td>
-                                                                        <td>{item.quantity}</td>
-                                                                        <td>{item.price}</td>
-                                                                        <td>
-                                                                            <input
-                                                                                type="checkbox"
-                                                                                style={{ width: "20px", height: "20px" }}
-                                                                                checked={
-                                                                                    reprintChecked[selectedTable]?.[
-                                                                                    dailyId
-                                                                                    ]?.[order.id] !== false
-                                                                                }
-                                                                                onChange={(e) => {
-                                                                                    setReprintChecked((prev) => ({
-                                                                                        ...prev,
-                                                                                        [selectedTable]: {
-                                                                                            ...(prev[selectedTable] || {}),
-                                                                                            [dailyId]: {
-                                                                                                ...(prev[selectedTable]?.[
-                                                                                                dailyId
-                                                                                                ] || {}),
-                                                                                                [order.id]: e.target.checked,
-                                                                                            },
-                                                                                        },
-                                                                                    }));
-                                                                                }}
-                                                                            />
-                                                                        </td>
-                                                                    </tr>
-                                                                ))}
-                                                            </React.Fragment>
-                                                        );
-                                                    })}
-                                            </tbody>
-                                        </Table>
-                                    </div>
-                                );
-                            })
+                                                    onChange={(e) => {
+                                                      setReprintChecked((prev) => ({
+                                                        ...prev,
+                                                        [selectedTable]: {
+                                                          ...(prev[selectedTable] || {}),
+                                                          [dailyId]: {
+                                                            ...(prev[selectedTable]?.[dailyId] || {}),
+                                                            [order.id]: e.target.checked,
+                                                          },
+                                                        },
+                                                      }));
+                                                    }}
+                                                  />
+                                                </td>
+                                              </tr>
+                                            ))}
+                                          </React.Fragment>
+                                        );
+                                      })}
+                                  </tbody>
+                                </Table>
+                              </div>
+                            );
+                          });
+                        })()
                     ) : (
                         <p>该桌还没有订单。</p>
                     )}
