@@ -17,7 +17,7 @@ const renderMenuItemName = (item, selectedLanguage) => {
 const ShoppingCart = ({ selectedLanguage, items, onAdd, onRemove, color, timeLeftToOrder, enable_ordering, onOrderSuccess }) => {
   const location = useLocation();
   const isTakeAway = location.pathname.includes('takeaway');
-  const [phoneNumber, setPhoneNumber] = useState('');
+  const [phoneNumber, setPhoneNumber] = useState(0);
   const [arrivalTime, setArrivalTime] = useState(null);
   const [name, setName] = useState('');
   const [allcomment, setAllComment] = useState({});
