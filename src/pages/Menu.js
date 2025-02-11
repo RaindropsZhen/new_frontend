@@ -135,7 +135,7 @@ const Menu = () => {
 
   const handleLanguageSelect = (language) => {
     setSelectedLanguage(language);
-    // setShowLanguageModal(false); // Don't hide - always show agreement after language select
+    setShowLanguageModal(false); // Hide language modal after selection
     localStorage.setItem('selectedLanguage', language);
     setShowAgreementModal(true); // Show agreement modal after language selection
 };
