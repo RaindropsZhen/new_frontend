@@ -68,23 +68,31 @@ const Orders = () => {
     return (
       orderDate.getDate() === currentDate.getDate() &&
       orderDate.getMonth() === currentDate.getMonth() &&
+      orderDate.getMonth() === currentDate.getMonth() &&
       orderDate.getFullYear() === currentDate.getFullYear()
     );
   });
 
-  // Group orders by table number and daily_id
-  const groupedByTable = today_orders.reduce((acc, order) => {
-    const tableNumber = order.table;
-    const dailyId = order.daily_id;
-    if (!acc[tableNumber]) {
-      acc[tableNumber] = {};
-    }
-    if (!acc[tableNumber][dailyId]) {
-      acc[tableNumber][dailyId] = [];
-    }
-    acc[tableNumber][dailyId].push(order);
-    return acc;
-  }, {});
+    // Group orders by table number and daily_id
+    const groupedByTable = today_orders.reduce((acc, order) => {
+        const tableNumber = order.table;
+        const dailyId = order.daily_id;
+        if (!acc[tableNumber]) {
+            acc[tableNumber] = {};
+        }
+        if (!acc[tableNumber][dailyId]) {
+            acc[tableNumber][dailyId] = [];
+        }
+        acc[tableNumber][dailyId].push(order);
+        return acc;
+    }, {});
+
+    useEffect(() => {
+        if (showModal && selectedTable) {
+          const ordersForTable = groupedByTable[selectedTable] || {};
+          setSelectedTableOrders(ordersForTable);
+        }
+      }, [orders, showModal, selectedTable, groupedByTable]);
 
   const sortedTableNumbers = Object.keys(groupedByTable).sort((a, b) => a - b);
 
@@ -255,7 +263,7 @@ const Orders = () => {
                                   <h4>订单号: {dailyId} - {firstOrderTime}</h4>
                                   <Button
                                     variant="info"
-                                    size="lg"
+                                    
                                     onClick={async () => {
                                       // Prepare the order data for reprinting
                                       const ordersToReprint = orders.filter(
@@ -289,10 +297,10 @@ const Orders = () => {
                                     }}
                                   >
                                     重新打印
-                                  </Button>processing
+                                  </Button>
                                   <Button
                                     variant="success"
-                                    size="lg"
+                                    
                                     onClick={() => handleUpdateOrderStatus(selectedTable, dailyId)}
                                     disabled={!orders.some((order) => order.status === "processing")}
                                   >
