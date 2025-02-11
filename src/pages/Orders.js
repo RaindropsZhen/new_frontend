@@ -132,7 +132,6 @@ const Orders = () => {
                 {place ? (
                     place.tables.sort((a, b) => a.table_number - b.table_number).map((table) => (
                         <Col key={table.id} xs={6} sm={4} md={3} lg={2} className="mb-4">
-                            {console.log(table)}
                             <div className="d-flex flex-column gap-2">
                                 <div className="d-flex align-items-stretch">
                                     <Button

@@ -68,8 +68,7 @@ const PlaceForm = ({ onDone, place_length}) => {
       dinne_time_end: selectedDinnerTimeFinish
     },
     auth.token);
-    console.log(place_json)
-    console.log(place_json.id)
+
     const categoryNames = ["前菜", "正餐","饮料", "甜品"]; // Array of category names
     
 
@@ -82,7 +81,6 @@ const PlaceForm = ({ onDone, place_length}) => {
             },
             auth.token
         );
-        console.log(cat_json)
     }
 
       if (place_json) {

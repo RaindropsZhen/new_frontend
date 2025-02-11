@@ -9,7 +9,6 @@ import {
 
 import AuthContext from '../contexts/AuthContext';
 const createdAt = new Date().toLocaleString('en-US', { timeZone: 'Atlantic/Azores' });
-console.log(createdAt)
 const renderOrderingLimitMessage = (selectedLanguage) => {
   switch (selectedLanguage) {
     case '中文':
