@@ -18,7 +18,7 @@ import ShoppingCart from '../components/ShoppingCart';
 const languages = [
   { value: "en", label: "English" },
   { value: "pt", label: "Português" },
-  { "value": 'cn', "label": '中文' }
+  { value: 'cn', label: '中文' }
 ];
 const takeawayBoxFee = 8.9
 const StickyFilterContainer = styled.div`
@@ -484,7 +484,7 @@ const handleAgreementAccept = () => {
                 className="custom-dropdown"
               >
                {languages.map((language) => (
-                  <option key={language.value} value={language.value}>
+                  <option key={language.label} value={language.label}>
                     {language.label}
                   </option>
                 ))}
