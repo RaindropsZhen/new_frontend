@@ -1,6 +1,8 @@
 // eslint-disable-next-line
 import { Container, Row, Col, Button, Modal } from 'react-bootstrap';
 import { useParams, useLocation } from 'react-router-dom';
+import { ToastContainer, toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
 import { fetchPlace } from '../apis';
 import styled from 'styled-components';
@@ -180,6 +182,47 @@ const Menu = () => {
   }, [params.id]);
 
   const onAddItemtoShoppingCart = (item) => {
+    const tableNumber = parseInt(params.table);
+    const currentTable = place.tables.find(
+      (table) => parseInt(table.table_number) === tableNumber
+    );
+    const numberOfPeople = currentTable ? currentTable.number_people : 1; // Default to 1 if not found
+    const allowedItems = 10
+    const maxAllowedItems = numberOfPeople * allowedItems;
+
+    const renderToastMessage = (language, maxItems) => {
+      switch (language) {
+        case '中文':
+          return (
+            <>
+              每人每次最多可点 {allowedItems} 个菜品。<br />
+              您最多可以订购 {maxItems} 个菜品。
+            </>
+          );
+        case 'Português':
+          return (
+            <>
+              Cada pessoa pode pedir {allowedItems} itens de cada vez. <br />
+              Podem pedir até {maxItems} itens.
+            </>
+          );
+        default: // English
+          return (
+            <>
+              Each person can only order {allowedItems} items at a time. <br />
+              You can order up to {maxItems} items.
+            </>
+          );
+      }
+    };
+    
+    
+
+    if (totalQuantity + 1 > maxAllowedItems) {
+      toast.warn(renderToastMessage(selectedLanguage, maxAllowedItems));
+      return;
+    }
+
     setShoppingCart((prevShoppingCart) => ({
       ...shoppingCart,
       [item.id]: {
@@ -343,6 +386,8 @@ const Menu = () => {
 };
 
   return (
+    <>
+    <ToastContainer />
     <Container fluid className="mt-2 mb-4">
       {isLoading ? ( // Show loading message while fetching data
         <div className="text-center p-4 d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
@@ -489,6 +534,7 @@ const Menu = () => {
         </>
       )}
     </Container>
+    </>
   );
 };
 
