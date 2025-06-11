@@ -35,6 +35,21 @@ const useEditMenuItemFormLogic = (initialItem = {}, place, onDoneCallback) => {
   };
 
   const onUpdateMenuItem = async () => {
+    if (price === "" || price === null || typeof price === 'undefined') {
+      toast.error(t("editMenuItemForm.placeholder.enterPrice")); // Or a more generic "Price is required"
+      return;
+    }
+    const numericPrice = parseFloat(price);
+    if (isNaN(numericPrice) || numericPrice < 0) {
+      toast.error(t("menuSettings.toast.priceMustBePositive", "价格必须为大于或等于0的数字。")); // Add this key to translation
+      return;
+    }
+    if (!itemName.default || itemName.default.trim() === "") {
+      toast.error(t("menuSettings.toast.itemNameEmpty", "菜品名称不能为空。")); // Add this key to translation
+      return;
+    }
+
+
     // REMOVED Cloudinary upload:
     // let image_name = itemName.default;
     // let folder_name = auth.token + '/' + 'category_id_' + category;

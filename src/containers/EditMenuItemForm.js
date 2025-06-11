@@ -98,6 +98,8 @@ const EditMenuItemForm = ({ place, onDone, item = {} }) => {
               placeholder={t('editMenuItemForm.placeholder.enterPrice')}
               value={price}
               onChange={(e) => setPrice(e.target.value)}
+              min="0" // Prevent negative numbers at browser level
+              step="0.01" // Allow decimal prices
             />
           </Form.Group>
           <Form.Group>

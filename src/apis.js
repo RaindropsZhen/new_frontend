@@ -117,6 +117,10 @@ export function fetchPlace(id, token) {
     return request(`/api/places/${id}`, { token });
 }
 
+export function updateCategory(id, data, token) {
+    return request(`/api/categories/${id}`, { data, token, method: "PATCH" });
+}
+
 export function addCategory(data, token) {
     return request("/api/create_category_intent/", { data, token, method: "POST" });
 }
