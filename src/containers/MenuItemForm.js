@@ -1,5 +1,6 @@
 import React, { useState, useContext, useRef,useEffect } from 'react';
 import { Button, Form, Popover, Overlay } from 'react-bootstrap';
+import { useTranslation } from 'react-i18next'; // Import useTranslation
 import { RiPlayListAddFill } from 'react-icons/ri';
 import { toast } from 'react-toastify';
 import { 
@@ -44,6 +45,7 @@ const MenuItemForm = ({ place, onDone, item = {} }) => {
   const target = useRef(null);
 
   const auth = useContext(AuthContext);
+  const { t } = useTranslation(); // Initialize useTranslation
 
   const onAddCategory = async () => {
     setLoading(true)
@@ -68,30 +70,54 @@ const MenuItemForm = ({ place, onDone, item = {} }) => {
 
   const onAddMenuItems = async () => {
     
-    if (!allFieldsFilled()) {
-      toast.error("请填写所有菜品的信息");
-      return;
+    // Temporarily commenting out allFieldsFilled as its definition might be incomplete or too strict for now
+    // if (!allFieldsFilled()) { 
+    //   toast.error("请填写所有菜品的信息");
+    //   return;
+    // }
+    if (!name || name.trim() === "") {
+        toast.error("菜品名称为必填项。");
+        return;
+    }
+    if (price === "" || price === null || typeof price === 'undefined') {
+        toast.error("价格为必填项。");
+        return;
+    }
+    const numericPrice = parseFloat(price);
+    if (isNaN(numericPrice) || numericPrice < 0) {
+        toast.error("价格必须为大于或等于0的数字。");
+        return;
+    }
+    if (!category) {
+        toast.error("请选择一个菜品分类。");
+        return;
     }
 
+
     setLoading(true)
-    let folder_name = auth.token + '/' + 'category_id_' + category;
-    const image_json = await uploadImage(image, folder_name)
+    
+    let finalNameToPrint = name_to_print.trim();
+    if (!finalNameToPrint && name.trim()) {
+      finalNameToPrint = name.trim();
+    }
 
-    const json = await addMenuItems({
-      place: place.id,
-      category,
-      name,
-      price,
-      description,
-      image: image_json.url,
-      is_available: isAvailable,
-      name_to_print: name_to_print,
-      ordering_timing: orderingTiming
+    const formData = new FormData();
+    formData.append('place', place.id);
+    formData.append('category', category);
+    formData.append('name', name);
+    formData.append('price', price);
+    formData.append('description', description);
+    if (image instanceof File) { // Ensure image is a File object before appending
+      formData.append('image', image);
+    }
+    formData.append('is_available', isAvailable);
+    formData.append('name_to_print', finalNameToPrint);
+    formData.append('ordering_timing', orderingTiming);
 
-    }, auth.token);
+    const responseJson = await addMenuItems(formData, auth.token); // Renamed to responseJson for clarity
 
-    if (json) {
-      toast(`成功创建菜品${json.menu_item_name}`, { type: "success" });
+    if (responseJson && responseJson.success) { // Check for success field
+      toast(`成功创建菜品 ${responseJson.menu_item_name || name}`, { type: "success" }); // Fallback to name if menu_item_name is undefined
       setName("");
       setPrice("");
       setCategoryName("");
@@ -115,7 +141,36 @@ const MenuItemForm = ({ place, onDone, item = {} }) => {
     } catch (error) {
       console.error('Error loading selected languages from local storage:', error);
     }
-  }, []); // The empty dependency array ensures this effect runs once on mount
+  }, []); 
+
+  const formatTime = (timeInSeconds) => {
+    if (timeInSeconds === null || typeof timeInSeconds === 'undefined' || isNaN(timeInSeconds)) {
+      return t('menuSettings.timeNotSet', '--:--'); // Use t() for placeholder too
+    }
+    const totalMinutes = Math.floor(timeInSeconds / 60);
+    const hours = Math.floor(totalMinutes / 60);
+    const minutes = totalMinutes % 60;
+    
+    const formattedHours = String(hours).padStart(2, '0');
+    const formattedMinutes = String(minutes).padStart(2, '0');
+    
+    return `${formattedHours}:${formattedMinutes}`;
+  };
+  
+  // Check if at least one of the time values is a number to attempt formatting
+  const lunchStartTime = place?.lunch_time_start;
+  const lunchEndTime = place?.lunch_time_end;
+  const dinnerStartTime = place?.dinne_time_start;
+  const dinnerEndTime = place?.dinne_time_end;
+
+  const lunchTimeDisplay = (typeof lunchStartTime === 'number' && typeof lunchEndTime === 'number')
+    ? `(${formatTime(lunchStartTime)} - ${formatTime(lunchEndTime)})`
+    : t('menuSettings.timeNotSet', '(未设置)');
+  
+  const dinnerTimeDisplay = (typeof dinnerStartTime === 'number' && typeof dinnerEndTime === 'number')
+    ? `(${formatTime(dinnerStartTime)} - ${formatTime(dinnerEndTime)})`
+    : t('menuSettings.timeNotSet', '(未设置)');
+
   return (
     <Form>
       {/* CATEGORIES FORM */}
@@ -215,6 +270,8 @@ const MenuItemForm = ({ place, onDone, item = {} }) => {
               placeholder="输入价格"
               value={price}
               onChange={(e) => setPrice(e.target.value)}
+              min="0" // Prevent negative numbers at browser level
+              step="0.01" // Allow decimal prices
             />
           </Form.Group>
           <Form.Group>
@@ -255,14 +312,14 @@ const MenuItemForm = ({ place, onDone, item = {} }) => {
         />
         <Form.Check
           type="checkbox"
-          label="午饭"
+          label={<>午饭 <span style={{fontSize: '0.8em', color: 'gray'}}>{lunchTimeDisplay}</span></>}
           checked={orderingTiming === "lunch"}
           disabled={!isAvailable}
           onChange={() => handleOrderingTimingChange("lunch")}
         />
         <Form.Check
           type="checkbox"
-          label="晚饭"
+          label={<>晚饭 <span style={{fontSize: '0.8em', color: 'gray'}}>{dinnerTimeDisplay}</span></>}
           checked={orderingTiming === "dinner"}
           disabled={!isAvailable}
           onChange={() => handleOrderingTimingChange("dinner")}

@@ -66,6 +66,19 @@ const Places = () => {
         onFetchPlaces();
       }, []);
 
+    // Console logs for debugging image URLs
+    console.log("[Places.js] REACT_APP_API_URL:", process.env.REACT_APP_API_URL);
+    if (places && places.length > 0) {
+      places.forEach(place => {
+        if (place.image) {
+          console.log(`[Places.js] Place: ${place.name}, Original image path: ${place.image}, Constructed URL: ${process.env.REACT_APP_API_URL + place.image}`);
+        } else {
+          console.log(`[Places.js] Place: ${place.name} has no image path.`);
+        }
+      });
+    } else {
+      console.log("[Places.js] No places data to log image URLs for, or places array is empty.");
+    }
 
     return (
     <MainLayout style={{ backgroundColor: 'white' }}>
@@ -77,14 +90,32 @@ const Places = () => {
         </Modal>
 
         <Row >
-          {places.map((place) => (
+          {places.map((place) => {
+            let imageUrl = place.image; // Default to using place.image directly if it's a full URL
+
+            if (place.image && !place.image.startsWith('http')) {
+              // If place.image is not a full URL (doesn't start with http), then construct it.
+              // This primarily targets relative paths like /media/place_images/image.png
+              const apiURL = (process.env.REACT_APP_API_URL || '').replace(/\/$/, ''); // Remove trailing slash from API_URL
+              const imagePath = place.image.startsWith('/') ? place.image.substring(1) : place.image; // Remove leading slash if present
+              imageUrl = `${apiURL}/${imagePath}`;
+            }
+            
+            // The console.log for the "Constructed URL" in the previous version of the file 
+            // was using (process.env.REACT_APP_API_URL + place.image) which might be different 
+            // from the imageUrl logic here if place.image was already a full URL.
+            // For more accurate debugging of what this map function uses:
+            // console.log(`[Places.js] Rendering Place: ${place.name}, Using image URL: ${imageUrl}`);
+
+            return (
               <Col key={place.id} lg={4}>
                 <Place onClick={() => history.push(`/places/${place.id}`)}>
-                    <div style={{ backgroundImage: `url(${place.image})` }}></div>
+                    <div style={{ backgroundImage: `url(${imageUrl})` }}></div>
                     <p>{place.name}</p>
                 </Place>
               </Col>
-          ))}
+            );
+          })}
           <Col lg={4}>
             <AddPlaceButton onClick={onShow}>添加餐厅</AddPlaceButton>
           </Col>

@@ -1,5 +1,6 @@
 import { AiOutlineQrcode } from 'react-icons/ai';
 import { RiFileList3Line } from 'react-icons/ri';
+import { IoSettingsOutline } from 'react-icons/io5'; // 新增图标导入
 import { Row, Col, Button} from 'react-bootstrap';
 import { useParams, useHistory } from 'react-router-dom';
 import React, { useEffect, useState, useContext } from 'react';
@@ -63,6 +64,11 @@ const Place = () => {
         <Col xs={12} md={6} lg={6}>
           <div className="mb-4">
             <ButtonGrid>
+              <Button variant="link" onClick={() => { history.push(`/places/${params.id}/settings`) }}>
+                <IoSettingsOutline size={50} style={{ color: '#444', lineHeight: 0, padding: 0, margin: 0 }} />
+                <div style={{ fontSize: '24px', marginTop: '5px' }}>菜单管理</div>
+              </Button>
+
               <Button variant="link" onClick={() => { history.push(`/${params.id}/select_table/`) }}>
                 <AiOutlineQrcode size={50} style={{ color: '#444', lineHeight: 0, padding: 0, margin: 0 }} />
                 <div style={{ fontSize: '24px', marginTop: '5px' }}>点单链接</div>
@@ -78,10 +84,10 @@ const Place = () => {
                 <div style={{ fontSize: '24px', marginTop: '5px' }}>外卖订单</div>
               </Button>
 
-              <Button variant="link" >
+              {/* <Button variant="link" >
                 <TiPrinter size={50} style={{ color: '#444', lineHeight: 0, padding: 0, margin: 0 }} />
                 <div style={{ fontSize: '24px', marginTop: '5px' }}>打印机</div>
-              </Button>
+              </Button> */}
             </ButtonGrid>
           </div>
         </Col>

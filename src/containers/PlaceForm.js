@@ -51,23 +51,25 @@ const PlaceForm = ({ onDone, place_length}) => {
     const onClick = async () => {
       setLoading(true);
 
-      let image_name = "placeId" + "_" + (place_length + 1) ;
-      let folder_name = auth.token;
+      // REMOVED Cloudinary upload:
+      // let image_name = "placeId" + "_" + (place_length + 1) ;
+      // let folder_name = auth.token;
+      // const image_json = await uploadImage(image, folder_name,image_name)
 
-      const image_json = await uploadImage(image, folder_name,image_name)
-
-      const place_json = await addPlace({ 
-      name: name,
-      place_type:placeType,
-      image: image_json.url,
-      number_of_tables: tableNumber,
-      ordering_limit_interval: interval,
-      lunch_time_start: selectedLunchTimeStart,
-      lunch_time_end: selectedLunchTimeFinish,
-      dinne_time_start : selectedDinnerTimeStart,
-      dinne_time_end: selectedDinnerTimeFinish
-    },
-    auth.token);
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('place_type', placeType);
+      if (image) { // Ensure image is not null/undefined before appending
+        formData.append('image', image);
+      }
+      formData.append('number_of_tables', tableNumber);
+      formData.append('ordering_limit_interval', interval);
+      formData.append('lunch_time_start', selectedLunchTimeStart);
+      formData.append('lunch_time_end', selectedLunchTimeFinish);
+      formData.append('dinne_time_start', selectedDinnerTimeStart);
+      formData.append('dinne_time_end', selectedDinnerTimeFinish);
+      
+      const place_json = await addPlace(formData, auth.token);
 
     const categoryNames = ["前菜", "正餐","饮料", "甜品"]; // Array of category names
     
