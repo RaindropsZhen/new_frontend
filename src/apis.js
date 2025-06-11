@@ -1,13 +1,23 @@
 import { toast } from 'react-toastify';
 
 function request(path,{ data = null, token = null, method = "GET"}) {
+    const headers = {
+      Authorization: token ? `Token ${token}` : "",
+    };
+    let body = null;
+
+    if (data instanceof FormData) {
+      // For FormData, don't set Content-Type, browser will do it with boundary
+      body = data;
+    } else if (method !== "GET" && method !== "DELETE" && data !== null) {
+      headers["Content-Type"] = "application/json";
+      body = JSON.stringify(data);
+    }
+
     return fetch(path, {
         method,
-        headers: {
-          Authorization: token ? `Token ${token}` : "",
-          "Content-Type": "application/json",
-        },
-        body: method !== "GET" && method !== "DELETE" ? JSON.stringify(data) : null,
+        headers,
+        body,
       })
     .then((response) => {
         // If it is success
@@ -67,31 +77,32 @@ export function addPlace(data, token) {
     return request("/api/places/", { data, token, method: "POST" });
   }
 
-function generateRandomId() {
-    // You can use any method you prefer to generate a random ID.
-    // Here's an example using a timestamp and a random number.
-    const timestamp = new Date().getTime();
-    const randomNum = Math.floor(Math.random() * 1000000); // Adjust as needed
-    return `${timestamp}_${randomNum}`;
-}
-
-export function uploadImage(image, folder_name) {
-    const formData = new FormData();
-    formData.append("file", image);
-    formData.append("upload_preset", "qrmenu_photos");
-    //formData.append("overwrite", "true");
-
-    const randomId = generateRandomId();
-    const publicId = `${folder_name}/${randomId}`;
-    formData.append("public_id", publicId);    
-    
-    return fetch("https://api.cloudinary.com/v1_1/qrmenudemo/image/upload", {
-        method: "POST",
-        body: formData,
-    }).then((response) => {
-        return response.json();
-});
-}
+// Removed Cloudinary-specific uploadImage function
+// function generateRandomId() {
+//     // You can use any method you prefer to generate a random ID.
+//     // Here's an example using a timestamp and a random number.
+//     const timestamp = new Date().getTime();
+//     const randomNum = Math.floor(Math.random() * 1000000); // Adjust as needed
+//     return `${timestamp}_${randomNum}`;
+// }
+//
+// export function uploadImage(image, folder_name) {
+//     const formData = new FormData();
+//     formData.append("file", image);
+//     formData.append("upload_preset", "qrmenu_photos");
+//     //formData.append("overwrite", "true");
+//
+//     const randomId = generateRandomId();
+//     const publicId = `${folder_name}/${randomId}`;
+//     formData.append("public_id", publicId);    
+//    
+//     return fetch("https://api.cloudinary.com/v1_1/qrmenudemo/image/upload", {
+//         method: "POST",
+//         body: formData,
+//     }).then((response) => {
+//         return response.json();
+// });
+// }
 // export function deleteImage(data) {
 //     return request("/api/delete_image/",{data,token:null, method:'DELETE'})
 

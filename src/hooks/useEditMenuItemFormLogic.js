@@ -35,29 +35,35 @@ const useEditMenuItemFormLogic = (initialItem = {}, place, onDoneCallback) => {
   };
 
   const onUpdateMenuItem = async () => {
-    let image_name = itemName.default;
-    let folder_name = auth.token + '/' + 'category_id_' + category;
-    const image_json = await uploadImage(image, folder_name, image_name);
+    // REMOVED Cloudinary upload:
+    // let image_name = itemName.default;
+    // let folder_name = auth.token + '/' + 'category_id_' + category;
+    // const image_json = await uploadImage(image, folder_name, image_name);
+
+    const formData = new FormData();
+    formData.append('place', place.id);
+    formData.append('category', category); // Assuming category is just an ID
+    formData.append('name', itemName.default);
+    formData.append('name_en', itemName.en);
+    formData.append('name_es', itemName.es);
+    formData.append('name_pt', itemName.pt);
+    formData.append('price', price);
+    formData.append('description', itemDescription.default);
+    formData.append('description_en', itemDescription.en);
+    formData.append('description_es', itemDescription.es);
+    formData.append('description_pt', itemDescription.pt);
+    formData.append('name_to_print', name_to_print);
+    formData.append('is_available', isAvailable);
+    formData.append('ordering_timing', orderingTiming);
+
+    // Only append image if it's a new File object, not the old URL string
+    if (image instanceof File) {
+      formData.append('image', image);
+    }
 
     const json = await updateMenuItem(
       initialItem.id,
-      {
-        place: place.id,
-        category,
-        name: itemName.default,
-        name_en: itemName.en,
-        name_es: itemName.es,
-        name_pt: itemName.pt,
-        price,
-        description: itemDescription.default,
-        description_en: itemDescription.en,
-        description_es: itemDescription.es,
-        description_pt: itemDescription.pt,
-        image: image_json.url,
-        name_to_print: name_to_print,
-        is_available: isAvailable,
-        ordering_timing: orderingTiming,
-      },
+      formData, // Pass FormData directly
       auth.token
     );
 

@@ -46,31 +46,37 @@ const EditPlace = ({place}) => {
     const onClick = async () => {
       setLoading(true);
 
-      let image_name = "placeId" + "_" + (0 + 1) ;
-      let folder_name = auth.token;
+      // REMOVED Cloudinary upload:
+      // let image_name = "placeId" + "_" + (0 + 1) ;
+      // let folder_name = auth.token;
+      // const image_json = await uploadImage(image, folder_name,image_name)
 
-      const image_json = await uploadImage(image, folder_name,image_name)
+      const formData = new FormData();
+      formData.append('name', name);
+      formData.append('place_type', placeType);
+      formData.append('number_of_tables', tableNumber);
+      formData.append('ordering_limit_interval', interval);
+      formData.append('lunch_time_start', selectedLunchTimeStart);
+      formData.append('lunch_time_end', selectedLunchTimeFinish);
+      formData.append('dinne_time_start', selectedDinnerTimeStart);
+      formData.append('dinne_time_end', selectedDinnerTimeFinish);
 
-      const update_json = await onUpdatePlace({ 
-      name: name,
-      place_type:placeType,
-      image: image_json.url,
-      number_of_tables: tableNumber,
-      ordering_limit_interval: interval,
-      lunch_time_start: selectedLunchTimeStart,
-      lunch_time_end: selectedLunchTimeFinish,
-      dinne_time_start : selectedDinnerTimeStart,
-      dinne_time_end: selectedDinnerTimeFinish
-      },
-      auth.token);  
+      // Only append image if it's a new File object, not the old URL string
+      if (image instanceof File) {
+        formData.append('image', image);
+      }
+      
+      await onUpdatePlace(formData);  
 
       setLoading(false);
+      toast.success("餐厅信息已更新!", { autoClose: 2000 });
   }
-    const onUpdatePlace = (data) => {
-      updatePlace(
+    const onUpdatePlace = (formData) => { // data is now formData
+      return updatePlace( // Added return here to await its completion
         place.id, 
-        data,
-        auth.token)
+        formData, // Pass formData directly
+        auth.token
+      );
     }
 
     return (

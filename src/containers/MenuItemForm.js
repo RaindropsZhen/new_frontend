@@ -74,21 +74,24 @@ const MenuItemForm = ({ place, onDone, item = {} }) => {
     }
 
     setLoading(true)
-    let folder_name = auth.token + '/' + 'category_id_' + category;
-    const image_json = await uploadImage(image, folder_name)
+    // REMOVED Cloudinary upload:
+    // let folder_name = auth.token + '/' + 'category_id_' + category;
+    // const image_json = await uploadImage(image, folder_name)
 
-    const json = await addMenuItems({
-      place: place.id,
-      category,
-      name,
-      price,
-      description,
-      image: image_json.url,
-      is_available: isAvailable,
-      name_to_print: name_to_print,
-      ordering_timing: orderingTiming
+    const formData = new FormData();
+    formData.append('place', place.id);
+    formData.append('category', category);
+    formData.append('name', name);
+    formData.append('price', price);
+    formData.append('description', description);
+    if (image) { // Ensure image is not null/undefined before appending
+      formData.append('image', image);
+    }
+    formData.append('is_available', isAvailable);
+    formData.append('name_to_print', name_to_print);
+    formData.append('ordering_timing', orderingTiming);
 
-    }, auth.token);
+    const json = await addMenuItems(formData, auth.token);
 
     if (json) {
       toast(`成功创建菜品${json.menu_item_name}`, { type: "success" });
