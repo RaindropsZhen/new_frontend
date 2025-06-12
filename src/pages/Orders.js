@@ -1,9 +1,10 @@
 import { IoMdArrowBack } from "react-icons/io";
+import { FiLink } from "react-icons/fi"; // Import Link icon
 import { Row, Col, Button, Table, Modal, ToggleButton } from "react-bootstrap";
 import { useParams, useHistory } from "react-router-dom";
 import React, { useState, useEffect, useContext, useCallback } from "react";
-import DropdownTableNumberPicker from "../components/DropdownTableNumberPicker";
-import { fetchOrders, completeOrder, reprintOrder, fetchPlace, updateTableBlockedStatus, updateTableNumberPeople } from "../apis";
+// import DropdownTableNumberPicker from "../components/DropdownTableNumberPicker"; // Commented out
+import { fetchOrders, completeOrder, reprintOrder, fetchPlace, updateTableBlockedStatus } from "../apis"; // Removed updateTableNumberPeople
 import AuthContext from "../contexts/AuthContext";
 import MainLayout from "../layouts/MainLayout";
 import { ToastContainer, toast } from 'react-toastify';
@@ -11,7 +12,7 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const Orders = () => {
   const [place, setPlace] = useState(null);
-  const [selectedNumbers, setSelectedNumbers] = useState({});
+  // const [selectedNumbers, setSelectedNumbers] = useState({}); // Commented out
   const [orders, setOrders] = useState([]);
   const currentDate = new Date();
   const [showModal, setShowModal] = useState(false);
@@ -39,19 +40,19 @@ const Orders = () => {
         }
     }, [params.id, auth.token]);
 
-    useEffect(() => {
-        onFetchPlace();
-    }, [onFetchPlace]);
+  useEffect(() => {
+    onFetchPlace();
+  }, [onFetchPlace]);
 
-    useEffect(() => {
-        if (place) {
-            const initialSelectedNumbers = {};
-            place.tables.forEach(table => {
-                initialSelectedNumbers[table.id] = table.number_people || 1;
-            });
-            setSelectedNumbers(initialSelectedNumbers);
-        }
-    }, [place]);
+    // useEffect(() => { // Commented out - related to selectedNumbers
+    //     if (place) {
+    //         const initialSelectedNumbers = {};
+    //         place.tables.forEach(table => {
+    //             initialSelectedNumbers[table.id] = table.number_people || 1;
+    //         });
+    //         setSelectedNumbers(initialSelectedNumbers);
+    //     }
+    // }, [place]);
 
     useEffect(() => {
         const updateOrders = async () => {
@@ -171,12 +172,23 @@ const Orders = () => {
                                             setShowModal(true);
                                         }}
                                         disabled={table.blocked}
+                                        className="flex-grow-1" // Make button take available space
                                     >
                                         {String(table.table_number) === "77" ? "VIP" : `桌号 ${table.table_number}`}
                                     </Button>
-                                    <DropdownTableNumberPicker
-                                        min={1}
-                                        max={40}
+                                    <Button 
+                                        variant="outline-info" 
+                                        onClick={() => window.open(`/menu/0/${params.id}/${table.table_number}`, '_blank')}
+                                        className="ms-1" // Margin start for spacing
+                                        title={`打开桌号 ${table.table_number}的点餐链接`}
+                                        style={{ padding: '0.375rem 0.5rem' }} // Adjust padding to match other small buttons
+                                    >
+                                        <FiLink size={18}/>
+                                    </Button>
+                                    {/* <div className="ms-1"> // Commented out DropdownTableNumberPicker wrapper
+                                      <DropdownTableNumberPicker
+                                          min={1}
+                                          max={40}
                                         initialValue={selectedNumbers[table.id] || 1}
                                         onChange={(value) => {
                                           setSelectedNumbers(prev => ({ ...prev, [table.id]: value }));
@@ -193,7 +205,8 @@ const Orders = () => {
                                               toast.error("更新人数失败");
                                             });
                                         }}
-                                    />
+                                      />
+                                    </div> */}
                                 </div>
                             <ToggleButton
                                 className="mb-2"

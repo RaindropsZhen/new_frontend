@@ -1,7 +1,8 @@
 import { AiOutlineQrcode } from 'react-icons/ai';
 import { RiFileList3Line } from 'react-icons/ri';
-import { IoSettingsOutline } from 'react-icons/io5'; // 新增图标导入
-import { Row, Col, Button} from 'react-bootstrap';
+import { IoSettingsOutline } from 'react-icons/io5';
+import { FiEdit } from 'react-icons/fi'; // Icon for Edit Place
+import { Row, Col, Button, Modal } from 'react-bootstrap'; // Added Modal
 import { useParams, useHistory } from 'react-router-dom';
 import React, { useEffect, useState, useContext } from 'react';
 import styled from 'styled-components';
@@ -9,7 +10,8 @@ import { RiEBike2Fill } from "react-icons/ri";
 import { TiPrinter } from "react-icons/ti";
 import AuthContext from '../contexts/AuthContext';
 import MainLayout from '../layouts/MainLayout';
-import {fetchPlace,} from '../apis';
+import {fetchPlace} from '../apis'; // Removed trailing comma
+import EditPlace from '../components/EditPlace'; // Import EditPlace component
 
 const ButtonGrid = styled.div`
   display: grid;
@@ -40,7 +42,8 @@ const ButtonGrid = styled.div`
 `;
 
 const Place = () => {
-  const [place, setPlace] = useState({});
+  const [place, setPlace] = useState(null); // Initialize with null
+  const [showEditPlaceModal, setShowEditPlaceModal] = useState(false);
   
   const auth = useContext(AuthContext);
   const params = useParams();
@@ -69,6 +72,11 @@ const Place = () => {
                 <div style={{ fontSize: '24px', marginTop: '5px' }}>菜单管理</div>
               </Button>
 
+              <Button variant="link" onClick={() => setShowEditPlaceModal(true)}>
+                <FiEdit size={50} style={{ color: '#444', lineHeight: 0, padding: 0, margin: 0 }} />
+                <div style={{ fontSize: '24px', marginTop: '5px' }}>店铺设置</div>
+              </Button>
+
               <Button variant="link" onClick={() => { history.push(`/${params.id}/select_table/`) }}>
                 <AiOutlineQrcode size={50} style={{ color: '#444', lineHeight: 0, padding: 0, margin: 0 }} />
                 <div style={{ fontSize: '24px', marginTop: '5px' }}>点单链接</div>
@@ -79,10 +87,10 @@ const Place = () => {
                 <div style={{ fontSize: '24px', marginTop: '5px' }}>今日订单</div>
               </Button>
 
-              <Button variant="link" >
+              {/* <Button variant="link" >
                 <RiEBike2Fill size={50} style={{ color: '#444', lineHeight: 0, padding: 0, margin: 0 }} />
                 <div style={{ fontSize: '24px', marginTop: '5px' }}>外卖订单</div>
-              </Button>
+              </Button> */}
 
               {/* <Button variant="link" >
                 <TiPrinter size={50} style={{ color: '#444', lineHeight: 0, padding: 0, margin: 0 }} />
@@ -93,6 +101,23 @@ const Place = () => {
         </Col>
 
       </Row>
+
+      {place && (
+        <Modal show={showEditPlaceModal} onHide={() => setShowEditPlaceModal(false)} size="lg" centered>
+          <Modal.Header closeButton>
+            <Modal.Title>编辑店铺信息 - {place.name}</Modal.Title>
+          </Modal.Header>
+          <Modal.Body>
+            <EditPlace 
+              place={place} 
+              onDone={() => {
+                setShowEditPlaceModal(false);
+                onFetchPlace(); // Refresh place data after editing
+              }} 
+            />
+          </Modal.Body>
+        </Modal>
+      )}
     </MainLayout>
   )
 };

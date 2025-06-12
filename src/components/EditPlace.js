@@ -1,15 +1,15 @@
 import { Form, Button,InputGroup  } from 'react-bootstrap';
-import React, { useState, useContext,Row } from 'react';
+import React, { useState, useContext } from 'react'; // Removed Row as it's not used directly here
 import TimePicker from 'react-bootstrap-time-picker';
 import AuthContext from '../contexts/AuthContext';
 
 import ImageDropzone from '../containers/ImageDropzone';
-import { uploadImage,updatePlace } from '../apis';
+import { updatePlace } from '../apis'; // uploadImage was removed previously
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 
 
-const EditPlace = ({place}) => {
+const EditPlace = ({place, onDone}) => {
 
     const [name, setName] = useState(place.name);
     const [image, setImage] = useState(place.image);
@@ -18,10 +18,10 @@ const EditPlace = ({place}) => {
     const [tableNumber, setTableNumber] = useState(place.number_of_tables);
     const numberOptions = Array.from({ length: 400 }, (_, index) => index + 1);
     const [interval, setInterval] = useState(place.ordering_limit_interval); 
-    const [selectedLunchTimeStart, setselectedLunchTimeStart] = useState(place.lunch_time_start); // Initialize with 12PM = 12*3600
-    const [selectedLunchTimeFinish, setselectedLunchTimeFinish] = useState(place.lunch_time_end); // Initialize with 3PM = 15*3600
-    const [selectedDinnerTimeStart, setselectedDinnerTimeStart] = useState(place.dinne_time_start); // Initialize with 7PM = 19*3600
-    const [selectedDinnerTimeFinish, setselectedDinnerTimeFinish] = useState(place.dinne_time_end); // Initialize with 11PM = 23*3600
+    const [selectedLunchTimeStart, setselectedLunchTimeStart] = useState(place.lunch_time_start);
+    const [selectedLunchTimeFinish, setselectedLunchTimeFinish] = useState(place.lunch_time_end);
+    const [selectedDinnerTimeStart, setselectedDinnerTimeStart] = useState(place.dinne_time_start);
+    const [selectedDinnerTimeFinish, setselectedDinnerTimeFinish] = useState(place.dinne_time_end);
     const [placeType, setPlaceType] = useState(place.place_type);
 
     const handleLunchStartChange = (time) => {
@@ -41,48 +41,59 @@ const EditPlace = ({place}) => {
       setPlaceType(event.target.value);
     };
     const handleNumberChange = (value) => {
-      setTableNumber(value);
+      setTableNumber(parseInt(value, 10)); // Ensure it's an integer
     }
-    const onClick = async () => {
-      setLoading(true);
 
-      // REMOVED Cloudinary upload:
-      // let image_name = "placeId" + "_" + (0 + 1) ;
-      // let folder_name = auth.token;
-      // const image_json = await uploadImage(image, folder_name,image_name)
+    const onUpdatePlaceInternal = async (formData) => { 
+      try {
+        await updatePlace(
+          place.id, 
+          formData, 
+          auth.token
+        );
+        return true; 
+      } catch (error) {
+        console.error("Failed to update place:", error);
+        return false; 
+      }
+    }
+
+    const handleSubmit = async () => { // Renamed onClick to handleSubmit for clarity
+      setLoading(true);
 
       const formData = new FormData();
       formData.append('name', name);
       formData.append('place_type', placeType);
       formData.append('number_of_tables', tableNumber);
       formData.append('ordering_limit_interval', interval);
-      formData.append('lunch_time_start', selectedLunchTimeStart);
-      formData.append('lunch_time_end', selectedLunchTimeFinish);
-      formData.append('dinne_time_start', selectedDinnerTimeStart);
-      formData.append('dinne_time_end', selectedDinnerTimeFinish);
-
-      // Only append image if it's a new File object, not the old URL string
+      
+      // Handle null or undefined time values before appending
+      if (selectedLunchTimeStart !== null && typeof selectedLunchTimeStart !== 'undefined') formData.append('lunch_time_start', selectedLunchTimeStart);
+      if (selectedLunchTimeFinish !== null && typeof selectedLunchTimeFinish !== 'undefined') formData.append('lunch_time_end', selectedLunchTimeFinish);
+      if (selectedDinnerTimeStart !== null && typeof selectedDinnerTimeStart !== 'undefined') formData.append('dinne_time_start', selectedDinnerTimeStart);
+      if (selectedDinnerTimeFinish !== null && typeof selectedDinnerTimeFinish !== 'undefined') formData.append('dinne_time_end', selectedDinnerTimeFinish);
+      
       if (image instanceof File) {
         formData.append('image', image);
       }
       
-      await onUpdatePlace(formData);  
+      const success = await onUpdatePlaceInternal(formData);  
 
       setLoading(false);
-      toast.success("餐厅信息已更新!", { autoClose: 2000 });
+      if (success) { 
+        toast.success("餐厅信息已更新!", { autoClose: 2000 });
+        if (onDone) {
+          onDone(); 
+        }
+      } else {
+        toast.error("更新餐厅信息失败!", { autoClose: 2000 });
+      }
   }
-    const onUpdatePlace = (formData) => { // data is now formData
-      return updatePlace( // Added return here to await its completion
-        place.id, 
-        formData, // Pass formData directly
-        auth.token
-      );
-    }
-
+  
     return (
       <div className='page-wrapper'>
-        <h4 className='text-center'>更新餐厅信息</h4>
-        <Form.Group>
+        <h4 className='text-center mb-4'>更新餐厅信息</h4> {/* Added mb-4 for spacing */}
+        <Form.Group className="mb-3"> {/* Added className for spacing */}
           <Form.Label style={{ fontWeight: 'bold' }}>名字</Form.Label>
           <Form.Control 
             type="text" 
@@ -92,9 +103,10 @@ const EditPlace = ({place}) => {
           />
         </Form.Group>
 
-        <Form.Group>
+        <Form.Group className="mb-3"> {/* Added className for spacing */}
           <Form.Label style={{ fontWeight: 'bold' ,marginRight: '20px'}}>输入餐桌数量</Form.Label>
-          <select
+          <Form.Control // Changed to Form.Control for better styling consistency
+            as="select"
             value={tableNumber}
             onChange={(e) => handleNumberChange(e.target.value)}
           >
@@ -103,10 +115,10 @@ const EditPlace = ({place}) => {
                 {option}
               </option>
             ))}
-          </select>
+          </Form.Control>
         </Form.Group>
 
-      <Form>
+      <Form className="mb-3"> {/* Added className for spacing */}
         <Form.Label style={{ fontWeight: 'bold' }}>选择餐厅类型</Form.Label>
         <div key={`inline-radio`} className="mb-3">
           <Form.Check
@@ -115,9 +127,8 @@ const EditPlace = ({place}) => {
             name="place_type"
             type='radio'
             id={`inline-type-1`}
-            checked={placeType === 'normal'} // Set checked attribute based on placeType value
-
-            value="normal" // Correct value
+            checked={placeType === 'normal'} 
+            value="normal" 
             onChange={handlePlaceTypeChange}
           />
           <Form.Check
@@ -126,23 +137,22 @@ const EditPlace = ({place}) => {
             name="place_type"
             type='radio'
             id={`inline-type-2`}
-            checked={placeType === 'buffet'} // Set checked attribute based on placeType value
-
-            value="buffet" // Correct value
+            checked={placeType === 'buffet'}
+            value="buffet" 
             onChange={handlePlaceTypeChange}
           />
         </div>
       </Form>
 
-      <Form.Group>
+      <Form.Group className="mb-3"> {/* Added className for spacing */}
       <Form.Label style={{ fontWeight: 'bold' }}>选择餐桌点单时间间隔（秒钟）</Form.Label>
       <Form.Control 
         type="number" 
         min="1" 
-        max="60" // Adjust max value according to your requirements
+        // max="60" // Max might be too restrictive, consider removing or increasing
         placeholder="输入点单时间间隔" 
-        value={interval} 
-        onChange={(e) => setInterval(e.target.value)} 
+        value={interval === null ? '' : interval} // Handle null for controlled input
+        onChange={(e) => setInterval(parseInt(e.target.value, 10) || null)} 
       />
       </Form.Group>
 
@@ -150,20 +160,22 @@ const EditPlace = ({place}) => {
         <label style={{ marginRight: '10px', fontWeight: 'bold',}}>选择午饭时间:</label>
         <div style={{ marginRight: '10px' }}>
           <TimePicker
-            start="8:00"
-            end="23:00"
+            start="00:00" // Start from midnight
+            end="23:30"   // End before next midnight
             step={30}
             value={selectedLunchTimeStart}
             onChange={handleLunchStartChange}
+            format={24}
           />
         </div>
         <div>
           <TimePicker
-            start="8:00"
-            end="23:00"
+            start="00:00"
+            end="23:30"
             step={30}
             value={selectedLunchTimeFinish}
             onChange={handleLunchFinishChange}
+            format={24}
           />
         </div>
       </div>
@@ -172,33 +184,35 @@ const EditPlace = ({place}) => {
         <label style={{ marginRight: '10px' ,fontWeight: 'bold' }}>选择晚饭时间:</label>
         <div style={{ marginRight: '10px' }}>
           <TimePicker
-            start="8:00"
-            end="23:00"
+            start="00:00"
+            end="23:30"
             step={30}
             value={selectedDinnerTimeStart}
             onChange={handleDinnerStartChange}
+            format={24}
           />
         </div>
         <div>
           <TimePicker
-            start="8:00"
-            end="23:00"
+            start="00:00"
+            end="23:30"
             step={30}
             value={selectedDinnerTimeFinish}
             onChange={handleDinnerFinishChange}
+            format={24}
           />
         </div>
       </div>
 
-      <Form.Group>
+      <Form.Group className="mb-3"> {/* Added className for spacing */}
         <Form.Label style={{ fontWeight: 'bold' }}>图片</Form.Label>
         <ImageDropzone value={image} onChange={setImage} />
       </Form.Group>
 
-      <Button variant="standard" block onClick={onClick} disabled={loading}>
+      <Button variant="primary" className="w-100" onClick={handleSubmit} disabled={loading}> {/* Changed to primary, w-100 */}
         {loading ? "正在更新中...." : "点击更新"}
       </Button>
-        </div>
+    </div>
     )
   }
 
