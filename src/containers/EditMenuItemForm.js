@@ -55,15 +55,7 @@ const EditMenuItemForm = ({ place, onDone, item = {} }) => {
             />
             </Form.Group>
 
-            <Form.Group>
-              <Form.Label>{t('editMenuItemForm.label.spanishName')}</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder={t('editMenuItemForm.placeholder.enterSpanishName')}
-                value={itemName.es}
-                onChange={(e) => setItemName(prev => ({ ...prev, es: e.target.value }))}
-              />
-            </Form.Group>
+            {/* Spanish Name field removed */}
 
             <Form.Group>
               <Form.Label>{t('editMenuItemForm.label.portugueseName')}</Form.Label>
@@ -120,15 +112,7 @@ const EditMenuItemForm = ({ place, onDone, item = {} }) => {
                 onChange={(e) => setItemDescription(prev => ({ ...prev, en: e.target.value }))}
               />
             </Form.Group>
-            <Form.Group>
-              <Form.Label>{t('editMenuItemForm.label.spanishDescription')}</Form.Label>
-              <Form.Control
-                type="text"
-                placeholder={t('editMenuItemForm.placeholder.enterSpanishDescription')}
-                value={itemDescription.es}
-                onChange={(e) => setItemDescription(prev => ({ ...prev, es: e.target.value }))}
-              />
-            </Form.Group>
+            {/* Spanish Description field removed */}
 
 
             <Form.Group>

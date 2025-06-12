@@ -52,6 +52,8 @@
   "menuSettings.modal.saveCategoryButton": "保存分类",
   "menuSettings.modal.editCategoryTitle": "编辑分类: {{categoryName}}",
   "menuSettings.modal.newCategoryNameLabel": "新分类名称",
+  "menuSettings.modal.englishNameLabel": "英文名称",
+  "menuSettings.modal.portugueseNameLabel": "葡文名称",
   "menuSettings.modal.enterNewCategoryNamePlaceholder": "请输入新的分类名称",
   "menuSettings.modal.addMenuItemTitle": "为 {{categoryName}} 添加新菜单项",
   "menuSettings.modal.editMenuItemTitle": "编辑菜单项: {{itemName}}",
@@ -65,5 +67,6 @@
   "menuSettings.toast.itemNameEmpty": "菜品名称不能为空。",
   "menuSettings.confirm.deleteCategory": "您确定要删除分类 \"{{categoryName}}\" 吗？此操作无法撤销。",
   "menuSettings.confirm.deleteMenuItem": "您确定要删除菜单项 \"{{itemName}}\" 吗？此操作无法撤销。",
-  "menuSettings.timeNotSet": "(未设置)"
+  "menuSettings.timeNotSet": "(未设置)",
+  "selectTable.title": "选择桌号"
 }

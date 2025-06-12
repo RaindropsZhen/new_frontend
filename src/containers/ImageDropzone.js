@@ -23,12 +23,21 @@ function ImageDropzone({ value, onChange,reset, setReset }) {
   // Effect to set initial preview from 'value' prop
   useEffect(() => {
     if (value instanceof File) {
-      setPreviewUrl(URL.createObjectURL(value));
+      // Create a new object URL for the file
+      const objectUrl = URL.createObjectURL(value);
+      setPreviewUrl(objectUrl);
     } else if (typeof value === 'string' && value) {
-      const baseUrl = process.env.REACT_APP_API_URL || ''; // Fallback to empty string if not set
-      setPreviewUrl(baseUrl + value);
+      // If value is a string, assume it's a path or full URL
+      if (value.startsWith('http') || value.startsWith('blob:')) {
+        setPreviewUrl(value); // It's already a full URL or a blob URL
+      } else {
+        // Construct full URL from relative path
+        const apiUrl = (process.env.REACT_APP_API_URL || '').replace(/\/$/, '');
+        const imagePath = value.startsWith('/') ? value.substring(1) : value;
+        setPreviewUrl(`${apiUrl}/${imagePath}`);
+      }
     } else {
-      setPreviewUrl(""); // Clear preview if value is null or invalid
+      setPreviewUrl(""); // Clear preview if value is null, undefined, or empty string
     }
     // Cleanup object URL when component unmounts or value changes
     return () => {
@@ -70,14 +79,10 @@ function ImageDropzone({ value, onChange,reset, setReset }) {
     accept: 'image/*',
   });
 
-  let displaySrc = null;
-  if (previewUrl) { // This will hold either blob URL or server path + API_URL
-    displaySrc = previewUrl;
-  } else if (typeof value === 'string' && value) { // Fallback for initial load if effect hasn't run
-     const baseUrl = process.env.REACT_APP_API_URL || '';
-     displaySrc = baseUrl + value;
-  }
-
+  // displaySrc will now primarily rely on previewUrl state, 
+  // as useEffect should correctly set it on initial load or value change.
+  // The fallback logic here is removed to simplify and rely on the effect.
+  const displaySrc = previewUrl; 
 
   return (
     <Dropzone {...getRootProps()}>

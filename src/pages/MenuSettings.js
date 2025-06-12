@@ -1,6 +1,6 @@
 import { IoMdArrowBack } from 'react-icons/io';
 import { FiEdit2, FiTrash2 } from 'react-icons/fi'; // Icons for Edit/Delete
-import { Row, Col, Button, Form, Modal } from 'react-bootstrap';
+import { Row, Col, Button, Form, Modal, Dropdown } from 'react-bootstrap'; // Added Dropdown
 import { useParams, useHistory } from 'react-router-dom';
 import React, { useState, useEffect, useContext } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -25,15 +25,14 @@ const StyledListItem = styled.li`
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding: 12px 12px; // Slightly increased vertical padding
-  border-radius: 0; // Remove individual border-radius if using full-width lines
-  // margin-bottom: 8px; // Remove margin if using borders for separation
+  padding: 12px 12px; 
+  border-radius: 0; 
   cursor: pointer;
   transition: background-color 0.2s ease-in-out;
-  border-bottom: 1px solid #dee2e6; // Add bottom border
+  border-bottom: 1px solid #dee2e6; 
 
   &:last-child {
-    border-bottom: none; // No border for the last item
+    border-bottom: none; 
   }
   background-color: ${props => props.selected ? '#e9ecef' : 'transparent'}; 
   font-weight: ${props => props.selected ? '600' : 'normal'};
@@ -44,9 +43,9 @@ const StyledListItem = styled.li`
 
   .item-name {
     flex-grow: 1;
-    color: #343a40; // Darker text for better readability
-    font-weight: 500; // Added from inline style
-    margin-bottom: 4px; // Added from inline style
+    color: #343a40; 
+    font-weight: 500; 
+    margin-bottom: 4px; 
   }
 
   .actions {
@@ -54,23 +53,23 @@ const StyledListItem = styled.li`
     margin-left: 15px;
     display: flex;
     align-items: center;
-    gap: 10px; // Increased gap for better touch targets
+    gap: 10px; 
   }
 `;
 
 const ActionButton = styled(Button)`
-  padding: 0.3rem 0.5rem; // Slightly more padding
+  padding: 0.3rem 0.5rem; 
   display: flex;
   align-items: center;
   justify-content: center;
   line-height: 1;
-  background: transparent !important; // Override default bootstrap background
-  border: 1px solid transparent !important; // Override default bootstrap border
-  color: #6c757d; // Muted icon color
+  background: transparent !important; 
+  border: 1px solid transparent !important; 
+  color: #6c757d; 
 
   &:hover {
-    color: ${props => props.hovercolor || '#007bff'}; // Default hover blue, allow custom
-    background-color: #e9ecef !important; // Light background on hover
+    color: ${props => props.hovercolor || '#007bff'}; 
+    background-color: #e9ecef !important; 
   }
 `;
 
@@ -79,10 +78,14 @@ const MenuSettings = () => {
   const [showAddCategoryModal, setShowAddCategoryModal] = useState(false);
   const [newCategoryName, setNewCategoryName] = useState("");
   const [addCategoryLoading, setAddCategoryLoading] = useState(false);
+  
   const [showEditCategoryModal, setShowEditCategoryModal] = useState(false);
   const [editingCategory, setEditingCategory] = useState(null);
-  const [editCategoryName, setEditCategoryName] = useState("");
+  const [editCategoryName, setEditCategoryName] = useState(""); 
+  const [editCategoryNameEn, setEditCategoryNameEn] = useState(""); 
+  const [editCategoryNamePt, setEditCategoryNamePt] = useState(""); 
   const [editCategoryLoading, setEditCategoryLoading] = useState(false);
+  
   const [selectedCategoryId, setSelectedCategoryId] = useState(null);
   const [showAddMenuItemModal, setShowAddMenuItemModal] = useState(false);
   const [showEditMenuItemModal, setShowEditMenuItemModal] = useState(false);
@@ -91,7 +94,7 @@ const MenuSettings = () => {
   const params = useParams();
   const history = useHistory();
   const auth = useContext(AuthContext);
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation(); 
 
   const onBack = () => history.push(`/places/${params.id}`);
 
@@ -135,7 +138,9 @@ const MenuSettings = () => {
 
   const handleShowEditCategoryModal = (category) => {
     setEditingCategory(category);
-    setEditCategoryName(category.name);
+    setEditCategoryName(category.name || "");
+    setEditCategoryNameEn(category.name_en || "");
+    setEditCategoryNamePt(category.name_pt || "");
     setShowEditCategoryModal(true);
   };
 
@@ -143,6 +148,8 @@ const MenuSettings = () => {
     setShowEditCategoryModal(false);
     setEditingCategory(null);
     setEditCategoryName("");
+    setEditCategoryNameEn("");
+    setEditCategoryNamePt("");
     setEditCategoryLoading(false);
   };
 
@@ -152,8 +159,13 @@ const MenuSettings = () => {
       return;
     }
     setEditCategoryLoading(true);
+    const categoryData = {
+      name: editCategoryName,
+      name_en: editCategoryNameEn,
+      name_pt: editCategoryNamePt,
+    };
     try {
-      const result = await updateCategory(editingCategory.id, { name: editCategoryName }, auth.token);
+      const result = await updateCategory(editingCategory.id, categoryData, auth.token);
       if (result) {
         toast.success(t('menuSettings.toast.categoryUpdatedSuccess', { editCategoryName: editCategoryName }));
         onFetchPlace(); 
@@ -167,13 +179,15 @@ const MenuSettings = () => {
   };
 
   const handleDeleteCategory = async (categoryId, categoryName) => {
-    if (window.confirm(t('menuSettings.confirm.deleteCategory', { categoryName: categoryName }))) {
+    // Use the primary name for confirmation, or a generic term if needed
+    const catNameToConfirm = categoryName || t('menuSettings.thisCategory', 'this category');
+    if (window.confirm(t('menuSettings.confirm.deleteCategory', { categoryName: catNameToConfirm }))) {
       try {
         const success = await removeCategory(categoryId, auth.token); 
         if (success) {
-          toast.success(t('menuSettings.toast.categoryDeletedSuccess', { categoryName: categoryName }));
+          toast.success(t('menuSettings.toast.categoryDeletedSuccess', { categoryName: catNameToConfirm }));
           onFetchPlace(); 
-          if (selectedCategoryId === categoryId) { // If deleted category was selected, unselect it
+          if (selectedCategoryId === categoryId) {
             setSelectedCategoryId(null);
           }
         }
@@ -216,11 +230,12 @@ const MenuSettings = () => {
   };
 
   const handleDeleteMenuItem = async (itemId, itemName) => {
-    if (window.confirm(t('menuSettings.confirm.deleteMenuItem', { itemName: itemName }))) {
+    const itemNameToConfirm = itemName || t('menuSettings.thisMenuItem', 'this menu item');
+    if (window.confirm(t('menuSettings.confirm.deleteMenuItem', { itemName: itemNameToConfirm }))) {
       try {
         const success = await removeMenuItem(itemId, auth.token);
         if (success) {
-          toast.success(t('menuSettings.toast.menuItemDeletedSuccess', { itemName: itemName }));
+          toast.success(t('menuSettings.toast.menuItemDeletedSuccess', { itemName: itemNameToConfirm }));
           onFetchPlace(); 
         }
       } catch (error) {
@@ -230,6 +245,17 @@ const MenuSettings = () => {
   };
 
   const currentCategory = place.categories?.find(c => c.id === selectedCategoryId);
+  
+  let displayCategoryNameForTitle = '';
+  if (currentCategory) {
+    if (i18n.language === 'en' && currentCategory.name_en) {
+      displayCategoryNameForTitle = currentCategory.name_en;
+    } else if (i18n.language === 'pt' && currentCategory.name_pt) {
+      displayCategoryNameForTitle = currentCategory.name_pt;
+    } else {
+      displayCategoryNameForTitle = currentCategory.name; 
+    }
+  }
 
   return (
     <MainLayout>
@@ -238,6 +264,32 @@ const MenuSettings = () => {
           <IoMdArrowBack size={28} />
         </Button>
         <h2 className="mb-0 ms-2" style={{fontWeight: 600}}>{t('menuSettings.title')}</h2>
+        <div style={{ flexGrow: 1 }} /> {/* Spacer div */}
+        <div> {/* Wrapper for Dropdown, removed ms-auto */}
+          <Dropdown>
+            <Dropdown.Toggle 
+              variant="outline-secondary" 
+              id="dropdown-language" 
+              style={{ minWidth: '150px', display: 'flex', alignItems: 'center', justifyContent: 'space-between', padding: '0.5rem 1rem' }}
+            >
+              {i18n.language === 'zh' ? <><span role="img" aria-label="China flag">🇨🇳</span> 中文</> : 
+               i18n.language === 'en' ? <><span role="img" aria-label="UK flag">🇬🇧</span> EN</> : 
+               i18n.language === 'pt' ? <><span role="img" aria-label="Portugal flag">🇵🇹</span> PT</> : 
+               i18n.language.toUpperCase()}
+            </Dropdown.Toggle>
+            <Dropdown.Menu style={{ minWidth: '150px' }}>
+              <Dropdown.Item active={i18n.language === 'zh'} onClick={() => i18n.changeLanguage('zh')} style={{ display: 'flex', alignItems: 'center' }}>
+                <span role="img" aria-label="China flag" style={{ marginRight: '8px' }}>🇨🇳</span> 中文
+              </Dropdown.Item>
+              <Dropdown.Item active={i18n.language === 'en'} onClick={() => i18n.changeLanguage('en')} style={{ display: 'flex', alignItems: 'center' }}>
+                <span role="img" aria-label="UK flag" style={{ marginRight: '8px' }}>🇬🇧</span> English (EN)
+              </Dropdown.Item>
+              <Dropdown.Item active={i18n.language === 'pt'} onClick={() => i18n.changeLanguage('pt')} style={{ display: 'flex', alignItems: 'center' }}>
+                <span role="img" aria-label="Portugal flag" style={{ marginRight: '8px' }}>🇵🇹</span> Português (PT)
+              </Dropdown.Item>
+            </Dropdown.Menu>
+          </Dropdown>
+        </div>
       </div>
 
       <Row>
@@ -245,38 +297,46 @@ const MenuSettings = () => {
           <Panel> 
             <h5 style={{marginBottom: '20px', fontWeight: 600}}>{t('menuSettings.categoriesTitle')}</h5>
             {place.categories && place.categories.length > 0 ? (
-              <ul className="list-unstyled mb-0" style={{ borderTop: '1px solid #dee2e6' }}> {/* Add border-top to ul to complement item borders */}
-                {place.categories.map((category) => (
-                  <StyledListItem 
-                    key={category.id} 
-                    selected={selectedCategoryId === category.id}
-                    onClick={() => setSelectedCategoryId(category.id)}
-                  >
-                    <span className="item-name">
-                      {category.name}
-                    </span>
-                    <div className="actions">
-                      <ActionButton 
-                        variant="light" 
-                        size="sm" 
-                        hovercolor="#007bff"
-                        onClick={(e) => { e.stopPropagation(); handleShowEditCategoryModal(category); }}
-                        title={t('common.edit')}
-                      >
-                        <FiEdit2 size={18} />
-                      </ActionButton>
-                      <ActionButton 
-                        variant="light" 
-                        size="sm" 
-                        hovercolor="#dc3545"
-                        onClick={(e) => { e.stopPropagation(); handleDeleteCategory(category.id, category.name); }}
-                        title={t('common.delete')}
-                      >
-                        <FiTrash2 size={18} />
-                      </ActionButton>
-                    </div>
-                  </StyledListItem>
-                ))}
+              <ul className="list-unstyled mb-0" style={{ borderTop: '1px solid #dee2e6' }}>
+                {place.categories.map((category) => {
+                  let catDisplayLangName = category.name; // Default to primary name
+                  if (i18n.language === 'en' && category.name_en) {
+                    catDisplayLangName = category.name_en;
+                  } else if (i18n.language === 'pt' && category.name_pt) {
+                    catDisplayLangName = category.name_pt;
+                  }
+                  return (
+                    <StyledListItem 
+                      key={category.id} 
+                      selected={selectedCategoryId === category.id}
+                      onClick={() => setSelectedCategoryId(category.id)}
+                    >
+                      <span className="item-name">
+                        {catDisplayLangName}
+                      </span>
+                      <div className="actions">
+                        <ActionButton 
+                          variant="light" 
+                          size="sm" 
+                          hovercolor="#007bff"
+                          onClick={(e) => { e.stopPropagation(); handleShowEditCategoryModal(category); }}
+                          title={t('common.edit')}
+                        >
+                          <FiEdit2 size={18} />
+                        </ActionButton>
+                        <ActionButton 
+                          variant="light" 
+                          size="sm" 
+                          hovercolor="#dc3545"
+                          onClick={(e) => { e.stopPropagation(); handleDeleteCategory(category.id, catDisplayLangName); }}
+                          title={t('common.delete')}
+                        >
+                          <FiTrash2 size={18} />
+                        </ActionButton>
+                      </div>
+                    </StyledListItem>
+                  );
+                })}
               </ul>
             ) : (
               <p className="text-center text-muted mt-3">{t('menuSettings.noCategoriesYet')}</p> 
@@ -290,23 +350,27 @@ const MenuSettings = () => {
         <Col md={8}>
           {selectedCategoryId && currentCategory ? (
             <Panel>
-              <h5 style={{marginBottom: '20px', fontWeight: 600}}>{t('menuSettings.menuItemsForCategory', { categoryName: currentCategory.name || '' })}</h5>
+              <h5 style={{marginBottom: '20px', fontWeight: 600}}>{t('menuSettings.menuItemsForCategory', { categoryName: displayCategoryNameForTitle || '' })}</h5>
               {currentCategory.menu_items?.length > 0 ? (
-                <ul className="list-unstyled mb-0" style={{ borderTop: '1px solid #dee2e6' }}> {/* Add border-top to ul */}
+                <ul className="list-unstyled mb-0" style={{ borderTop: '1px solid #dee2e6' }}>
                   {currentCategory.menu_items.map(item => {
                     let imageUrl = item.image ? (item.image.startsWith('http') ? item.image : `${(process.env.REACT_APP_API_URL || '').replace(/\/$/, '')}/${item.image.startsWith('/') ? item.image.substring(1) : item.image}`) : null;
-                    const descriptionPreview = item.description && item.description.length > 70 ? `${item.description.substring(0, 70)}...` : item.description;
+                    
+                    let itemDisplayLangName = item.name;
+                    if (i18n.language === 'en' && item.name_en) itemDisplayLangName = item.name_en;
+                    else if (i18n.language === 'pt' && item.name_pt) itemDisplayLangName = item.name_pt;
 
-                    // Note: The StyledListItem for menu items does not need onClick or selected prop directly,
-                    // and hover effects are defined in its styled-component definition.
-                    // The error might be a linter/parser false positive or a very subtle syntax issue.
-                    // For now, ensuring the structure is clean.
+                    let itemDisplayLangDesc = item.description;
+                    if (i18n.language === 'en' && item.description_en) itemDisplayLangDesc = item.description_en;
+                    else if (i18n.language === 'pt' && item.description_pt) itemDisplayLangDesc = item.description_pt;
+                    const descriptionPreview = itemDisplayLangDesc && itemDisplayLangDesc.length > 70 ? `${itemDisplayLangDesc.substring(0, 70)}...` : itemDisplayLangDesc;
+
                     return (
                     <StyledListItem key={item.id}> 
                       {imageUrl && (
                         <img 
                           src={imageUrl} 
-                          alt={item.name} 
+                          alt={itemDisplayLangName} 
                           style={{ 
                             width: '60px', 
                             height: '60px', 
@@ -318,7 +382,7 @@ const MenuSettings = () => {
                         />
                       )}
                       <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                        <span className="item-name">{item.name} - ${item.price}</span> 
+                        <span className="item-name">{itemDisplayLangName} - ${item.price}</span> 
                         {descriptionPreview && (
                           <small className="text-muted d-block" style={{ fontSize: '0.85em', lineHeight: '1.3', marginTop: '4px' }}>
                             {descriptionPreview}
@@ -339,14 +403,14 @@ const MenuSettings = () => {
                           variant="light" 
                           size="sm" 
                           hovercolor="#dc3545"
-                          onClick={() => handleDeleteMenuItem(item.id, item.name)}
+                          onClick={() => handleDeleteMenuItem(item.id, itemDisplayLangName)}
                           title={t('common.delete')}
                         >
                           <FiTrash2 size={18} />
                         </ActionButton>
                       </div>
                     </StyledListItem>
-                  ); // Explicitly ensuring semicolon for the return statement
+                  ); 
                   })}
                 </ul>
               ) : (
@@ -393,13 +457,31 @@ const MenuSettings = () => {
             <Modal.Title>{t('menuSettings.modal.editCategoryTitle', { categoryName: editingCategory.name })}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <Form.Group>
-              <Form.Label>{t('menuSettings.modal.newCategoryNameLabel')}</Form.Label>
+            <Form.Group className="mb-3">
+              <Form.Label>{t('menuSettings.modal.categoryNameLabel')} (中文)</Form.Label>
               <Form.Control
                 type="text"
                 placeholder={t('menuSettings.modal.enterNewCategoryNamePlaceholder')}
                 value={editCategoryName}
                 onChange={(e) => setEditCategoryName(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>{t('menuSettings.modal.englishNameLabel')}</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder={t('editMenuItemForm.placeholder.enterEnglishName')}
+                value={editCategoryNameEn}
+                onChange={(e) => setEditCategoryNameEn(e.target.value)}
+              />
+            </Form.Group>
+            <Form.Group className="mb-3">
+              <Form.Label>{t('menuSettings.modal.portugueseNameLabel')}</Form.Label>
+              <Form.Control
+                type="text"
+                placeholder={t('editMenuItemForm.placeholder.enterPortugueseName')}
+                value={editCategoryNamePt}
+                onChange={(e) => setEditCategoryNamePt(e.target.value)}
               />
             </Form.Group>
           </Modal.Body>
@@ -417,7 +499,7 @@ const MenuSettings = () => {
       {selectedCategoryId && place && (
         <Modal show={showAddMenuItemModal} onHide={handleCloseAddMenuItemModal} size="lg" centered>
           <Modal.Header closeButton>
-            <Modal.Title>{t('menuSettings.modal.addMenuItemTitle', { categoryName: currentCategory?.name || '' })}</Modal.Title>
+            <Modal.Title>{t('menuSettings.modal.addMenuItemTitle', { categoryName: displayCategoryNameForTitle || '' })}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
             <MenuItemForm

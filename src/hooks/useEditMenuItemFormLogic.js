@@ -10,14 +10,14 @@ const useEditMenuItemFormLogic = (initialItem = {}, place, onDoneCallback) => {
   const [itemName, setItemName] = useState({
     default: initialItem.name || '',
     en: initialItem.name_en || '',
-    es: initialItem.name_es || '',
+    // es: initialItem.name_es || '', // Removed Spanish
     pt: initialItem.name_pt || '',
   });
   const [name_to_print, set_name_to_print] = useState(initialItem.name_to_print);
   const [itemDescription, setItemDescription] = useState({
     default: initialItem.description || '',
     en: initialItem.description_en || '',
-    es: initialItem.description_es || '',
+    // es: initialItem.description_es || '', // Removed Spanish
     pt: initialItem.description_pt || '',
   });
   const [price, setPrice] = useState(initialItem.price || t("editMenuItemForm.placeholder.enterPrice"));
@@ -60,12 +60,12 @@ const useEditMenuItemFormLogic = (initialItem = {}, place, onDoneCallback) => {
     formData.append('category', category); // Assuming category is just an ID
     formData.append('name', itemName.default);
     formData.append('name_en', itemName.en);
-    formData.append('name_es', itemName.es);
+    // formData.append('name_es', itemName.es); // Removed Spanish
     formData.append('name_pt', itemName.pt);
     formData.append('price', price);
     formData.append('description', itemDescription.default);
     formData.append('description_en', itemDescription.en);
-    formData.append('description_es', itemDescription.es);
+    // formData.append('description_es', itemDescription.es); // Removed Spanish
     formData.append('description_pt', itemDescription.pt);
     formData.append('name_to_print', name_to_print);
     formData.append('is_available', isAvailable);
@@ -85,9 +85,9 @@ const useEditMenuItemFormLogic = (initialItem = {}, place, onDoneCallback) => {
     if (json) {
       toast(t("editMenuItemForm.toast.updateSuccess", { itemName: json.name }), { type: "success" });
       setCategory("");
-      setItemName({ default: '', en: '', es: '', pt: '' });
+      setItemName({ default: '', en: '', pt: '' }); // Removed Spanish
       setPrice(0);
-      setItemDescription({ default: '', en: '', es: '', pt: '' });
+      setItemDescription({ default: '', en: '', pt: '' }); // Removed Spanish
       setImage("");
       setIsAvailable(true);
       setResetImageDropzone(true);
