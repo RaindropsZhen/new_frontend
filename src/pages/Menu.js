@@ -1,5 +1,5 @@
 // eslint-disable-next-line
-import { Container, Row, Col, Button, Modal } from 'react-bootstrap';
+import { Container, Row, Col, Button, /*Modal*/ } from 'react-bootstrap';
 import { useParams, useLocation } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
@@ -43,7 +43,7 @@ const renderFilterAllButton = (selectedLanguage) => {
 };
 const Menu = () => {
   const { table } = useParams();
-  const [showAgreementModal, setShowAgreementModal] = useState(false);
+  // const [showAgreementModal, setShowAgreementModal] = useState(false);
   const [isLoading, setIsLoading] = useState(true); // Add loading state
 
   const [place, setPlace] = useState({});
@@ -56,8 +56,9 @@ const Menu = () => {
   const [nextOrderingTime, setNextOrderingTime] = useState(0);
   const [enableOrdering, setEnableOrdering] = useState(true);
   const [timeLeftToOrder, setTimeLeftToOrder] = useState(0); //in millisecond
-  const takeawayBoxFee = 8.9;
+  // const takeawayBoxFee = 8.9;
 
+  /*
   const [agreementText, setAgreementText] = useState({
     'English': (
       <>
@@ -109,6 +110,7 @@ const Menu = () => {
     '中文': "我同意",
     'Português': "Acordo"
   });
+  */
 
     useEffect(() => {
     const storedOrderHistory = localStorage.getItem(`orderHistory-${params.table}`);
@@ -137,7 +139,7 @@ const Menu = () => {
     setSelectedLanguage(language);
     setShowLanguageModal(false); // Hide language modal after selection
     localStorage.setItem('selectedLanguage', language);
-    setShowAgreementModal(true); // Show agreement modal after language selection
+    // setShowAgreementModal(true); // Show agreement modal after language selection
 };
 
 const location = useLocation();
@@ -158,46 +160,46 @@ const location = useLocation();
   }, [params.id]);
 
   const onAddItemtoShoppingCart = (item) => {
-    const tableNumber = parseInt(params.table);
-    const currentTable = place.tables.find(
-      (table) => parseInt(table.table_number) === tableNumber
-    );
-    const numberOfPeople = currentTable ? currentTable.number_people : 1; // Default to 1 if not found
-    const allowedItems = 10
-    const maxAllowedItems = numberOfPeople * allowedItems;
+    // const tableNumber = parseInt(params.table);
+    // const currentTable = place.tables.find(
+    //   (table) => parseInt(table.table_number) === tableNumber
+    // );
+    // const numberOfPeople = currentTable ? currentTable.number_people : 1; // Default to 1 if not found
+    // const allowedItems = 10
+    // const maxAllowedItems = numberOfPeople * allowedItems;
 
-    const renderToastMessage = (language, maxItems) => {
-      switch (language) {
-        case '中文':
-          return (
-            <>
-              每人每次最多可点 {allowedItems} 个菜品。<br />
-              您最多可以订购 {maxItems} 个菜品。
-            </>
-          );
-        case 'Português':
-          return (
-            <>
-              Cada pessoa pode pedir {allowedItems} itens de cada vez. <br />
-              Podem pedir até {maxItems} itens.
-            </>
-          );
-        default: // English
-          return (
-            <>
-              Each person can only order {allowedItems} items at a time. <br />
-              You can order up to {maxItems} items.
-            </>
-          );
-      }
-    };
+    // const renderToastMessage = (language, maxItems) => {
+    //   switch (language) {
+    //     case '中文':
+    //       return (
+    //         <>
+    //           每人每次最多可点 {allowedItems} 个菜品。<br />
+    //           您最多可以订购 {maxItems} 个菜品。
+    //         </>
+    //       );
+    //     case 'Português':
+    //       return (
+    //         <>
+    //           Cada pessoa pode pedir {allowedItems} itens de cada vez. <br />
+    //           Podem pedir até {maxItems} itens.
+    //         </>
+    //       );
+    //     default: // English
+    //       return (
+    //         <>
+    //           Each person can only order {allowedItems} items at a time. <br />
+    //           You can order up to {maxItems} items.
+    //         </>
+    //       );
+    //   }
+    // };
     
     
 
-    if (totalQuantity + 1 > maxAllowedItems) {
-      toast.warn(renderToastMessage(selectedLanguage, maxAllowedItems));
-      return;
-    }
+    // if (totalQuantity + 1 > maxAllowedItems) {
+    //   toast.warn(renderToastMessage(selectedLanguage, maxAllowedItems));
+    //   return;
+    // }
 
     setShoppingCart((prevShoppingCart) => ({
       ...shoppingCart,
@@ -260,7 +262,7 @@ const location = useLocation();
     const storedLanguage = localStorage.getItem('selectedLanguage');
     const agreementTimestamp = localStorage.getItem('agreementTimestamp');
     const now = Date.now();
-    const twoHours = 2 * 60 * 60 * 1000; // Two hours in milliseconds
+    // const twoHours = 2 * 60 * 60 * 1000; // Two hours in milliseconds
 
     if (storedLanguage) {
         setSelectedLanguage(storedLanguage);
@@ -268,9 +270,10 @@ const location = useLocation();
 
     if (!storedLanguage) {
       setShowLanguageModal(true);
-    } else if (!agreementTimestamp || (now - parseInt(agreementTimestamp, 10) > twoHours)) {
-      setShowAgreementModal(true);
-    }
+    } 
+    // else if (!agreementTimestamp || (now - parseInt(agreementTimestamp, 10) > twoHours)) {
+    //   setShowAgreementModal(true);
+    // }
   }, []);
 
   const [activeTab, setActiveTab] = useState('menu');
@@ -279,33 +282,50 @@ const location = useLocation();
       setActiveTab(tabName);
     };
 
-  const renderCategoryName = (category) => {
+  const renderCategoryName = useCallback((category) => {
     switch (selectedLanguage) {
       case '中文':
-        return category.name_cn;
+        return category.name; // Changed from category.name_cn
       case 'English':
         return category.name_en;
       case 'Português':
         return category.name_pt;
       default:
-        return category.name;
+        return category.name; // Ensure your category objects have these properties
     }
-  };
-  const categories = place && place.categories ? place.categories.map(
-    (category) => renderCategoryName(category)
-  ) : [];
+  }, [selectedLanguage]);
 
-  const [selectedCategoryName, setSelectedCategoryName] = useState(categories.length > 0 ? categories[0] : '');
+  const categories = useMemo(() => {
+    if (!place || !place.categories) return [];
+    return place.categories.map(category => renderCategoryName(category));
+  }, [place.categories, renderCategoryName]);
+
+  const [selectedCategoryName, setSelectedCategoryName] = useState('');
+
+  useEffect(() => {
+    if (categories.length > 0) {
+      // If selectedCategoryName is not in the current list of categories,
+      // or if it's the placeholder for "All", reset to the first actual category.
+      if (!categories.includes(selectedCategoryName) || selectedCategoryName === '') {
+        setSelectedCategoryName(categories[0]);
+      }
+    } else {
+      // If there are no categories, set selectedCategoryName to empty (which implies "All")
+      setSelectedCategoryName('');
+    }
+  }, [categories, selectedCategoryName]);
 
   const handleCategoryClick = (name) => {
     setSelectedCategoryName(name);
   };
 
+/*
 const handleAgreementAccept = () => {
     const now = Date.now();
     localStorage.setItem('agreementTimestamp', now.toString());
     setShowAgreementModal(false);
 };
+*/
 
   useEffect(() => {
     const timer = setInterval(() => {
@@ -390,7 +410,7 @@ const handleAgreementAccept = () => {
         </div>
       ) : (
         <>
-          {showAgreementModal && (
+          {/* {showAgreementModal && (
             <Modal 
             show={showAgreementModal}
             backdrop="static"
@@ -398,7 +418,6 @@ const handleAgreementAccept = () => {
             centered
             className="agreementModal"
           >
-            {/* Table Number Header */}
             <div style={{
               backgroundColor: '#FE6C4C',
               color: 'white',
@@ -412,7 +431,6 @@ const handleAgreementAccept = () => {
               Table Number: {params.table === '77' ? 'VIP' : params.table}
             </div>
           
-            {/* Modal Content */}
             <Modal.Body style={{
               padding: '20px',
               fontSize: '16px',
@@ -429,7 +447,6 @@ const handleAgreementAccept = () => {
               </div>
             </Modal.Body>
           
-            {/* Modal Footer */}
             <Modal.Footer style={{
               display: 'flex',
               justifyContent: 'center',
@@ -456,7 +473,7 @@ const handleAgreementAccept = () => {
             </Modal.Footer>
           </Modal>
           
-          )}
+          )} */}
 
           {/* Filter */}
           <StickyFilterContainer>
