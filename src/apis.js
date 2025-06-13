@@ -154,6 +154,16 @@ export function removeMenuItem(id, token) {
     return request(`/api/menu_items/${id}`, { token, method: "DELETE" });
 }
 
+export function reorderCategories(placeId, orderedCategoryIds, token) {
+  const data = { ordered_category_ids: orderedCategoryIds };
+  return request(`/api/places/${placeId}/categories/reorder/`, { data, token, method: "POST" });
+}
+
+export function reorderMenuItems(categoryId, orderedItemIds, token) {
+  const data = { ordered_item_ids: orderedItemIds };
+  return request(`/api/categories/${categoryId}/menu-items/reorder/`, { data, token, method: "POST" });
+}
+
 export function updatePlace(id, data, token) {
     return request(`/api/places/${id}`, { data, token, method: "PATCH" });
 }
