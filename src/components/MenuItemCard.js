@@ -66,7 +66,8 @@ const MenuItemCard = ({ language, item, onOrder, onRemove, color }) => {
   const lisbonTime = new Date(date.toLocaleString('en-US', { timeZone: 'Europe/Lisbon' }));
   const hour = lisbonTime.getHours();
   const minute = lisbonTime.getMinutes();
-  const currentTimeSeconds = 3600 * hour + 60 * minute;
+  const second = lisbonTime.getSeconds();
+  const currentTimeSeconds = 3600 * hour + 60 * minute + second;
 
   const [currentOrderingTiming, setCurrentOrderingTiming] = useState('');
   const [currentAvailability, setCurrentAvailability] = useState(false);
@@ -99,77 +100,75 @@ const MenuItemCard = ({ language, item, onOrder, onRemove, color }) => {
   
   return (
     <>
-      <Card className='card h-100' style={{ borderRadius: '10px', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
-        <LazyLoadImage
-          src={item.image}
-          alt={renderMenuItemName(item, language)}
-          style={{
-            objectFit: 'cover',
-            width: '100%',
-            height: '180px', // Slightly reduced height for more text space
-            filter: currentAvailability ? '' : 'grayscale(80%)'
-          }}
-          onClick={currentAvailability ? handleShow : undefined}
-        />
-        <Card.Body style={{ padding: '10px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flexGrow: 1 }}>
-          {/* Top part for name, code, and price */}
-          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'auto' }}>
-            <Card.Title style={{ fontSize: '1em', fontWeight: 'bold', color: '#333', flexGrow: 1, marginRight: '5px', marginBottom: '2px' }}>
-              <span style={{ fontSize: '0.8em', color: '#777', marginRight: '5px' }}>{item.code}</span>
-              {renderMenuItemName(item, language)}
-            </Card.Title>
-            {item.price > 0 && (
-              <b style={{ color: color || '#FE6C4C', fontSize: '1.1em', fontWeight: 'bold', whiteSpace: 'nowrap', marginLeft: '5px' }}>
-                {item.price.toFixed(2)}€
-              </b>
-            )}
-          </div>
+      <Card className='card' style={{ borderRadius: '10px', overflow: 'hidden' }}>
+  <LazyLoadImage
+    src={item.image}
+    alt={item.name}
+    style={{
+      objectFit: 'cover',
+      width: '100%',
+      height: '200px',
+      filter: currentAvailability ? '' : 'grayscale(80%)'
+    }}
+    onClick={currentAvailability ? handleShow : undefined}
+  />
+  <Card.Body style={{ padding: '5px' }}>
+    <Card.Title style={{ fontSize: '14px' }}>
+      <span className="red-text">{item.code}</span>{renderMenuItemName(item, language)}
+    </Card.Title>
+    <Card.Text>
+      <Col>
+        <Modal show={showDescription} onHide={handleClose} centered>
+          <Modal.Header closeButton>
+            <Modal.Title>{renderMenuItemDescriptionModalName(language)}</Modal.Title>
+          </Modal.Header>
+          <LazyLoadImage
+            src={item.image}
+            alt={item.name}
+            style={{ width: '100%', height: 'auto' }}
+          />
+          <Modal.Body>{renderMenuItemDescription(item, language)}</Modal.Body>
+        </Modal>
+        {/* Price */}
+        <Row className="d-flex justify-content-start align-items-center">
+          <Col className="d-flex justify-content-end">
+            {item.price > 0 && <b style={{ color, fontSize: '1rem', fontWeight: 'bold' }}>{item.price}€</b>}
+          </Col>
+        </Row>
 
-          {/* Bottom part for buttons only */}
-          {onOrder && (
-            <div style={{ marginTop: '10px' }}>
-              <div className="d-flex justify-content-end align-items-center">
-                <OperationButton
-                  variant="lightgray"
-                  size="sm"
-                  onClick={() => onRemove(item)}
-                  disabled={!currentAvailability || (item.quantity || 0) === 0}
-                  style={{ padding: '0.2rem 0.5rem', minWidth: '30px' }}
-                >
-                  -
-                </OperationButton>
-                <span style={{ margin: '0 8px', fontSize: '1em', color: '#333' }}>
-                  {item.quantity >= 0 ? item.quantity : 0}
-                </span>
-                <OperationButton
-                  variant="lightgray"
-                  size="sm"
-                  onClick={() => onOrder(item)}
-                  disabled={!currentAvailability}
-                  style={{ padding: '0.2rem 0.5rem', minWidth: '30px' }}
-                >
-                  +
-                </OperationButton>
-              </div>
-            </div>
-          )}
-        </Card.Body>
-      </Card>
+        {/* Buttons */}
+        {onOrder && (
+        <Row className="d-flex justify-content-end align-items-center">
+          <Col className="d-flex justify-content-end align-items-center">
+            <OperationButton
+              variant="lightgray"
+              size="sm"
+              onClick={() => onRemove(item)}
+              disabled={!currentAvailability}
+            >
+              -
+            </OperationButton>
+            
+            <span>{item.quantity >= 0 ? item.quantity : 0}</span>
+            
+            <OperationButton
+              variant="lightgray"
+              size="sm"
+              onClick={() => onOrder(item)}
+              disabled={!currentAvailability}
+            >
+              +
+            </OperationButton>
+          </Col>
+        </Row>
+        )}
+      </Col>
+    </Card.Text>
+  </Card.Body>
+</Card>
 
-      <Modal show={showDescription} onHide={handleClose} centered>
-        <Modal.Header closeButton>
-          <Modal.Title>{renderMenuItemDescriptionModalName(language)}</Modal.Title>
-        </Modal.Header>
-        <LazyLoadImage
-          src={item.image}
-          alt={renderMenuItemName(item, language)}
-          style={{ width: '100%', height: 'auto', maxHeight: '300px', objectFit: 'cover' }}
-        />
-        <Modal.Body>{renderMenuItemDescription(item, language)}</Modal.Body>
-      </Modal>
 
-      {/* This Row seems out of place and might be redundant or for a different layout. Reviewing its necessity. */}
-      <Row xs={7} className="d-flex flex-column justify-content-between w-100" style={{ marginTop: '5px' }}>
+      <Row xs={7} className="d-flex flex-column justify-content-between w-100">
         <div className="d-flex justify-content-between align-items-end">
           <div>
             <h5 className="mb-0 text-standard">

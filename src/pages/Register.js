@@ -4,6 +4,8 @@ import { Button, Form, Card, Spinner } from 'react-bootstrap';
 import MainLayout from '../layouts/MainLayout';
 import AuthContext from '../contexts/AuthContext';
 
+// import background_image from '../Assets/Images/backgroundImage.png';
+
 const Register = () => {
     const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
@@ -55,6 +57,7 @@ const Register = () => {
 
     return (
         <MainLayout>
+            {/* <Row style={leftColumnStyle}> */}
                     {/* Registration form */}
                     <Card style={cardStyle}>
                         <Card.Body>
@@ -131,6 +134,7 @@ const Register = () => {
                             </Button>
                         </Card.Body>
                     </Card>
+            {/* </Row> */}
         </MainLayout>
     )
 }

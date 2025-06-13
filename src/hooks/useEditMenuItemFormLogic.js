@@ -1,7 +1,7 @@
 import { useState, useContext } from 'react';
 import { toast } from 'react-toastify';
 import { useTranslation } from 'react-i18next';
-import { updateMenuItem } from '../apis';
+import { updateMenuItem, uploadImage } from '../apis';
 import AuthContext from '../contexts/AuthContext';
 
 const useEditMenuItemFormLogic = (initialItem = {}, place, onDoneCallback) => {
@@ -48,6 +48,12 @@ const useEditMenuItemFormLogic = (initialItem = {}, place, onDoneCallback) => {
       toast.error(t("menuSettings.toast.itemNameEmpty", "菜品名称不能为空。")); // Add this key to translation
       return;
     }
+
+
+    // REMOVED Cloudinary upload:
+    // let image_name = itemName.default;
+    // let folder_name = auth.token + '/' + 'category_id_' + category;
+    // const image_json = await uploadImage(image, folder_name, image_name);
 
     const formData = new FormData();
     formData.append('place', place.id);

@@ -1,11 +1,12 @@
 import { useParams, useHistory } from 'react-router-dom';
-import { useEffect, useState, useContext } from 'react';
+import React, { useEffect, useState, useContext } from 'react';
 import { Container } from 'react-bootstrap';
 import QRCode from '../components/QRCode';
 import styled from 'styled-components';
 
 import { 
-    fetchPlace
+    fetchPlace, 
+    // deleteImage
   } from '../apis';
 
   import AuthContext from '../contexts/AuthContext';
@@ -53,3 +54,4 @@ const QRCodePage = () => {
   }
   
   export default QRCodePage;
+  
