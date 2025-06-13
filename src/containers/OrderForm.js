@@ -121,9 +121,9 @@ const OrderForm = ({amount, items, color, selectedLanguage, isTakeAway, phoneNum
         created_at: createdAt,
       }, auth.token);
 
-      if (json?.success && json.order) {
+      if (json?.success && json.order_id) {
         toast.success(
-          renderOrderSuccessMessage(selectedLanguage, json.order),
+          renderOrderSuccessMessage(selectedLanguage, json.order_id),
           {
             autoClose: false,
           }
