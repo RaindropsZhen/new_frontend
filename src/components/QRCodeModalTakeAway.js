@@ -1,5 +1,5 @@
 import React from 'react';
-import { Modal, Tab, Tabs, Container } from 'react-bootstrap';
+import { Modal, Tab, Tabs, Button,Container } from 'react-bootstrap';
 import QRCodeTakeAway from './QRCodeTakeAway';
 import TakeAwayCustomQRCode from './TakeAwayCustomQRCode';
 import ModifyQRCode from './ModifyQRCode';

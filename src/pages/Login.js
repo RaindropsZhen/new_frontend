@@ -3,9 +3,13 @@ import { useHistory } from 'react-router-dom';
 import { Button, Card, Col, Form, Spinner } from 'react-bootstrap';
 import MainLayout from '../layouts/MainLayout';
 import AuthContext from '../contexts/AuthContext';
+// import background_image from '../Assets/Images/backgroundImage.png';
+// import { authentication } from '../firebase/firebase';
+// import { signInWithPopup, GoogleAuthProvider, ProviderId } from "firebase/auth";
 
 const Login = () => {
     const [email, setEmail] = useState("");
+    const [username, setUsername] = useState("");
     const [password, setPassword] = useState("");
 
     const history = useHistory();
@@ -23,6 +27,12 @@ const Login = () => {
         auth.signIn(email, password, () => history.replace("/places"));
     }
 
+  //   const leftColumnStyle = {
+  //     backgroundImage: `url(${background_image})`, // Use the imported image here
+  //     backgroundSize: 'cover',
+  //     backgroundPosition: 'center',
+  //     minHeight: '100vh'
+  // };
     const cardStyle = {
         padding: '40px',
         maxWidth: '400px',
@@ -49,6 +59,7 @@ const Login = () => {
 
     return (
         <MainLayout>
+            {/* <Row style={leftColumnStyle}> */}
                 <Col>
                     <Card style={cardStyle}>
                         <Card.Body>
@@ -97,6 +108,7 @@ const Login = () => {
                         </Card.Body>
                     </Card>
                 </Col>
+            {/* </Row> */}
         </MainLayout>
     )
 }
