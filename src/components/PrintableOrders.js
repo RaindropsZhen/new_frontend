@@ -1,15 +1,10 @@
 import React, {useRef} from 'react';
-import ReactToPrint from 'react-to-print';
 
 const PrintableOrders = ({ orders }) => {
     const componentRef = useRef();
   
   return (
     <div>
-        {/* <ReactToPrint
-            trigger={() => <button style={{ backgroundColor: 'green', color: 'white', borderColor: 'green', borderRadius: '5px' }}>打印所有订单/Imprimir todos pedidos</button>}
-            content={() => componentRef.current}
-        /> */}
 
       <div ref={componentRef} className="printable-section">
         {orders.filter(order => !order.is_Printed).map(order => (

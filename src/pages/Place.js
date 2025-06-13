@@ -6,8 +6,6 @@ import { Row, Col, Button, Modal } from 'react-bootstrap'; // Added Modal
 import { useParams, useHistory } from 'react-router-dom';
 import React, { useEffect, useState, useContext } from 'react';
 import styled from 'styled-components';
-import { RiEBike2Fill } from "react-icons/ri";
-import { TiPrinter } from "react-icons/ti";
 import AuthContext from '../contexts/AuthContext';
 import MainLayout from '../layouts/MainLayout';
 import {fetchPlace} from '../apis'; // Removed trailing comma
@@ -86,16 +84,6 @@ const Place = () => {
                 <RiFileList3Line size={50} style={{ color: '#444', lineHeight: 0, padding: 0, margin: 0 }} />
                 <div style={{ fontSize: '24px', marginTop: '5px' }}>今日订单</div>
               </Button>
-
-              {/* <Button variant="link" >
-                <RiEBike2Fill size={50} style={{ color: '#444', lineHeight: 0, padding: 0, margin: 0 }} />
-                <div style={{ fontSize: '24px', marginTop: '5px' }}>外卖订单</div>
-              </Button> */}
-
-              {/* <Button variant="link" >
-                <TiPrinter size={50} style={{ color: '#444', lineHeight: 0, padding: 0, margin: 0 }} />
-                <div style={{ fontSize: '24px', marginTop: '5px' }}>打印机</div>
-              </Button> */}
             </ButtonGrid>
           </div>
         </Col>

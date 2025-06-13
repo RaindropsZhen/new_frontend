@@ -14,7 +14,7 @@ const renderMenuItemName = (item, selectedLanguage) => {
   }
 };
 
-const ShoppingCart = ({ selectedLanguage, items, onAdd, onRemove, color, timeLeftToOrder, enable_ordering, onOrderSuccess }) => {
+const ShoppingCart = ({ selectedLanguage, items, onAdd, onRemove, color, onOrderSuccess }) => {
   const location = useLocation();
   const isTakeAway = location.pathname.includes('takeaway');
   const [phoneNumber, setPhoneNumber] = useState(0);
@@ -28,13 +28,6 @@ const ShoppingCart = ({ selectedLanguage, items, onAdd, onRemove, color, timeLef
     'Español': "Su pedido",
     'Português': "Seu pedido"
   }[selectedLanguage] || "Your Order");
-
-  const renderWarning = (selectedLanguage) => ({
-    '中文': "每10分钟只能下一个订单",
-    'English': "Only one order allowed every 10 minutes",
-    'Español': "Solo se permite un pedido cada 10 minutos",
-    'Português': "Somente um pedido a cada 10 minutos"
-  }[selectedLanguage] || "Only one order allowed every 10 minutes");
 
   const renderTotal = (selectedLanguage) => ({
     '中文': "总计",
@@ -53,11 +46,6 @@ const ShoppingCart = ({ selectedLanguage, items, onAdd, onRemove, color, timeLef
       {/* Order Title */}
       <h3 className="text-center mb-3" style={{ fontSize: 'clamp(1.2rem, 2vw, 1.8rem)', fontWeight: 'bold' }}>
         {renderOrdername(selectedLanguage)}
-      </h3>
-
-      {/* Warning Message */}
-      <h3 className="text-center mb-3 text-danger" style={{ fontSize: 'clamp(1rem, 1.8vw, 1.4rem)', fontWeight: 'bold' }}>
-        {renderWarning(selectedLanguage)}
       </h3>
 
       {/* Shopping Cart Card */}
@@ -114,8 +102,6 @@ const ShoppingCart = ({ selectedLanguage, items, onAdd, onRemove, color, timeLef
             arrivalTime={arrivalTime}
             comment={allcomment}
             customer_name={name}
-            timeLeftToOrder={timeLeftToOrder}
-            enable_ordering={enable_ordering}
             onOrderSuccess={onOrderSuccess}
           />
         </Card.Body>

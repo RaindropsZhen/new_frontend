@@ -1,14 +1,15 @@
 import { IoMdArrowBack } from 'react-icons/io';
-import { FiEdit2, FiTrash2 } from 'react-icons/fi'; // Icons for Edit/Delete
+import { FiEdit2, FiTrash2, FiMenu } from 'react-icons/fi'; // Icons for Edit/Delete, added FiMenu for drag handle
 import { Row, Col, Button, Form, Modal, Dropdown } from 'react-bootstrap'; // Added Dropdown
 import { useParams, useHistory } from 'react-router-dom';
 import React, { useState, useEffect, useContext } from 'react';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import AuthContext from '../contexts/AuthContext';
 import {toast} from 'react-toastify';
 
-import { fetchPlace, addCategory, removeCategory, updateCategory, addMenuItems, removeMenuItem, updateMenuItem } from '../apis';
+import { fetchPlace, addCategory, removeCategory, updateCategory, removeMenuItem, reorderCategories, reorderMenuItems } from '../apis'; // Added reorderMenuItems
 import MainLayout from '../layouts/MainLayout';
 import MenuItemForm from '../containers/MenuItemForm';
 import EditMenuItemForm from '../containers/EditMenuItemForm';
@@ -90,6 +91,7 @@ const MenuSettings = () => {
   const [showAddMenuItemModal, setShowAddMenuItemModal] = useState(false);
   const [showEditMenuItemModal, setShowEditMenuItemModal] = useState(false);
   const [editingMenuItem, setEditingMenuItem] = useState(null);
+  const [isDragging, setIsDragging] = useState(false); // To potentially change style during drag
 
   const params = useParams();
   const history = useHistory();
@@ -245,6 +247,67 @@ const MenuSettings = () => {
   };
 
   const currentCategory = place.categories?.find(c => c.id === selectedCategoryId);
+
+  const handleOnDragEnd = async (result) => {
+    setIsDragging(false);
+    if (!result.destination) return;
+    if (result.source.index === result.destination.index) return;
+
+    const items = Array.from(place.categories);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+
+    // Optimistic UI update
+    setPlace(prevPlace => ({
+      ...prevPlace,
+      categories: items
+    }));
+
+    const orderedCategoryIds = items.map(item => item.id);
+
+    try {
+      await reorderCategories(params.id, orderedCategoryIds, auth.token);
+      toast.success(t('menuSettings.toast.categoriesReorderedSuccess')); // Changed key
+      onFetchPlace(); // Re-fetch to ensure consistency, though optimistic update is good
+    } catch (error) {
+      console.error("Failed to reorder categories:", error);
+      toast.error(t('menuSettings.toast.categoriesReorderFailedError')); // Changed key
+      // Optionally revert UI update here if API call fails, or rely on re-fetch
+      onFetchPlace(); // Re-fetch to revert to server state on error
+    }
+  };
+
+  const handleOnMenuItemDragEnd = async (result, categoryId) => {
+    if (!result.destination || !currentCategory || !currentCategory.menu_items) return;
+    if (result.source.index === result.destination.index) return;
+
+    const items = Array.from(currentCategory.menu_items);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+
+    // Optimistic UI update for menu items within the specific category
+    setPlace(prevPlace => ({
+      ...prevPlace,
+      categories: prevPlace.categories.map(cat =>
+        cat.id === categoryId ? { ...cat, menu_items: items } : cat
+      ),
+    }));
+
+    const orderedItemIds = items.map(item => item.id);
+
+    try {
+      await reorderMenuItems(categoryId, orderedItemIds, auth.token);
+      toast.success(t('menuSettings.toast.menuItemsReorderedSuccess')); // New toast key
+      // No need to call onFetchPlace() immediately if optimistic update is trusted,
+      // but can be called for consistency or if server might change data further.
+      // For now, let's rely on optimistic update and eventual refresh if user navigates.
+      // onFetchPlace(); 
+    } catch (error) {
+      console.error("Failed to reorder menu items:", error);
+      toast.error(t('menuSettings.toast.menuItemsReorderFailedError')); // New toast key
+      onFetchPlace(); // Re-fetch to revert to server state on error
+    }
+  };
   
   let displayCategoryNameForTitle = '';
   if (currentCategory) {
@@ -294,54 +357,81 @@ const MenuSettings = () => {
 
       <Row>
         <Col md={4}>
-          <Panel> 
-            <h5 style={{marginBottom: '20px', fontWeight: 600}}>{t('menuSettings.categoriesTitle')}</h5>
-            {place.categories && place.categories.length > 0 ? (
-              <ul className="list-unstyled mb-0" style={{ borderTop: '1px solid #dee2e6' }}>
-                {place.categories.map((category) => {
-                  let catDisplayLangName = category.name; // Default to primary name
-                  if (i18n.language === 'en' && category.name_en) {
-                    catDisplayLangName = category.name_en;
-                  } else if (i18n.language === 'pt' && category.name_pt) {
-                    catDisplayLangName = category.name_pt;
-                  }
-                  return (
-                    <StyledListItem 
-                      key={category.id} 
-                      selected={selectedCategoryId === category.id}
-                      onClick={() => setSelectedCategoryId(category.id)}
-                    >
-                      <span className="item-name">
-                        {catDisplayLangName}
-                      </span>
-                      <div className="actions">
-                        <ActionButton 
-                          variant="light" 
-                          size="sm" 
-                          hovercolor="#007bff"
-                          onClick={(e) => { e.stopPropagation(); handleShowEditCategoryModal(category); }}
-                          title={t('common.edit')}
-                        >
-                          <FiEdit2 size={18} />
-                        </ActionButton>
-                        <ActionButton 
-                          variant="light" 
-                          size="sm" 
-                          hovercolor="#dc3545"
-                          onClick={(e) => { e.stopPropagation(); handleDeleteCategory(category.id, catDisplayLangName); }}
-                          title={t('common.delete')}
-                        >
-                          <FiTrash2 size={18} />
-                        </ActionButton>
-                      </div>
-                    </StyledListItem>
-                  );
-                })}
-              </ul>
-            ) : (
-              <p className="text-center text-muted mt-3">{t('menuSettings.noCategoriesYet')}</p> 
-            )}
-            <Button variant="success" block className="mt-3 w-100" onClick={handleShowAddCategoryModal}> 
+          <Panel>
+            <h5 style={{ marginBottom: '20px', fontWeight: 600 }}>{t('menuSettings.categoriesTitle')}</h5>
+            <DragDropContext 
+              onDragStart={() => setIsDragging(true)} 
+              onDragEnd={handleOnDragEnd}
+            >
+              <Droppable droppableId="categories">
+                {(provided) => (
+                  <ul 
+                    className="list-unstyled mb-0" 
+                    style={{ borderTop: '1px solid #dee2e6' }}
+                    {...provided.droppableProps} 
+                    ref={provided.innerRef}
+                  >
+                    {place.categories && place.categories.length > 0 ? (
+                      place.categories.map((category, index) => {
+                        let catDisplayLangName = category.name;
+                        if (i18n.language === 'en' && category.name_en) {
+                          catDisplayLangName = category.name_en;
+                        } else if (i18n.language === 'pt' && category.name_pt) {
+                          catDisplayLangName = category.name_pt;
+                        }
+                        return (
+                          <Draggable key={category.id} draggableId={String(category.id)} index={index}>
+                            {(provided, snapshot) => (
+                              <StyledListItem
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                selected={selectedCategoryId === category.id}
+                                onClick={() => setSelectedCategoryId(category.id)}
+                                style={{
+                                  ...provided.draggableProps.style,
+                                  backgroundColor: snapshot.isDragging ? '#d0eaff' : (selectedCategoryId === category.id ? '#e9ecef' : 'transparent'),
+                                }}
+                              >
+                                <div {...provided.dragHandleProps} style={{ cursor: 'grab', marginRight: '10px', display: 'flex', alignItems: 'center' }}>
+                                  <FiMenu size={18} />
+                                </div>
+                                <span className="item-name">
+                                  {catDisplayLangName}
+                                </span>
+                                <div className="actions">
+                                  <ActionButton
+                                    variant="light"
+                                    size="sm"
+                                    hovercolor="#007bff"
+                                    onClick={(e) => { e.stopPropagation(); handleShowEditCategoryModal(category); }}
+                                    title={t('common.edit')}
+                                  >
+                                    <FiEdit2 size={18} />
+                                  </ActionButton>
+                                  <ActionButton
+                                    variant="light"
+                                    size="sm"
+                                    hovercolor="#dc3545"
+                                    onClick={(e) => { e.stopPropagation(); handleDeleteCategory(category.id, catDisplayLangName); }}
+                                    title={t('common.delete')}
+                                  >
+                                    <FiTrash2 size={18} />
+                                  </ActionButton>
+                                </div>
+                              </StyledListItem>
+                            )}
+                          </Draggable>
+                        );
+                      })
+                    ) : (
+                      !isDragging && <p className="text-center text-muted mt-3">{t('menuSettings.noCategoriesYet')}</p>
+                    )}
+                    {provided.placeholder}
+                  </ul>
+                )}
+              </Droppable>
+            </DragDropContext>
+            <Button variant="success" block className="mt-3 w-100" onClick={handleShowAddCategoryModal}>
               {t('menuSettings.addCategory')}
             </Button>
           </Panel>
@@ -350,72 +440,98 @@ const MenuSettings = () => {
         <Col md={8}>
           {selectedCategoryId && currentCategory ? (
             <Panel>
-              <h5 style={{marginBottom: '20px', fontWeight: 600}}>{t('menuSettings.menuItemsForCategory', { categoryName: displayCategoryNameForTitle || '' })}</h5>
-              {currentCategory.menu_items?.length > 0 ? (
-                <ul className="list-unstyled mb-0" style={{ borderTop: '1px solid #dee2e6' }}>
-                  {currentCategory.menu_items.map(item => {
-                    let imageUrl = item.image ? (item.image.startsWith('http') ? item.image : `${(process.env.REACT_APP_API_URL || '').replace(/\/$/, '')}/${item.image.startsWith('/') ? item.image.substring(1) : item.image}`) : null;
-                    
-                    let itemDisplayLangName = item.name;
-                    if (i18n.language === 'en' && item.name_en) itemDisplayLangName = item.name_en;
-                    else if (i18n.language === 'pt' && item.name_pt) itemDisplayLangName = item.name_pt;
+              <h5 style={{ marginBottom: '20px', fontWeight: 600 }}>{t('menuSettings.menuItemsForCategory', { categoryName: displayCategoryNameForTitle || '' })}</h5>
+              <DragDropContext onDragEnd={(result) => handleOnMenuItemDragEnd(result, currentCategory.id)}>
+                <Droppable droppableId={`menu-items-${currentCategory.id}`}>
+                  {(provided) => (
+                    <ul
+                      className="list-unstyled mb-0"
+                      style={{ borderTop: '1px solid #dee2e6' }}
+                      {...provided.droppableProps}
+                      ref={provided.innerRef}
+                    >
+                      {currentCategory.menu_items?.length > 0 ? (
+                        currentCategory.menu_items.map((item, index) => {
+                          let imageUrl = item.image ? (item.image.startsWith('http') ? item.image : `${(process.env.REACT_APP_API_URL || '').replace(/\/$/, '')}/${item.image.startsWith('/') ? item.image.substring(1) : item.image}`) : null;
+                          
+                          let itemDisplayLangName = item.name;
+                          if (i18n.language === 'en' && item.name_en) itemDisplayLangName = item.name_en;
+                          else if (i18n.language === 'pt' && item.name_pt) itemDisplayLangName = item.name_pt;
 
-                    let itemDisplayLangDesc = item.description;
-                    if (i18n.language === 'en' && item.description_en) itemDisplayLangDesc = item.description_en;
-                    else if (i18n.language === 'pt' && item.description_pt) itemDisplayLangDesc = item.description_pt;
-                    const descriptionPreview = itemDisplayLangDesc && itemDisplayLangDesc.length > 70 ? `${itemDisplayLangDesc.substring(0, 70)}...` : itemDisplayLangDesc;
+                          let itemDisplayLangDesc = item.description;
+                          if (i18n.language === 'en' && item.description_en) itemDisplayLangDesc = item.description_en;
+                          else if (i18n.language === 'pt' && item.description_pt) itemDisplayLangDesc = item.description_pt;
+                          const descriptionPreview = itemDisplayLangDesc && itemDisplayLangDesc.length > 70 ? `${itemDisplayLangDesc.substring(0, 70)}...` : itemDisplayLangDesc;
 
-                    return (
-                    <StyledListItem key={item.id}> 
-                      {imageUrl && (
-                        <img 
-                          src={imageUrl} 
-                          alt={itemDisplayLangName} 
-                          style={{ 
-                            width: '60px', 
-                            height: '60px', 
-                            objectFit: 'cover', 
-                            marginRight: '15px', 
-                            borderRadius: '4px',
-                            flexShrink: 0
-                          }} 
-                        />
+                          return (
+                            <Draggable key={item.id} draggableId={`menuitem-${item.id}`} index={index}>
+                              {(provided, snapshot) => (
+                                <StyledListItem
+                                  ref={provided.innerRef}
+                                  {...provided.draggableProps}
+                                  style={{
+                                    ...provided.draggableProps.style,
+                                    backgroundColor: snapshot.isDragging ? '#d0eaff' : 'transparent',
+                                  }}
+                                >
+                                  <div {...provided.dragHandleProps} style={{ cursor: 'grab', marginRight: '10px', display: 'flex', alignItems: 'center' }}>
+                                    <FiMenu size={18} />
+                                  </div>
+                                  {imageUrl && (
+                                    <img
+                                      src={imageUrl}
+                                      alt={itemDisplayLangName}
+                                      style={{
+                                        width: '60px',
+                                        height: '60px',
+                                        objectFit: 'cover',
+                                        marginRight: '15px',
+                                        borderRadius: '4px',
+                                        flexShrink: 0
+                                      }}
+                                    />
+                                  )}
+                                  <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
+                                    <span className="item-name">{itemDisplayLangName} - ${item.price}</span>
+                                    {descriptionPreview && (
+                                      <small className="text-muted d-block" style={{ fontSize: '0.85em', lineHeight: '1.3', marginTop: '4px' }}>
+                                        {descriptionPreview}
+                                      </small>
+                                    )}
+                                  </div>
+                                  <div className="actions">
+                                    <ActionButton
+                                      variant="light"
+                                      size="sm"
+                                      hovercolor="#007bff"
+                                      onClick={() => handleShowEditMenuItemModal(item)}
+                                      title={t('common.edit')}
+                                    >
+                                      <FiEdit2 size={18} />
+                                    </ActionButton>
+                                    <ActionButton
+                                      variant="light"
+                                      size="sm"
+                                      hovercolor="#dc3545"
+                                      onClick={() => handleDeleteMenuItem(item.id, itemDisplayLangName)}
+                                      title={t('common.delete')}
+                                    >
+                                      <FiTrash2 size={18} />
+                                    </ActionButton>
+                                  </div>
+                                </StyledListItem>
+                              )}
+                            </Draggable>
+                          );
+                        })
+                      ) : (
+                        <p className="text-center text-muted mt-3">{t('menuSettings.noMenuItemsYet')}</p>
                       )}
-                      <div style={{ flexGrow: 1, display: 'flex', flexDirection: 'column', justifyContent: 'center' }}>
-                        <span className="item-name">{itemDisplayLangName} - ${item.price}</span> 
-                        {descriptionPreview && (
-                          <small className="text-muted d-block" style={{ fontSize: '0.85em', lineHeight: '1.3', marginTop: '4px' }}>
-                            {descriptionPreview}
-                          </small>
-                        )}
-                      </div>
-                      <div className="actions">
-                        <ActionButton 
-                          variant="light" 
-                          size="sm" 
-                          hovercolor="#007bff"
-                          onClick={() => handleShowEditMenuItemModal(item)}
-                          title={t('common.edit')}
-                        >
-                          <FiEdit2 size={18} />
-                        </ActionButton>
-                        <ActionButton 
-                          variant="light" 
-                          size="sm" 
-                          hovercolor="#dc3545"
-                          onClick={() => handleDeleteMenuItem(item.id, itemDisplayLangName)}
-                          title={t('common.delete')}
-                        >
-                          <FiTrash2 size={18} />
-                        </ActionButton>
-                      </div>
-                    </StyledListItem>
-                  ); 
-                  })}
-                </ul>
-              ) : (
-                <p className="text-center text-muted mt-3">{t('menuSettings.noMenuItemsYet')}</p>
-              )}
+                      {provided.placeholder}
+                    </ul>
+                  )}
+                </Droppable>
+              </DragDropContext>
               <Button variant="success" block className="mt-3 w-100" onClick={handleShowAddMenuItemModal}>{t('menuSettings.addMenuItem')}</Button>
             </Panel>
           ) : (

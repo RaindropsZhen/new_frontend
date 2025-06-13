@@ -1,7 +1,6 @@
 import React, { useEffect, useRef, useState } from "react";
 import QRCodeStyling from "qr-code-styling";
 import { Col, Row, Button } from 'react-bootstrap';
-import MultipleCustomQRCode from "./MultipleCustomQRCode";
 
 const CustomQRCode = ({ place, dotColor, cornersDotColor, cornersSquareColor, backgroundColorleft, backgroundColorright }) => {
   const qrCodeRef = useRef(null);

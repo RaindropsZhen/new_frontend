@@ -77,41 +77,6 @@ export function addPlace(data, token) {
     return request("/api/places/", { data, token, method: "POST" });
   }
 
-// Removed Cloudinary-specific uploadImage function
-// function generateRandomId() {
-//     // You can use any method you prefer to generate a random ID.
-//     // Here's an example using a timestamp and a random number.
-//     const timestamp = new Date().getTime();
-//     const randomNum = Math.floor(Math.random() * 1000000); // Adjust as needed
-//     return `${timestamp}_${randomNum}`;
-// }
-//
-// export function uploadImage(image, folder_name) {
-//     const formData = new FormData();
-//     formData.append("file", image);
-//     formData.append("upload_preset", "qrmenu_photos");
-//     //formData.append("overwrite", "true");
-//
-//     const randomId = generateRandomId();
-//     const publicId = `${folder_name}/${randomId}`;
-//     formData.append("public_id", publicId);    
-//    
-//     return fetch("https://api.cloudinary.com/v1_1/qrmenudemo/image/upload", {
-//         method: "POST",
-//         body: formData,
-//     }).then((response) => {
-//         return response.json();
-// });
-// }
-// export function deleteImage(data) {
-//     return request("/api/delete_image/",{data,token:null, method:'DELETE'})
-
-//   }
-  
-// export function deleteImage(data) {
-
-//     return request("/api/delete_image/", {method: 'DELETE', data: data});
-// }
 
 export function fetchPlace(id, token) {
     return request(`/api/places/${id}`, { token });
@@ -151,6 +116,16 @@ export function removeCategory(id, token) {
 
 export function removeMenuItem(id, token) {
     return request(`/api/menu_items/${id}`, { token, method: "DELETE" });
+}
+
+export function reorderCategories(placeId, orderedCategoryIds, token) {
+  const data = { ordered_category_ids: orderedCategoryIds };
+  return request(`/api/places/${placeId}/categories/reorder/`, { data, token, method: "POST" });
+}
+
+export function reorderMenuItems(categoryId, orderedItemIds, token) {
+  const data = { ordered_item_ids: orderedItemIds };
+  return request(`/api/categories/${categoryId}/menu-items/reorder/`, { data, token, method: "POST" });
 }
 
 export function updatePlace(id, data, token) {
