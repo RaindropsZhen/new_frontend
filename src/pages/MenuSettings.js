@@ -1,14 +1,15 @@
 import { IoMdArrowBack } from 'react-icons/io';
-import { FiEdit2, FiTrash2 } from 'react-icons/fi'; // Icons for Edit/Delete
+import { FiEdit2, FiTrash2, FiMenu } from 'react-icons/fi'; // Icons for Edit/Delete, added FiMenu for drag handle
 import { Row, Col, Button, Form, Modal, Dropdown } from 'react-bootstrap'; // Added Dropdown
 import { useParams, useHistory } from 'react-router-dom';
 import React, { useState, useEffect, useContext } from 'react';
+import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import AuthContext from '../contexts/AuthContext';
 import {toast} from 'react-toastify';
 
-import { fetchPlace, addCategory, removeCategory, updateCategory, removeMenuItem } from '../apis';
+import { fetchPlace, addCategory, removeCategory, updateCategory, removeMenuItem, reorderCategories } from '../apis'; // Added reorderCategories
 import MainLayout from '../layouts/MainLayout';
 import MenuItemForm from '../containers/MenuItemForm';
 import EditMenuItemForm from '../containers/EditMenuItemForm';
@@ -90,6 +91,7 @@ const MenuSettings = () => {
   const [showAddMenuItemModal, setShowAddMenuItemModal] = useState(false);
   const [showEditMenuItemModal, setShowEditMenuItemModal] = useState(false);
   const [editingMenuItem, setEditingMenuItem] = useState(null);
+  const [isDragging, setIsDragging] = useState(false); // To potentially change style during drag
 
   const params = useParams();
   const history = useHistory();
@@ -245,6 +247,35 @@ const MenuSettings = () => {
   };
 
   const currentCategory = place.categories?.find(c => c.id === selectedCategoryId);
+
+  const handleOnDragEnd = async (result) => {
+    setIsDragging(false);
+    if (!result.destination) return;
+    if (result.source.index === result.destination.index) return;
+
+    const items = Array.from(place.categories);
+    const [reorderedItem] = items.splice(result.source.index, 1);
+    items.splice(result.destination.index, 0, reorderedItem);
+
+    // Optimistic UI update
+    setPlace(prevPlace => ({
+      ...prevPlace,
+      categories: items
+    }));
+
+    const orderedCategoryIds = items.map(item => item.id);
+
+    try {
+      await reorderCategories(params.id, orderedCategoryIds, auth.token);
+      toast.success(t('menuSettings.toast.categoriesReorderedSuccess')); // Changed key
+      onFetchPlace(); // Re-fetch to ensure consistency, though optimistic update is good
+    } catch (error) {
+      console.error("Failed to reorder categories:", error);
+      toast.error(t('menuSettings.toast.categoriesReorderFailedError')); // Changed key
+      // Optionally revert UI update here if API call fails, or rely on re-fetch
+      onFetchPlace(); // Re-fetch to revert to server state on error
+    }
+  };
   
   let displayCategoryNameForTitle = '';
   if (currentCategory) {
@@ -294,54 +325,81 @@ const MenuSettings = () => {
 
       <Row>
         <Col md={4}>
-          <Panel> 
-            <h5 style={{marginBottom: '20px', fontWeight: 600}}>{t('menuSettings.categoriesTitle')}</h5>
-            {place.categories && place.categories.length > 0 ? (
-              <ul className="list-unstyled mb-0" style={{ borderTop: '1px solid #dee2e6' }}>
-                {place.categories.map((category) => {
-                  let catDisplayLangName = category.name; // Default to primary name
-                  if (i18n.language === 'en' && category.name_en) {
-                    catDisplayLangName = category.name_en;
-                  } else if (i18n.language === 'pt' && category.name_pt) {
-                    catDisplayLangName = category.name_pt;
-                  }
-                  return (
-                    <StyledListItem 
-                      key={category.id} 
-                      selected={selectedCategoryId === category.id}
-                      onClick={() => setSelectedCategoryId(category.id)}
-                    >
-                      <span className="item-name">
-                        {catDisplayLangName}
-                      </span>
-                      <div className="actions">
-                        <ActionButton 
-                          variant="light" 
-                          size="sm" 
-                          hovercolor="#007bff"
-                          onClick={(e) => { e.stopPropagation(); handleShowEditCategoryModal(category); }}
-                          title={t('common.edit')}
-                        >
-                          <FiEdit2 size={18} />
-                        </ActionButton>
-                        <ActionButton 
-                          variant="light" 
-                          size="sm" 
-                          hovercolor="#dc3545"
-                          onClick={(e) => { e.stopPropagation(); handleDeleteCategory(category.id, catDisplayLangName); }}
-                          title={t('common.delete')}
-                        >
-                          <FiTrash2 size={18} />
-                        </ActionButton>
-                      </div>
-                    </StyledListItem>
-                  );
-                })}
-              </ul>
-            ) : (
-              <p className="text-center text-muted mt-3">{t('menuSettings.noCategoriesYet')}</p> 
-            )}
-            <Button variant="success" block className="mt-3 w-100" onClick={handleShowAddCategoryModal}> 
+          <Panel>
+            <h5 style={{ marginBottom: '20px', fontWeight: 600 }}>{t('menuSettings.categoriesTitle')}</h5>
+            <DragDropContext 
+              onDragStart={() => setIsDragging(true)} 
+              onDragEnd={handleOnDragEnd}
+            >
+              <Droppable droppableId="categories">
+                {(provided) => (
+                  <ul 
+                    className="list-unstyled mb-0" 
+                    style={{ borderTop: '1px solid #dee2e6' }}
+                    {...provided.droppableProps} 
+                    ref={provided.innerRef}
+                  >
+                    {place.categories && place.categories.length > 0 ? (
+                      place.categories.map((category, index) => {
+                        let catDisplayLangName = category.name;
+                        if (i18n.language === 'en' && category.name_en) {
+                          catDisplayLangName = category.name_en;
+                        } else if (i18n.language === 'pt' && category.name_pt) {
+                          catDisplayLangName = category.name_pt;
+                        }
+                        return (
+                          <Draggable key={category.id} draggableId={String(category.id)} index={index}>
+                            {(provided, snapshot) => (
+                              <StyledListItem
+                                ref={provided.innerRef}
+                                {...provided.draggableProps}
+                                selected={selectedCategoryId === category.id}
+                                onClick={() => setSelectedCategoryId(category.id)}
+                                style={{
+                                  ...provided.draggableProps.style,
+                                  backgroundColor: snapshot.isDragging ? '#d0eaff' : (selectedCategoryId === category.id ? '#e9ecef' : 'transparent'),
+                                }}
+                              >
+                                <div {...provided.dragHandleProps} style={{ cursor: 'grab', marginRight: '10px', display: 'flex', alignItems: 'center' }}>
+                                  <FiMenu size={18} />
+                                </div>
+                                <span className="item-name">
+                                  {catDisplayLangName}
+                                </span>
+                                <div className="actions">
+                                  <ActionButton
+                                    variant="light"
+                                    size="sm"
+                                    hovercolor="#007bff"
+                                    onClick={(e) => { e.stopPropagation(); handleShowEditCategoryModal(category); }}
+                                    title={t('common.edit')}
+                                  >
+                                    <FiEdit2 size={18} />
+                                  </ActionButton>
+                                  <ActionButton
+                                    variant="light"
+                                    size="sm"
+                                    hovercolor="#dc3545"
+                                    onClick={(e) => { e.stopPropagation(); handleDeleteCategory(category.id, catDisplayLangName); }}
+                                    title={t('common.delete')}
+                                  >
+                                    <FiTrash2 size={18} />
+                                  </ActionButton>
+                                </div>
+                              </StyledListItem>
+                            )}
+                          </Draggable>
+                        );
+                      })
+                    ) : (
+                      !isDragging && <p className="text-center text-muted mt-3">{t('menuSettings.noCategoriesYet')}</p>
+                    )}
+                    {provided.placeholder}
+                  </ul>
+                )}
+              </Droppable>
+            </DragDropContext>
+            <Button variant="success" block className="mt-3 w-100" onClick={handleShowAddCategoryModal}>
               {t('menuSettings.addCategory')}
             </Button>
           </Panel>

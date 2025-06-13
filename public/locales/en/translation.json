@@ -57,6 +57,8 @@
   "menuSettings.toast.categoryUpdatedSuccess": "Category \"{{editCategoryName}}\" updated successfully!",
   "menuSettings.toast.categoryDeletedSuccess": "Category \"{{categoryName}}\" deleted successfully!",
   "menuSettings.toast.menuItemDeletedSuccess": "Menu item \"{{itemName}}\" deleted successfully!",
+  "menuSettings.toast.categoriesReorderedSuccess": "Categories reordered successfully!",
+  "menuSettings.toast.categoriesReorderFailedError": "Failed to reorder categories. Please try again.",
   "menuSettings.toast.categoryNameEmpty": "Category name cannot be empty.",
   "menuSettings.toast.selectCategoryFirst": "Please select a category first.",
   "menuSettings.toast.priceMustBePositive": "Price must be a number greater than or equal to 0.",
