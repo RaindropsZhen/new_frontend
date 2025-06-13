@@ -99,9 +99,9 @@ const OrderForm = ({amount, items, color, selectedLanguage, isTakeAway, phoneNum
         created_at: createdAt,
       }, auth.token);
 
-      if (json?.success && json.order) {
+      if (json?.success && json.order_id) { // Check for order_id instead of order
         toast.success(
-          renderOrderSuccessMessage(selectedLanguage, json.order),
+          renderOrderSuccessMessage(selectedLanguage, json.order_id), // Pass order_id
           {
             autoClose: false,
           }
