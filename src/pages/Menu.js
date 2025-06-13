@@ -257,7 +257,7 @@ const location = useLocation();
 
   return (
     <>
-    {/* <ToastContainer /> // Removed to prevent duplicate toasts, App.js has one */}
+    <ToastContainer />
     <Container fluid className="mt-2 mb-4">
       {isLoading ? ( // Show loading message while fetching data
         <div className="text-center p-4 d-flex justify-content-center align-items-center" style={{ height: '100vh' }}>
