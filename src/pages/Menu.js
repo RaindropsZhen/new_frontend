@@ -1,8 +1,8 @@
-import { Container, Row, Col, Button } from 'react-bootstrap';
+import { Container, Row} from 'react-bootstrap';
 import { useParams, useLocation } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback } from 'react';
 import { fetchPlace } from '../apis';
 import styled from 'styled-components';
 import 'react-tabs/style/react-tabs.css';
@@ -113,43 +113,6 @@ const location = useLocation();
   }, [params.id]);
 
   const onAddItemtoShoppingCart = (item) => {
-    // const tableNumber = parseInt(params.table);
-    // const currentTable = place.tables.find(
-    //   (table) => parseInt(table.table_number) === tableNumber
-    // );
-    // const numberOfPeople = currentTable ? currentTable.number_people : 1; // Default to 1 if not found
-    // const allowedItems = 10
-    // const maxAllowedItems = numberOfPeople * allowedItems;
-
-    // const renderToastMessage = (language, maxItems) => {
-    //   switch (language) {
-    //     case '中文':
-    //       return (
-    //         <>
-    //           每人每次最多可点 {allowedItems} 个菜品。<br />
-    //           您最多可以订购 {maxItems} 个菜品。
-    //         </>
-    //       );
-    //     case 'Português':
-    //       return (
-    //         <>
-    //           Cada pessoa pode pedir {allowedItems} itens de cada vez. <br />
-    //           Podem pedir até {maxItems} itens.
-    //         </>
-    //       );
-    //     default: // English
-    //       return (
-    //         <>
-    //           Each person can only order {allowedItems} items at a time. <br />
-    //           You can order up to {maxItems} items.
-    //         </>
-    //       );
-    //   }
-    // };
-    
-    
-
-    // if (totalQuantity + 1 > maxAllowedItems) {
     setShoppingCart((prevShoppingCart) => ({
       ...shoppingCart,
       [item.id]: {

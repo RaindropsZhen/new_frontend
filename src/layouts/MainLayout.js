@@ -1,6 +1,6 @@
 import { Navbar, Nav, Container } from 'react-bootstrap';
 import { useHistory } from 'react-router-dom';
-import React, { useContext } from 'react';
+import { useContext } from 'react';
 
 import AuthContext from '../contexts/AuthContext';
 
