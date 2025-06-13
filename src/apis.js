@@ -123,6 +123,11 @@ export function reorderCategories(placeId, orderedCategoryIds, token) {
   return request(`/api/places/${placeId}/categories/reorder/`, { data, token, method: "POST" });
 }
 
+export function reorderMenuItems(categoryId, orderedItemIds, token) {
+  const data = { ordered_item_ids: orderedItemIds };
+  return request(`/api/categories/${categoryId}/menu-items/reorder/`, { data, token, method: "POST" });
+}
+
 export function updatePlace(id, data, token) {
     return request(`/api/places/${id}`, { data, token, method: "PATCH" });
 }
