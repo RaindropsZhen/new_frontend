@@ -3,8 +3,7 @@ import { FiLink } from "react-icons/fi"; // Import Link icon
 import { Row, Col, Button, Table, Modal, ToggleButton } from "react-bootstrap";
 import { useParams, useHistory } from "react-router-dom";
 import React, { useState, useEffect, useContext, useCallback } from "react";
-// import DropdownTableNumberPicker from "../components/DropdownTableNumberPicker"; // Commented out
-import { fetchOrders, completeOrder, reprintOrder, fetchPlace, updateTableBlockedStatus } from "../apis"; // Removed updateTableNumberPeople
+import { fetchOrders, completeOrder, reprintOrder, fetchPlace, updateTableBlockedStatus } from "../apis";
 import AuthContext from "../contexts/AuthContext";
 import MainLayout from "../layouts/MainLayout";
 import { ToastContainer, toast } from 'react-toastify';
@@ -12,7 +11,6 @@ import 'react-toastify/dist/ReactToastify.css';
 
 const Orders = () => {
   const [place, setPlace] = useState(null);
-  // const [selectedNumbers, setSelectedNumbers] = useState({}); // Commented out
   const [orders, setOrders] = useState([]);
   const currentDate = new Date();
   const [showModal, setShowModal] = useState(false);
@@ -43,16 +41,6 @@ const Orders = () => {
   useEffect(() => {
     onFetchPlace();
   }, [onFetchPlace]);
-
-    // useEffect(() => { // Commented out - related to selectedNumbers
-    //     if (place) {
-    //         const initialSelectedNumbers = {};
-    //         place.tables.forEach(table => {
-    //             initialSelectedNumbers[table.id] = table.number_people || 1;
-    //         });
-    //         setSelectedNumbers(initialSelectedNumbers);
-    //     }
-    // }, [place]);
 
     useEffect(() => {
         const updateOrders = async () => {
@@ -185,28 +173,6 @@ const Orders = () => {
                                     >
                                         <FiLink size={18}/>
                                     </Button>
-                                    {/* <div className="ms-1"> // Commented out DropdownTableNumberPicker wrapper
-                                      <DropdownTableNumberPicker
-                                          min={1}
-                                          max={40}
-                                        initialValue={selectedNumbers[table.id] || 1}
-                                        onChange={(value) => {
-                                          setSelectedNumbers(prev => ({ ...prev, [table.id]: value }));
-                                          updateTableNumberPeople(table.id, value, auth.token)
-                                            .then(response => {
-                                              if (response) {
-                                                toast.success(
-                                                  `已更新桌号 ${table.table_number} 的人数为 ${value}`
-                                                );
-                                              }
-                                            })
-                                            .catch(error => {
-                                              console.error("Error updating table number of people:", error);
-                                              toast.error("更新人数失败");
-                                            });
-                                        }}
-                                      />
-                                    </div> */}
                                 </div>
                             <ToggleButton
                                 className="mb-2"

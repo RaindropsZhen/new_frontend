@@ -1,12 +1,10 @@
-import { Form, Button,InputGroup  } from 'react-bootstrap';
-import React, { useState, useContext,Row } from 'react';
+import { Form, Button } from 'react-bootstrap';
+import React, { useState, useContext } from 'react';
 import TimePicker from 'react-bootstrap-time-picker';
 import { addPlace,addCategory } from '../apis';
 import AuthContext from '../contexts/AuthContext';
 
 import ImageDropzone from './ImageDropzone';
-
-import { uploadImage } from '../apis';
 
 const languages = [
   {value: "en","label":"English"},
@@ -50,11 +48,6 @@ const PlaceForm = ({ onDone, place_length}) => {
     }
     const onClick = async () => {
       setLoading(true);
-
-      // REMOVED Cloudinary upload:
-      // let image_name = "placeId" + "_" + (place_length + 1) ;
-      // let folder_name = auth.token;
-      // const image_json = await uploadImage(image, folder_name,image_name)
 
       const formData = new FormData();
       formData.append('name', name);

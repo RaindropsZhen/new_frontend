@@ -13,10 +13,6 @@ const MainLayout = ({ children }) => {
     history.replace("/login");
   }
 
-  const onRegister = () => {
-    history.replace("/register");
-  }
-
   const onSignOut = () => {
     auth.signOut();
     history.push("/login");
@@ -28,8 +24,8 @@ const MainLayout = ({ children }) => {
 
   return (
     <div>
-      <Navbar bg="dark" variant="dark" className="mb-4">
-        <Navbar.Brand href="/">主页</Navbar.Brand>
+      <Navbar bg="light" variant="light" className="mb-4">
+        <Navbar.Brand href="/">QR Menu</Navbar.Brand>
         <Nav>
           <Nav.Link onClick={goToPlaces}>我的餐厅</Nav.Link>
         </Nav>
@@ -40,8 +36,7 @@ const MainLayout = ({ children }) => {
             <Nav.Link onClick={onSignOut}>退出</Nav.Link>
           ) : (
             [
-              <Nav.Link key={1} onClick={onSignIn}>登录</Nav.Link>,
-              <Nav.Link key={2} onClick={onRegister}>注册</Nav.Link>
+              <Nav.Link key={1} onClick={onSignIn}>登录</Nav.Link>
             ]
           )}
         </Nav>

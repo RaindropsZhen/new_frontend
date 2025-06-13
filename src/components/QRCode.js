@@ -1,9 +1,8 @@
 import { AiOutlineLink } from 'react-icons/ai';
 import { Button } from 'react-bootstrap';
 import QRCodeReact from 'qrcode.react';
-import React, { useRef } from 'react';
+import React from 'react';
 import styled from 'styled-components';
-import { useReactToPrint } from 'react-to-print';
 
 const Container = styled.div`
   position: relative;
@@ -22,26 +21,7 @@ const Overlay = styled.div`
   }
 `;
 
-const ComponentToPrint = styled.div`
-  text-align: center;
-  margin-top: 200px;
-  h1 {
-    font-size: 100px;
-    font-weight: bold;
-    margin-bottom: 50px;
-  }
-  h2 {
-    font-size: 60px;
-    margin-bottom: 100px
-  }
-`;
-
 const QRCode = (placeId) => {
-
-  const componentRef = useRef();
-  const handlePrint = useReactToPrint({
-    content: () => componentRef.current,
-  });
   const url = `${window.location.origin}/${placeId.placeId}/select_table`;
 
   return (
