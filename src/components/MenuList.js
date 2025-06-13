@@ -37,7 +37,7 @@ const MenuList = ({
   const renderCategoryName = (category) => {
     switch (selectedLanguage) {
       case '中文':
-        return category.name_cn;
+        return category.name; // Corrected to use category.name for Chinese
       case 'English':
         return category.name_en;
       case 'Português':

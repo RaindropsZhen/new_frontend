@@ -4,6 +4,7 @@ import { useParams, useLocation } from 'react-router-dom';
 import { ToastContainer, toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import React, { useState, useEffect, useMemo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next'; // Import useTranslation here
 import { fetchPlace } from '../apis';
 import styled from 'styled-components';
 import 'react-tabs/style/react-tabs.css';
@@ -43,7 +44,8 @@ const renderFilterAllButton = (selectedLanguage) => {
 };
 const Menu = () => {
   const { table } = useParams();
-  const [showAgreementModal, setShowAgreementModal] = useState(false);
+  const { t } = useTranslation(); // Correctly initialize t here
+  // const [showAgreementModal, setShowAgreementModal] = useState(false); // Removed for agreement modal
   const [isLoading, setIsLoading] = useState(true); // Add loading state
 
   const [place, setPlace] = useState({});
@@ -53,62 +55,12 @@ const Menu = () => {
   const params = useParams();
   const [selectedLanguage, setSelectedLanguage] = useState("en");
   const [showLanguageModal, setShowLanguageModal] = useState(false);
-  const [nextOrderingTime, setNextOrderingTime] = useState(0);
-  const [enableOrdering, setEnableOrdering] = useState(true);
-  const [timeLeftToOrder, setTimeLeftToOrder] = useState(0); //in millisecond
-  const takeawayBoxFee = 8.9;
+  // const [nextOrderingTime, setNextOrderingTime] = useState(0); // Removed for 10-min limit
+  const [enableOrdering, setEnableOrdering] = useState(true); // Default to true, limit logic removed
+  // const [timeLeftToOrder, setTimeLeftToOrder] = useState(0); // Removed for 10-min limit
+  // const takeawayBoxFee = 8.9; // Removed for agreement modal
 
-  const [agreementText, setAgreementText] = useState({
-    'English': (
-      <>
-        Please read and acknowledge the following terms:
-        <br />
-        <br />
-        To minimize food waste, a charge of <b>{`${takeawayBoxFee}€`}</b> will be applied for each <b>takeaway box</b> required for uneaten food. 
-        We kindly ask you to order according to your appetite.
-        <br />
-        <br />
-        By dining in our restaurant, you acknowledge and accept these terms. Thank you for your understanding.
-      </>
-    ),
-    '中文': (
-      <>
-        请阅读并确认以下条款：
-        <br />
-        <br />
-        为减少食物浪费，我们将对每个未食用完需打包的<b>外卖盒</b>收取 <b>{`${takeawayBoxFee} 欧`}</b> 的费用。
-        敬请根据您的食量合理点餐。
-        <br />
-        <br />
-        在本餐厅用餐，即视为您已知悉并接受此条款。感谢您的理解与配合。
-      </>
-    ),
-    'Português': (
-      <>
-        Por favor, leia e reconheça os seguintes termos:
-        <br />
-        <br />
-        Para minimizar o desperdício de alimentos, será cobrada uma taxa de <b>{`${takeawayBoxFee}€`}</b> por cada <b>caixa de take-away</b> necessária para a comida não consumida. 
-        Pedimos que faça os seus pedidos de acordo com o seu apetite.
-        <br />
-        <br />
-        Ao fazer a sua refeição no nosso restaurante, considera-se que aceita estes termos. Agradecemos a sua compreensão.
-      </>
-    ),
-  });
-  
-  
-  const [agreementTitle, setAgreementTitle] = useState({
-    'English': "Agreement",
-    '中文': "协议",
-    'Português': "Acordo"
-  });
-
-  const [agreeButtonText, setAgreeButtonText] = useState({
-    'English': "I Agree",
-    '中文': "我同意",
-    'Português': "Acordo"
-  });
+  // Removed agreementText, agreementTitle, agreeButtonText states
 
     useEffect(() => {
     const storedOrderHistory = localStorage.getItem(`orderHistory-${params.table}`);
@@ -137,7 +89,7 @@ const Menu = () => {
     setSelectedLanguage(language);
     setShowLanguageModal(false); // Hide language modal after selection
     localStorage.setItem('selectedLanguage', language);
-    setShowAgreementModal(true); // Show agreement modal after language selection
+    // setShowAgreementModal(true); // Removed: Don't show agreement modal after language selection
 };
 
 const location = useLocation();
@@ -234,33 +186,33 @@ const location = useLocation();
     onFetchPlace();
   }, [onFetchPlace]);
 
-  useEffect(() => {
-    if (place && place.tables && params && params.table) {
-      const tableNumber = parseInt(params.table);
-      const table = place.tables.find(
-        (table) => parseInt(table.table_number) === tableNumber
-      );
+  // useEffect(() => { // Removed for 10-min limit
+    // if (place && place.tables && params && params.table) {
+      // const tableNumber = parseInt(params.table);
+      // const table = place.tables.find(
+        // (table) => parseInt(table.table_number) === tableNumber
+      // );
 
-      if (table) {
+      // if (table) {
         // Convert the last ordering time to milliseconds since epoch
-        const lastOrderingTimeInSeconds = table.last_ordering_time;
-        const placeCreatedAt = new Date(place.createdAt).getTime();
+        // const lastOrderingTimeInSeconds = table.last_ordering_time;
+        // const placeCreatedAt = new Date(place.createdAt).getTime();
 
-        const lastOrderingTimeInMilliseconds = placeCreatedAt + lastOrderingTimeInSeconds * 1000;
+        // const lastOrderingTimeInMilliseconds = placeCreatedAt + lastOrderingTimeInSeconds * 1000;
 
         // Calculate the next allowed ordering time
-        const nextAllowedTime = lastOrderingTimeInMilliseconds + place.ordering_limit_interval * 1000;
-        setNextOrderingTime(nextAllowedTime);
-      }
-    }
-  }, [place, params]);
+        // const nextAllowedTime = lastOrderingTimeInMilliseconds + place.ordering_limit_interval * 1000;
+        // setNextOrderingTime(nextAllowedTime);
+      // }
+    // }
+  // }, [place, params]); // Removed for 10-min limit
 
     // New useEffect for agreement modal logic
   useEffect(() => {
     const storedLanguage = localStorage.getItem('selectedLanguage');
-    const agreementTimestamp = localStorage.getItem('agreementTimestamp');
-    const now = Date.now();
-    const twoHours = 2 * 60 * 60 * 1000; // Two hours in milliseconds
+    // const agreementTimestamp = localStorage.getItem('agreementTimestamp'); // Removed for agreement modal
+    // const now = Date.now(); // Removed for agreement modal
+    // const twoHours = 2 * 60 * 60 * 1000; // Removed for agreement modal
 
     if (storedLanguage) {
         setSelectedLanguage(storedLanguage);
@@ -268,9 +220,10 @@ const location = useLocation();
 
     if (!storedLanguage) {
       setShowLanguageModal(true);
-    } else if (!agreementTimestamp || (now - parseInt(agreementTimestamp, 10) > twoHours)) {
-      setShowAgreementModal(true);
-    }
+    } 
+    // else if (!agreementTimestamp || (now - parseInt(agreementTimestamp, 10) > twoHours)) { // Removed for agreement modal
+      // setShowAgreementModal(true); // Removed for agreement modal
+    // } // Removed for agreement modal
   }, []);
 
   const [activeTab, setActiveTab] = useState('menu');
@@ -282,7 +235,7 @@ const location = useLocation();
   const renderCategoryName = (category) => {
     switch (selectedLanguage) {
       case '中文':
-        return category.name_cn;
+        return category.name;
       case 'English':
         return category.name_en;
       case 'Português':
@@ -301,26 +254,26 @@ const location = useLocation();
     setSelectedCategoryName(name);
   };
 
-const handleAgreementAccept = () => {
-    const now = Date.now();
-    localStorage.setItem('agreementTimestamp', now.toString());
-    setShowAgreementModal(false);
-};
+// const handleAgreementAccept = () => { // Removed for agreement modal
+    // const now = Date.now(); // Removed for agreement modal
+    // localStorage.setItem('agreementTimestamp', now.toString()); // Removed for agreement modal
+    // setShowAgreementModal(false); // Removed for agreement modal
+// }; // Removed for agreement modal
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      if (nextOrderingTime > 0) {
-        const now = Date.now();
-        const timeLeft = Math.max(0, nextOrderingTime - now); // Ensure timeLeft is not negative
-        setTimeLeftToOrder(timeLeft);
-        setEnableOrdering(timeLeft === 0);
-      }
-    }, 500);
+  // useEffect(() => { // Removed for 10-min limit
+    // const timer = setInterval(() => {
+      // if (nextOrderingTime > 0) {
+        // const now = Date.now();
+        // const timeLeft = Math.max(0, nextOrderingTime - now); // Ensure timeLeft is not negative
+        // setTimeLeftToOrder(timeLeft);
+        // setEnableOrdering(timeLeft === 0);
+      // }
+    // }, 500);
 
-    return () => clearInterval(timer);
-  }, [nextOrderingTime]);
+    // return () => clearInterval(timer);
+  // }, [nextOrderingTime]); // Removed for 10-min limit
 
-
+  // const { t } = useTranslation(); // This was misplaced, t is initialized at the start of Menu component.
 
   const OrderHistory = ({ orderHistory }) => {
     // Group items by name
@@ -338,17 +291,17 @@ const handleAgreementAccept = () => {
 
     return (
     <div style={{ width: '100%', maxWidth: '600px', margin: '0 auto' }}>
-      <h2 style={{ fontSize: '20px', marginBottom: '10px', textAlign: 'center' }}>Order History</h2>
+      <h2 style={{ fontSize: '20px', marginBottom: '10px', textAlign: 'center' }}>{t('orderHistory.title')}</h2>
       {Object.keys(groupedItems).length === 0 ? (
-        <p style={{ fontSize: '16px', textAlign: 'center' }}>No orders yet</p>
+        <p style={{ fontSize: '16px', textAlign: 'center' }}>{t('orderHistory.noOrdersYet')}</p>
       ) : (
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '16px' }}>
           <thead style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>
             <tr>
-              <th style={{ padding: '8px', textAlign: 'left' }}>Item</th>
-              <th style={{ padding: '8px', textAlign: 'right' }}>Price</th>
-              <th style={{ padding: '8px', textAlign: 'right' }}>Quantity</th>
-              <th style={{ padding: '8px', textAlign: 'right' }}>Total</th>
+              <th style={{ padding: '8px', textAlign: 'left' }}>{t('orderHistory.headers.item')}</th>
+              <th style={{ padding: '8px', textAlign: 'right' }}>{t('orderHistory.headers.price')}</th>
+              <th style={{ padding: '8px', textAlign: 'right' }}>{t('orderHistory.headers.quantity')}</th>
+              <th style={{ padding: '8px', textAlign: 'right' }}>{t('orderHistory.headers.total')}</th>
             </tr>
           </thead>
           <tbody>
@@ -361,15 +314,16 @@ const handleAgreementAccept = () => {
               </tr>
             ))}
             <tr style={{ borderTop: '2px solid #dee2e6', fontWeight: 'bold' }}>
-              <td colSpan="3" style={{ padding: '8px', textAlign: 'right' }}>Total:</td>
+              <td colSpan="3" style={{ padding: '8px', textAlign: 'right' }}>{t('orderHistory.totalLabel')}:</td>
               <td style={{ padding: '8px', textAlign: 'right' }}>€{totalCost.toFixed(1)}</td>
             </tr>
           </tbody>
         </table>
       )}
-      <p style={{ fontSize: '14px', marginTop: '15px', textAlign: 'center', color: '#6c757d' }}>
-        Please note that buffet per person is not included yet to the total price.
-      </p>
+      {/* Buffet note removed as per user request */}
+      {/* <p style={{ fontSize: '14px', marginTop: '15px', textAlign: 'center', color: '#6c757d' }}>
+        {t('orderHistory.buffetNote')}
+      </p> */}
     </div>
   );
 };
@@ -390,73 +344,7 @@ const handleAgreementAccept = () => {
         </div>
       ) : (
         <>
-          {showAgreementModal && (
-            <Modal 
-            show={showAgreementModal}
-            backdrop="static"
-            keyboard={false}
-            centered
-            className="agreementModal"
-          >
-            {/* Table Number Header */}
-            <div style={{
-              backgroundColor: '#FE6C4C',
-              color: 'white',
-              textAlign: 'center',
-              fontWeight: 'bold',
-              padding: '12px',
-              fontSize: '18px',
-              borderTopLeftRadius: '12px',
-              borderTopRightRadius: '12px'
-            }}>
-              Table Number: {params.table === '77' ? 'VIP' : params.table}
-            </div>
-          
-            {/* Modal Content */}
-            <Modal.Body style={{
-              padding: '20px',
-              fontSize: '16px',
-              textAlign: 'center',
-              lineHeight: '1.6',
-              color: '#333',
-              fontWeight: '500'
-            }}>
-              <h5 style={{ marginBottom: '15px', fontWeight: 'bold', color: '#FE6C4C' }}>
-                {agreementTitle[selectedLanguage]}
-              </h5>
-              <div style={{ textAlign: 'justify', padding: '0 10px' }}>
-                {agreementText[selectedLanguage]}
-              </div>
-            </Modal.Body>
-          
-            {/* Modal Footer */}
-            <Modal.Footer style={{
-              display: 'flex',
-              justifyContent: 'center',
-              paddingBottom: '20px',
-              borderTop: '1px solid #ddd'
-            }}>
-              <Button 
-                variant="primary" 
-                style={{ 
-                  backgroundColor: '#FE6C4C', 
-                  borderColor: '#FE6C4C', 
-                  fontSize: '16px', 
-                  padding: '10px 25px', 
-                  borderRadius: '8px',
-                  fontWeight: 'bold',
-                  transition: '0.3s'
-                }}
-                onMouseOver={(e) => e.target.style.backgroundColor = '#E65A3A'}
-                onMouseOut={(e) => e.target.style.backgroundColor = '#FE6C4C'}
-                onClick={handleAgreementAccept}
-              >
-                {agreeButtonText[selectedLanguage]}
-              </Button>
-            </Modal.Footer>
-          </Modal>
-          
-          )}
+          {/* Agreement Modal Removed */}
 
           {/* Filter */}
           <StickyFilterContainer>
@@ -501,7 +389,7 @@ const handleAgreementAccept = () => {
             fontSize: '16px',
             borderRadius: '10px'
           }}>
-            Número de Mesa: {params.table === '77' ? 'VIP' : params.table}
+            {t('tableNumberDisplayLabel', { tableId: params.table === '77' ? 'VIP' : params.table })}
           </div>
 
           <Row className="justifyContent-center m-2">
@@ -542,8 +430,8 @@ const handleAgreementAccept = () => {
               color={place.color}
               table_id={params.table}
               orderingInterval={place.ordering_limit_interval}
-              timeLeftToOrder={timeLeftToOrder}
-              enable_ordering={enableOrdering}
+              // timeLeftToOrder={timeLeftToOrder} // Prop removed
+              enable_ordering={true} // Always enable ordering
               activeTab={activeTab}
               onOrderSuccess={(items) => {
                 setShoppingCart({});
@@ -553,8 +441,8 @@ const handleAgreementAccept = () => {
                   quantity: item.quantity
                 }));
                 setOrderHistory(prevHistory => [...prevHistory, ...orderDetails]);
-                // Set next ordering time
-                setNextOrderingTime(Date.now() + place.ordering_limit_interval * 1000);
+                // Set next ordering time // Logic removed
+                // setNextOrderingTime(Date.now() + place.ordering_limit_interval * 1000); // Line removed
               }}
             />
           )}

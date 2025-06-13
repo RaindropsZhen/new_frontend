@@ -68,5 +68,17 @@
   "menuSettings.confirm.deleteCategory": "您确定要删除分类 \"{{categoryName}}\" 吗？此操作无法撤销。",
   "menuSettings.confirm.deleteMenuItem": "您确定要删除菜单项 \"{{itemName}}\" 吗？此操作无法撤销。",
   "menuSettings.timeNotSet": "(未设置)",
-  "selectTable.title": "选择桌号"
+  "selectTable.title": "选择桌号",
+  "tableVerificationMessage": "请确认您的桌号是 {{tableDisplay}}，以免订单送错桌。",
+  "tabs.menu": "菜单",
+  "tabs.cart": "购物车",
+  "tabs.history": "历史",
+  "orderHistory.title": "订单历史",
+  "orderHistory.noOrdersYet": "暂无订单",
+  "orderHistory.headers.item": "菜品",
+  "orderHistory.headers.price": "价格",
+  "orderHistory.headers.quantity": "数量",
+  "orderHistory.headers.total": "总计",
+  "orderHistory.totalLabel": "总计",
+  "tableNumberDisplayLabel": "桌号: {{tableId}}"
 }

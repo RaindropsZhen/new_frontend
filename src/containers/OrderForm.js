@@ -1,6 +1,7 @@
 import React, { useState, useContext, useRef } from 'react';
 import { Button, Form } from 'react-bootstrap';
 import { useParams,useHistory  } from 'react-router-dom';
+import { useTranslation } from 'react-i18next'; // Import useTranslation
 // import ReCAPTCHA from "react-google-recaptcha";
 import { toast } from 'react-toastify';
 import { 
@@ -23,24 +24,10 @@ const renderOrderingLimitMessage = (selectedLanguage) => {
       return ;
   }
 };
-const renderTableVerificationMessage = (selectedLanguage, tableNumber) => {
-  const tableDisplay = tableNumber === '77' ? 'VIP' : tableNumber;
-
-  switch (selectedLanguage) {
-    case '中文':
-      return `请确认您的桌号是 ${tableDisplay}，以免订单送错桌。`;
-    case 'English':
-      return `Please verify your table number is ${tableDisplay} to avoid order delivery to the wrong table.`;
-    case 'Español':
-      return `Por favor, verifique que su número de mesa es ${tableDisplay} para evitar la entrega incorrecta del pedido.`;
-    case 'Português':
-      return `Por favor, verifique se o número da sua mesa é ${tableDisplay} para evitar a entrega errada do pedido.`;
-    default:
-      return `Please verify your table number is ${tableDisplay} to avoid order delivery to the wrong table.`;
-  }
-};
+// Removed renderTableVerificationMessage as it will be replaced by i18n
 
 const OrderForm = ({amount, items, color, selectedLanguage, isTakeAway, phoneNumber, arrivalTime,comment,customer_name,timeLeftToOrder,enable_ordering, onOrderSuccess}) => {
+    const { t } = useTranslation(); // Initialize useTranslation
     const formatTime = (milliseconds) => {
       const totalSeconds = Math.floor(milliseconds / 1000);
       const minutes = Math.floor(totalSeconds / 60);
@@ -147,9 +134,9 @@ const OrderForm = ({amount, items, color, selectedLanguage, isTakeAway, phoneNum
   return (
     <Form onSubmit={createOrder} ref={formRef}>
     <div style={{ marginBottom: '10px', color: '#333', fontWeight: 'bold' }}>
-      {renderTableVerificationMessage(selectedLanguage, params.table)}
+      {t('tableVerificationMessage', { tableDisplay: params.table === '77' ? 'VIP' : params.table })}
     </div>
-    <Button 
+    <Button
       variant='standard' 
       style={{backgroundColor: '#FE6C4C'}} 
       className='.t-4' 

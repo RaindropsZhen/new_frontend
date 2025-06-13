@@ -64,5 +64,17 @@
   "menuSettings.confirm.deleteCategory": "Are you sure you want to delete category \"{{categoryName}}\"? This action cannot be undone.",
   "menuSettings.confirm.deleteMenuItem": "Are you sure you want to delete menu item \"{{itemName}}\"? This action cannot be undone.",
   "menuSettings.timeNotSet": "(Not set)",
-  "selectTable.title": "Select Table"
+  "selectTable.title": "Select Table",
+  "tableVerificationMessage": "Please verify your table number is {{tableDisplay}} to avoid order delivery to the wrong table.",
+  "tabs.menu": "Menu",
+  "tabs.cart": "Cart",
+  "tabs.history": "History",
+  "orderHistory.title": "Order History",
+  "orderHistory.noOrdersYet": "No orders yet",
+  "orderHistory.headers.item": "Item",
+  "orderHistory.headers.price": "Price",
+  "orderHistory.headers.quantity": "Quantity",
+  "orderHistory.headers.total": "Total",
+  "orderHistory.totalLabel": "Total",
+  "tableNumberDisplayLabel": "Table Number: {{tableId}}"
 }

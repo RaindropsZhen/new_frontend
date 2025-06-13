@@ -31,5 +31,17 @@
   "editMenuItemForm.label.dinner": "Dinner (ES)",
   "editMenuItemForm.title.changeImage": "Change Image (ES)",
   "editMenuItemForm.button.update": "Update (ES)",
-  "editMenuItemForm.toast.updateSuccess": "Successfully updated item {{itemName}} (ES)"
+  "editMenuItemForm.toast.updateSuccess": "Successfully updated item {{itemName}} (ES)",
+  "tableVerificationMessage": "Por favor, verifique que su número de mesa es {{tableDisplay}} para evitar la entrega incorrecta del pedido.",
+  "tabs.menu": "Menú",
+  "tabs.cart": "Carrito",
+  "tabs.history": "Historial",
+  "orderHistory.title": "Historial de Pedidos",
+  "orderHistory.noOrdersYet": "No hay pedidos todavía",
+  "orderHistory.headers.item": "Artículo",
+  "orderHistory.headers.price": "Precio",
+  "orderHistory.headers.quantity": "Cantidad",
+  "orderHistory.headers.total": "Total",
+  "orderHistory.totalLabel": "Total",
+  "tableNumberDisplayLabel": "Número de Mesa: {{tableId}}"
 }
