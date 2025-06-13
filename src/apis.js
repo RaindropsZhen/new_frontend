@@ -50,7 +50,8 @@ function request(path,{ data = null, token = null, method = "GET"}) {
     })
     .catch((e) =>{
         //Handle all errors 
-        toast(e.message,{type: "error"})
+        toast(e.message || "An API request error occurred.",{type: "error"}); // Ensure a message
+        throw e; // Re-throw the error so calling code can also catch it
     })
 }
 
