@@ -112,45 +112,47 @@ const MenuItemCard = ({ language, item, onOrder, onRemove, color }) => {
           onClick={currentAvailability ? handleShow : undefined}
         />
         <Card.Body style={{ padding: '10px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flexGrow: 1 }}>
-          <div> {/* Top part for name and code */}
-            <Card.Title style={{ fontSize: '1em', fontWeight: 'bold', marginBottom: '5px', color: '#333' }}>
+          {/* Top part for name, code, and price */}
+          <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'flex-start', marginBottom: 'auto' }}>
+            <Card.Title style={{ fontSize: '1em', fontWeight: 'bold', color: '#333', flexGrow: 1, marginRight: '5px', marginBottom: '2px' }}>
               <span style={{ fontSize: '0.8em', color: '#777', marginRight: '5px' }}>{item.code}</span>
               {renderMenuItemName(item, language)}
             </Card.Title>
+            {item.price > 0 && (
+              <b style={{ color: color || '#FE6C4C', fontSize: '1.1em', fontWeight: 'bold', whiteSpace: 'nowrap', marginLeft: '5px' }}>
+                {item.price.toFixed(2)}€
+              </b>
+            )}
           </div>
 
-          <div> {/* Bottom part for price and buttons */}
-            <Row className="align-items-center" style={{ marginTop: '10px' }}>
-              <Col xs={6} sm={6} className="text-start">
-                {item.price > 0 && <b style={{ color: color || '#FE6C4C', fontSize: '1.1em', fontWeight: 'bold' }}>{item.price.toFixed(2)}€</b>}
-              </Col>
-              {onOrder && (
-                <Col xs={6} sm={6} className="d-flex justify-content-end align-items-center">
-                  <OperationButton
-                    variant="lightgray"
-                    size="sm"
-                    onClick={() => onRemove(item)}
-                    disabled={!currentAvailability || (item.quantity || 0) === 0}
-                    style={{ padding: '0.2rem 0.5rem', minWidth: '30px' }}
-                  >
-                    -
-                  </OperationButton>
-                  <span style={{ margin: '0 8px', fontSize: '1em', color: '#333' }}>
-                    {item.quantity >= 0 ? item.quantity : 0}
-                  </span>
-                  <OperationButton
-                    variant="lightgray"
-                    size="sm"
-                    onClick={() => onOrder(item)}
-                    disabled={!currentAvailability}
-                    style={{ padding: '0.2rem 0.5rem', minWidth: '30px' }}
-                  >
-                    +
-                  </OperationButton>
-                </Col>
-              )}
-            </Row>
-          </div>
+          {/* Bottom part for buttons only */}
+          {onOrder && (
+            <div style={{ marginTop: '10px' }}>
+              <div className="d-flex justify-content-end align-items-center">
+                <OperationButton
+                  variant="lightgray"
+                  size="sm"
+                  onClick={() => onRemove(item)}
+                  disabled={!currentAvailability || (item.quantity || 0) === 0}
+                  style={{ padding: '0.2rem 0.5rem', minWidth: '30px' }}
+                >
+                  -
+                </OperationButton>
+                <span style={{ margin: '0 8px', fontSize: '1em', color: '#333' }}>
+                  {item.quantity >= 0 ? item.quantity : 0}
+                </span>
+                <OperationButton
+                  variant="lightgray"
+                  size="sm"
+                  onClick={() => onOrder(item)}
+                  disabled={!currentAvailability}
+                  style={{ padding: '0.2rem 0.5rem', minWidth: '30px' }}
+                >
+                  +
+                </OperationButton>
+              </div>
+            </div>
+          )}
         </Card.Body>
       </Card>
 

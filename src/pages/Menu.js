@@ -188,13 +188,13 @@ const location = useLocation();
 
   useEffect(() => {
     if (categories.length > 0) {
-      // If selectedCategoryName is not in the current list of categories,
-      // or if it's the placeholder for "All", reset to the first actual category.
-      if (!categories.includes(selectedCategoryName) || selectedCategoryName === '') {
+      // Only reset if a specific category is selected (not "All") AND it's no longer in the list.
+      if (selectedCategoryName && !categories.includes(selectedCategoryName)) {
         setSelectedCategoryName(categories[0]);
       }
+      // If selectedCategoryName is "" (for "All"), or if it's a valid category, no change is needed here.
     } else {
-      // If there are no categories, set selectedCategoryName to empty (which implies "All")
+      // If no categories exist, "All" (empty string) is the correct state.
       setSelectedCategoryName('');
     }
   }, [categories, selectedCategoryName]);
@@ -271,15 +271,12 @@ const location = useLocation();
         </div>
       ) : (
         <>
-          {/* Filter */}
           <StickyFilterContainer>
             <Row className="d-flex justify-content-between align-items-center flex-nowrap gap-3">
-            {/* Category Dropdown */}
             <select
               value={selectedCategoryName}
               onChange={(e) => handleCategoryClick(e.target.value)}
               className="custom-dropdown"
-              style={{ fontSize: '14px' }}
             >
               <option value="">{renderFilterAllButton(selectedLanguage)}</option>
               {categories
@@ -289,8 +286,6 @@ const location = useLocation();
                   </option>
                 ))}
               </select>
-
-            {/* Language Dropdown */}
             <select
                 value={selectedLanguage}
                 onChange={(e) => handleLanguageSelect(e.target.value)}
