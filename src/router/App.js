@@ -1,13 +1,9 @@
-import { BrowserRouter, Switch, Route } from 'react-router-dom';
+import { BrowserRouter, Switch, Route, Redirect } from 'react-router-dom';
 import { ToastContainer } from 'react-toastify';
-import React from 'react';
-
 import { AuthProvider } from '../contexts/AuthContext';
 import PrivateRoute from './PrivateRoute';
 
-import Home from '../pages/Home';
 import Login from '../pages/Login';
-import Register from '../pages/Register';
 import Places from '../pages/Places';
 import Place from '../pages/Place';
 import Menu from '../pages/Menu';
@@ -20,18 +16,11 @@ function App() {
         <AuthProvider>
             <BrowserRouter>
                 <Switch>
-                    <Route exact path='/'>
-                        <Home/>
-                    </Route>
-
+                    <Redirect from="/" to="/login" exact />
                     <Route exact path='/login'>
                         <Login/>
                     </Route>
                     
-                    <Route exact path='/register'>
-                        <Register/>
-                    </Route> 
-
                     <Route exact path='/:id/select_table/'>
                         <TableNumberInput/>
                     </Route>

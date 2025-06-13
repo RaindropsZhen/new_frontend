@@ -5,7 +5,7 @@ import CustomQRCode from "./CustomQRCode";
 import { updatePlace} from "../apis";
 import AuthContext from '../contexts/AuthContext';
 import { uploadImage } from "../apis";  
-import { ToastContainer, toast } from 'react-toastify';
+import { toast } from 'react-toastify';
 
 const ModifyQRCode = ({ place,dotColor, cornersDotColor, cornersSquareColor, backgroundColorleft, backgroundColorright }) => {
   const [showModal, setShowModal] = useState(false);
@@ -53,7 +53,6 @@ const ModifyQRCode = ({ place,dotColor, cornersDotColor, cornersSquareColor, bac
   }
 
   const handleConfirm = () => {
-    // onChange(color); // Call the provided onChange callback with the selected color
     onUpdatePlace()
     handleCloseModal();
   };

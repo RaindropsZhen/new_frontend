@@ -7,8 +7,6 @@ import useEditMenuItemFormLogic from '../hooks/useEditMenuItemFormLogic';
 const EditMenuItemForm = ({ place, onDone, item = {} }) => {
   const { t } = useTranslation();
   const {
-    category,
-    setCategory,
     itemName,
     setItemName,
     name_to_print,

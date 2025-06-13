@@ -66,8 +66,7 @@ const MenuItemCard = ({ language, item, onOrder, onRemove, color }) => {
   const lisbonTime = new Date(date.toLocaleString('en-US', { timeZone: 'Europe/Lisbon' }));
   const hour = lisbonTime.getHours();
   const minute = lisbonTime.getMinutes();
-  const second = lisbonTime.getSeconds();
-  const currentTimeSeconds = 3600 * hour + 60 * minute + second;
+  const currentTimeSeconds = 3600 * hour + 60 * minute;
 
   const [currentOrderingTiming, setCurrentOrderingTiming] = useState('');
   const [currentAvailability, setCurrentAvailability] = useState(false);
@@ -118,10 +117,6 @@ const MenuItemCard = ({ language, item, onOrder, onRemove, color }) => {
               <span style={{ fontSize: '0.8em', color: '#777', marginRight: '5px' }}>{item.code}</span>
               {renderMenuItemName(item, language)}
             </Card.Title>
-            {/* Optional: Short description can be added here if desired */}
-            {/* <p style={{ fontSize: '0.85em', color: '#555', marginBottom: '8px' }}>
-              {renderMenuItemDescription(item, language)?.substring(0, 40) + "..."}
-            </p> */}
           </div>
 
           <div> {/* Bottom part for price and buttons */}

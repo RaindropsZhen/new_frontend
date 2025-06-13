@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next'; // Import useTranslation
 import { RiPlayListAddFill } from 'react-icons/ri';
 import { toast } from 'react-toastify';
 import { 
-    uploadImage,
     addCategory,
     addMenuItems,
   } from '../apis';
@@ -27,10 +26,6 @@ const MenuItemForm = ({ place, onDone, item = {} }) => {
 
     setOrderingTiming(value);
 
-  };
-
-  const allFieldsFilled = () => {
-    return name && price && description && image; // Add any other fields you require
   };
   
   const [resetImageDropzone, setResetImageDropzone] = useState(false);
@@ -70,11 +65,6 @@ const MenuItemForm = ({ place, onDone, item = {} }) => {
 
   const onAddMenuItems = async () => {
     
-    // Temporarily commenting out allFieldsFilled as its definition might be incomplete or too strict for now
-    // if (!allFieldsFilled()) { 
-    //   toast.error("请填写所有菜品的信息");
-    //   return;
-    // }
     if (!name || name.trim() === "") {
         toast.error("菜品名称为必填项。");
         return;

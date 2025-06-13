@@ -8,7 +8,7 @@ import styled from 'styled-components';
 import AuthContext from '../contexts/AuthContext';
 import {toast} from 'react-toastify';
 
-import { fetchPlace, addCategory, removeCategory, updateCategory, addMenuItems, removeMenuItem, updateMenuItem } from '../apis';
+import { fetchPlace, addCategory, removeCategory, updateCategory, removeMenuItem } from '../apis';
 import MainLayout from '../layouts/MainLayout';
 import MenuItemForm from '../containers/MenuItemForm';
 import EditMenuItemForm from '../containers/EditMenuItemForm';
