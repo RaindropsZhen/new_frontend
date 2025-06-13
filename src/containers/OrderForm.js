@@ -23,6 +23,15 @@ const renderOrderingLimitMessage = (selectedLanguage) => {
       return ;
   }
 };
+
+// const formatTime = (milliseconds) => { // Commented out as no longer needed
+//   const totalSeconds = Math.floor(milliseconds / 1000);
+//   const minutes = Math.floor(totalSeconds / 60);
+//   const remainingSeconds = totalSeconds % 60;
+//   const formattedTime = `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+//   return formattedTime;
+// };
+
 const renderTableVerificationMessage = (selectedLanguage, tableNumber) => {
   const tableDisplay = tableNumber === '77' ? 'VIP' : tableNumber;
 
@@ -40,14 +49,14 @@ const renderTableVerificationMessage = (selectedLanguage, tableNumber) => {
   }
 };
 
-const OrderForm = ({amount, items, color, selectedLanguage, isTakeAway, phoneNumber, arrivalTime,comment,customer_name,timeLeftToOrder,enable_ordering, onOrderSuccess}) => {
-    const formatTime = (milliseconds) => {
-      const totalSeconds = Math.floor(milliseconds / 1000);
-      const minutes = Math.floor(totalSeconds / 60);
-      const remainingSeconds = totalSeconds % 60;
-      const formattedTime = `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
-      return formattedTime;
-    };
+const OrderForm = ({amount, items, color, selectedLanguage, isTakeAway, phoneNumber, arrivalTime,comment,customer_name, /*timeLeftToOrder, enable_ordering,*/ onOrderSuccess}) => {
+    // const formatTime = (milliseconds) => { // Already commented out above, but ensure it's not duplicated
+    //   const totalSeconds = Math.floor(milliseconds / 1000);
+    //   const minutes = Math.floor(totalSeconds / 60);
+    //   const remainingSeconds = totalSeconds % 60;
+    //   const formattedTime = `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
+    //   return formattedTime;
+    // };
   const formRef = useRef(null);
     // const history = useHistory(); // Get the history object to navigate
   const [loading, setLoading] = useState(false)
@@ -155,10 +164,9 @@ const OrderForm = ({amount, items, color, selectedLanguage, isTakeAway, phoneNum
       className='.t-4' 
       block 
       type="submit" 
-      disabled={loading || 
-        !enable_ordering} 
+      disabled={loading} // Only disable if loading
     >
-      {loading ? renderProcessing(selectedLanguage) : enable_ordering ? renderTotal(selectedLanguage) : `${renderOrderingLimitMessage(selectedLanguage)} ${formatTime(timeLeftToOrder)}`}
+      {loading ? renderProcessing(selectedLanguage) : renderTotal(selectedLanguage)}
     </Button>
   </Form>
 

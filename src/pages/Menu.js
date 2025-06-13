@@ -53,10 +53,27 @@ const Menu = () => {
   const params = useParams();
   const [selectedLanguage, setSelectedLanguage] = useState("en");
   const [showLanguageModal, setShowLanguageModal] = useState(false);
-  const [nextOrderingTime, setNextOrderingTime] = useState(0);
-  const [enableOrdering, setEnableOrdering] = useState(true);
-  const [timeLeftToOrder, setTimeLeftToOrder] = useState(0); //in millisecond
+  // const [nextOrderingTime, setNextOrderingTime] = useState(0); // Commented out
+  // const [enableOrdering, setEnableOrdering] = useState(true); // Commented out
+  // const [timeLeftToOrder, setTimeLeftToOrder] = useState(0); // Commented out
   // const takeawayBoxFee = 8.9;
+
+  const [tableNumberText, setTableNumberText] = useState({
+    'English': "Table Number: ",
+    '中文': "桌号：",
+    'Português': "Número da Mesa: "
+  });
+
+  const [orderHistoryTexts, setOrderHistoryTexts] = useState({
+    title: { 'English': "Order History", '中文': "订单历史", 'Português': "Histórico de Pedidos" },
+    noOrders: { 'English': "No orders yet", '中文': "暂无订单", 'Português': "Nenhum pedido ainda" },
+    itemHeader: { 'English': "Item", '中文': "项目", 'Português': "Item" },
+    priceHeader: { 'English': "Price", '中文': "价格", 'Português': "Preço" },
+    quantityHeader: { 'English': "Quantity", '中文': "数量", 'Português': "Quantidade" },
+    totalHeader: { 'English': "Total", '中文': "小计", 'Português': "Total" },
+    grandTotalLabel: { 'English': "Total:", '中文': "总计：", 'Português': "Total:" }
+    // buffetNote removed
+  });
 
   /*
   const [agreementText, setAgreementText] = useState({
@@ -236,26 +253,26 @@ const location = useLocation();
     onFetchPlace();
   }, [onFetchPlace]);
 
-  useEffect(() => {
-    if (place && place.tables && params && params.table) {
-      const tableNumber = parseInt(params.table);
-      const table = place.tables.find(
-        (table) => parseInt(table.table_number) === tableNumber
-      );
+  // useEffect(() => { // Commented out logic related to nextOrderingTime
+  //   if (place && place.tables && params && params.table) {
+  //     const tableNumber = parseInt(params.table);
+  //     const table = place.tables.find(
+  //       (table) => parseInt(table.table_number) === tableNumber
+  //     );
 
-      if (table) {
-        // Convert the last ordering time to milliseconds since epoch
-        const lastOrderingTimeInSeconds = table.last_ordering_time;
-        const placeCreatedAt = new Date(place.createdAt).getTime();
+  //     if (table) {
+  //       // Convert the last ordering time to milliseconds since epoch
+  //       const lastOrderingTimeInSeconds = table.last_ordering_time;
+  //       const placeCreatedAt = new Date(place.createdAt).getTime();
 
-        const lastOrderingTimeInMilliseconds = placeCreatedAt + lastOrderingTimeInSeconds * 1000;
+  //       const lastOrderingTimeInMilliseconds = placeCreatedAt + lastOrderingTimeInSeconds * 1000;
 
-        // Calculate the next allowed ordering time
-        const nextAllowedTime = lastOrderingTimeInMilliseconds + place.ordering_limit_interval * 1000;
-        setNextOrderingTime(nextAllowedTime);
-      }
-    }
-  }, [place, params]);
+  //       // Calculate the next allowed ordering time
+  //       const nextAllowedTime = lastOrderingTimeInMilliseconds + place.ordering_limit_interval * 1000;
+  //       // setNextOrderingTime(nextAllowedTime); // Commented out
+  //     }
+  //   }
+  // }, [place, params]);
 
     // New useEffect for agreement modal logic
   useEffect(() => {
@@ -327,18 +344,18 @@ const handleAgreementAccept = () => {
 };
 */
 
-  useEffect(() => {
-    const timer = setInterval(() => {
-      if (nextOrderingTime > 0) {
-        const now = Date.now();
-        const timeLeft = Math.max(0, nextOrderingTime - now); // Ensure timeLeft is not negative
-        setTimeLeftToOrder(timeLeft);
-        setEnableOrdering(timeLeft === 0);
-      }
-    }, 500);
+  // useEffect(() => { // Commented out timer logic for ordering interval
+  //   const timer = setInterval(() => {
+  //     if (nextOrderingTime > 0) {
+  //       const now = Date.now();
+  //       const timeLeft = Math.max(0, nextOrderingTime - now); // Ensure timeLeft is not negative
+  //       // setTimeLeftToOrder(timeLeft); // Commented out
+  //       // setEnableOrdering(timeLeft === 0); // Commented out
+  //     }
+  //   }, 500);
 
-    return () => clearInterval(timer);
-  }, [nextOrderingTime]);
+  //   return () => clearInterval(timer);
+  // }, [nextOrderingTime]);
 
 
 
@@ -358,17 +375,17 @@ const handleAgreementAccept = () => {
 
     return (
     <div style={{ width: '100%', maxWidth: '600px', margin: '0 auto' }}>
-      <h2 style={{ fontSize: '20px', marginBottom: '10px', textAlign: 'center' }}>Order History</h2>
+      <h2 style={{ fontSize: '20px', marginBottom: '10px', textAlign: 'center' }}>{orderHistoryTexts.title[selectedLanguage]}</h2>
       {Object.keys(groupedItems).length === 0 ? (
-        <p style={{ fontSize: '16px', textAlign: 'center' }}>No orders yet</p>
+        <p style={{ fontSize: '16px', textAlign: 'center' }}>{orderHistoryTexts.noOrders[selectedLanguage]}</p>
       ) : (
         <table style={{ width: '100%', borderCollapse: 'collapse', fontSize: '16px' }}>
           <thead style={{ backgroundColor: '#f8f9fa', borderBottom: '2px solid #dee2e6' }}>
             <tr>
-              <th style={{ padding: '8px', textAlign: 'left' }}>Item</th>
-              <th style={{ padding: '8px', textAlign: 'right' }}>Price</th>
-              <th style={{ padding: '8px', textAlign: 'right' }}>Quantity</th>
-              <th style={{ padding: '8px', textAlign: 'right' }}>Total</th>
+              <th style={{ padding: '8px', textAlign: 'left' }}>{orderHistoryTexts.itemHeader[selectedLanguage]}</th>
+              <th style={{ padding: '8px', textAlign: 'right' }}>{orderHistoryTexts.priceHeader[selectedLanguage]}</th>
+              <th style={{ padding: '8px', textAlign: 'right' }}>{orderHistoryTexts.quantityHeader[selectedLanguage]}</th>
+              <th style={{ padding: '8px', textAlign: 'right' }}>{orderHistoryTexts.totalHeader[selectedLanguage]}</th>
             </tr>
           </thead>
           <tbody>
@@ -381,15 +398,13 @@ const handleAgreementAccept = () => {
               </tr>
             ))}
             <tr style={{ borderTop: '2px solid #dee2e6', fontWeight: 'bold' }}>
-              <td colSpan="3" style={{ padding: '8px', textAlign: 'right' }}>Total:</td>
+              <td colSpan="3" style={{ padding: '8px', textAlign: 'right' }}>{orderHistoryTexts.grandTotalLabel[selectedLanguage]}</td>
               <td style={{ padding: '8px', textAlign: 'right' }}>€{totalCost.toFixed(1)}</td>
             </tr>
           </tbody>
         </table>
       )}
-      <p style={{ fontSize: '14px', marginTop: '15px', textAlign: 'center', color: '#6c757d' }}>
-        Please note that buffet per person is not included yet to the total price.
-      </p>
+      {/* Buffet note paragraph removed */}
     </div>
   );
 };
@@ -518,7 +533,7 @@ const handleAgreementAccept = () => {
             fontSize: '16px',
             borderRadius: '10px'
           }}>
-            Número de Mesa: {params.table === '77' ? 'VIP' : params.table}
+            {tableNumberText[selectedLanguage]}{params.table === '77' ? 'VIP' : params.table}
           </div>
 
           <Row className="justifyContent-center m-2">
@@ -558,9 +573,9 @@ const handleAgreementAccept = () => {
               onRemove={onRemoveItemToShoppingCart}
               color={place.color}
               table_id={params.table}
-              orderingInterval={place.ordering_limit_interval}
-              timeLeftToOrder={timeLeftToOrder}
-              enable_ordering={enableOrdering}
+              orderingInterval={place.ordering_limit_interval} // This might still be needed by ShoppingCart for other purposes, or can be removed if not.
+              // timeLeftToOrder={timeLeftToOrder} // Prop removed
+              // enable_ordering={enableOrdering} // Prop removed
               activeTab={activeTab}
               onOrderSuccess={(items) => {
                 setShoppingCart({});
@@ -570,13 +585,13 @@ const handleAgreementAccept = () => {
                   quantity: item.quantity
                 }));
                 setOrderHistory(prevHistory => [...prevHistory, ...orderDetails]);
-                // Set next ordering time
-                setNextOrderingTime(Date.now() + place.ordering_limit_interval * 1000);
+                // Set next ordering time // Commented out
+                // setNextOrderingTime(Date.now() + place.ordering_limit_interval * 1000);
               }}
             />
           )}
           {activeTab === 'history' && <OrderHistory activeTab={activeTab} orderHistory={orderHistory} />}
-          <BottomTabBar activeTab={activeTab} onSelectTab={handleSelectTab} totalQuantity={totalQuantity} />
+          <BottomTabBar activeTab={activeTab} onSelectTab={handleSelectTab} totalQuantity={totalQuantity} selectedLanguage={selectedLanguage} />
         </>
       )}
     </Container>

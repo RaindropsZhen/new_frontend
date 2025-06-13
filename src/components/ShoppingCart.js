@@ -14,7 +14,7 @@ const renderMenuItemName = (item, selectedLanguage) => {
   }
 };
 
-const ShoppingCart = ({ selectedLanguage, items, onAdd, onRemove, color, timeLeftToOrder, enable_ordering, onOrderSuccess }) => {
+const ShoppingCart = ({ selectedLanguage, items, onAdd, onRemove, color, /*timeLeftToOrder, enable_ordering,*/ onOrderSuccess }) => {
   const location = useLocation();
   const isTakeAway = location.pathname.includes('takeaway');
   const [phoneNumber, setPhoneNumber] = useState(0);
@@ -55,10 +55,10 @@ const ShoppingCart = ({ selectedLanguage, items, onAdd, onRemove, color, timeLef
         {renderOrdername(selectedLanguage)}
       </h3>
 
-      {/* Warning Message */}
-      <h3 className="text-center mb-3 text-danger" style={{ fontSize: 'clamp(1rem, 1.8vw, 1.4rem)', fontWeight: 'bold' }}>
+      {/* Warning Message Removed */}
+      {/* <h3 className="text-center mb-3 text-danger" style={{ fontSize: 'clamp(1rem, 1.8vw, 1.4rem)', fontWeight: 'bold' }}>
         {renderWarning(selectedLanguage)}
-      </h3>
+      </h3> */}
 
       {/* Shopping Cart Card */}
       <Card style={{ width: '100%', border: '1px solid #ddd', borderRadius: '12px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', padding: '15px' }}>
@@ -114,8 +114,8 @@ const ShoppingCart = ({ selectedLanguage, items, onAdd, onRemove, color, timeLef
             arrivalTime={arrivalTime}
             comment={allcomment}
             customer_name={name}
-            timeLeftToOrder={timeLeftToOrder}
-            enable_ordering={enable_ordering}
+            // timeLeftToOrder={timeLeftToOrder} // Prop removed
+            // enable_ordering={enable_ordering} // Prop removed
             onOrderSuccess={onOrderSuccess}
           />
         </Card.Body>

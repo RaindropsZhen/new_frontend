@@ -100,75 +100,79 @@ const MenuItemCard = ({ language, item, onOrder, onRemove, color }) => {
   
   return (
     <>
-      <Card className='card' style={{ borderRadius: '10px', overflow: 'hidden' }}>
-  <LazyLoadImage
-    src={item.image}
-    alt={item.name}
-    style={{
-      objectFit: 'cover',
-      width: '100%',
-      height: '200px',
-      filter: currentAvailability ? '' : 'grayscale(80%)'
-    }}
-    onClick={currentAvailability ? handleShow : undefined}
-  />
-  <Card.Body style={{ padding: '5px' }}>
-    <Card.Title style={{ fontSize: '14px' }}>
-      <span className="red-text">{item.code}</span>{renderMenuItemName(item, language)}
-    </Card.Title>
-    <Card.Text>
-      <Col>
-        <Modal show={showDescription} onHide={handleClose} centered>
-          <Modal.Header closeButton>
-            <Modal.Title>{renderMenuItemDescriptionModalName(language)}</Modal.Title>
-          </Modal.Header>
-          <LazyLoadImage
-            src={item.image}
-            alt={item.name}
-            style={{ width: '100%', height: 'auto' }}
-          />
-          <Modal.Body>{renderMenuItemDescription(item, language)}</Modal.Body>
-        </Modal>
-        {/* Price */}
-        <Row className="d-flex justify-content-start align-items-center">
-          <Col className="d-flex justify-content-end">
-            {item.price > 0 && <b style={{ color, fontSize: '1rem', fontWeight: 'bold' }}>{item.price}€</b>}
-          </Col>
-        </Row>
+      <Card className='card h-100' style={{ borderRadius: '10px', overflow: 'hidden', display: 'flex', flexDirection: 'column' }}>
+        <LazyLoadImage
+          src={item.image}
+          alt={renderMenuItemName(item, language)}
+          style={{
+            objectFit: 'cover',
+            width: '100%',
+            height: '180px', // Slightly reduced height for more text space
+            filter: currentAvailability ? '' : 'grayscale(80%)'
+          }}
+          onClick={currentAvailability ? handleShow : undefined}
+        />
+        <Card.Body style={{ padding: '10px', display: 'flex', flexDirection: 'column', justifyContent: 'space-between', flexGrow: 1 }}>
+          <div> {/* Top part for name and code */}
+            <Card.Title style={{ fontSize: '1em', fontWeight: 'bold', marginBottom: '5px', color: '#333' }}>
+              <span style={{ fontSize: '0.8em', color: '#777', marginRight: '5px' }}>{item.code}</span>
+              {renderMenuItemName(item, language)}
+            </Card.Title>
+            {/* Optional: Short description can be added here if desired */}
+            {/* <p style={{ fontSize: '0.85em', color: '#555', marginBottom: '8px' }}>
+              {renderMenuItemDescription(item, language)?.substring(0, 40) + "..."}
+            </p> */}
+          </div>
 
-        {/* Buttons */}
-        {onOrder && (
-        <Row className="d-flex justify-content-end align-items-center">
-          <Col className="d-flex justify-content-end align-items-center">
-            <OperationButton
-              variant="lightgray"
-              size="sm"
-              onClick={() => onRemove(item)}
-              disabled={!currentAvailability}
-            >
-              -
-            </OperationButton>
-            
-            <span>{item.quantity >= 0 ? item.quantity : 0}</span>
-            
-            <OperationButton
-              variant="lightgray"
-              size="sm"
-              onClick={() => onOrder(item)}
-              disabled={!currentAvailability}
-            >
-              +
-            </OperationButton>
-          </Col>
-        </Row>
-        )}
-      </Col>
-    </Card.Text>
-  </Card.Body>
-</Card>
+          <div> {/* Bottom part for price and buttons */}
+            <Row className="align-items-center" style={{ marginTop: '10px' }}>
+              <Col xs={6} sm={6} className="text-start">
+                {item.price > 0 && <b style={{ color: color || '#FE6C4C', fontSize: '1.1em', fontWeight: 'bold' }}>{item.price.toFixed(2)}€</b>}
+              </Col>
+              {onOrder && (
+                <Col xs={6} sm={6} className="d-flex justify-content-end align-items-center">
+                  <OperationButton
+                    variant="lightgray"
+                    size="sm"
+                    onClick={() => onRemove(item)}
+                    disabled={!currentAvailability || (item.quantity || 0) === 0}
+                    style={{ padding: '0.2rem 0.5rem', minWidth: '30px' }}
+                  >
+                    -
+                  </OperationButton>
+                  <span style={{ margin: '0 8px', fontSize: '1em', color: '#333' }}>
+                    {item.quantity >= 0 ? item.quantity : 0}
+                  </span>
+                  <OperationButton
+                    variant="lightgray"
+                    size="sm"
+                    onClick={() => onOrder(item)}
+                    disabled={!currentAvailability}
+                    style={{ padding: '0.2rem 0.5rem', minWidth: '30px' }}
+                  >
+                    +
+                  </OperationButton>
+                </Col>
+              )}
+            </Row>
+          </div>
+        </Card.Body>
+      </Card>
 
+      <Modal show={showDescription} onHide={handleClose} centered>
+        <Modal.Header closeButton>
+          <Modal.Title>{renderMenuItemDescriptionModalName(language)}</Modal.Title>
+        </Modal.Header>
+        <LazyLoadImage
+          src={item.image}
+          alt={renderMenuItemName(item, language)}
+          style={{ width: '100%', height: 'auto', maxHeight: '300px', objectFit: 'cover' }}
+        />
+        <Modal.Body>{renderMenuItemDescription(item, language)}</Modal.Body>
+      </Modal>
 
-      <Row xs={7} className="d-flex flex-column justify-content-between w-100">
+      {/* This Row seems out of place and might be redundant or for a different layout. Reviewing its necessity. */}
+      <Row xs={7} className="d-flex flex-column justify-content-between w-100" style={{ marginTop: '5px' }}>
         <div className="d-flex justify-content-between align-items-end">
           <div>
             <h5 className="mb-0 text-standard">
