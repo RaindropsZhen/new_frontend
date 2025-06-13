@@ -10,31 +10,13 @@ import {
 
 import AuthContext from '../contexts/AuthContext';
 const createdAt = new Date().toLocaleString('en-US', { timeZone: 'Atlantic/Azores' });
-const renderOrderingLimitMessage = (selectedLanguage) => {
-  switch (selectedLanguage) {
-    case '中文':
-      return '下单剩余时间：';
-    case 'English':
-      return 'Time left to order: ';
-    case 'Español':
-      return 'Tiempo restante para ordenar: ';
-    case 'Português':
-      return 'Tempo restante para encomendar: ';
-    default:
-      return ;
-  }
-};
+// Removed renderOrderingLimitMessage function
+
 // Removed renderTableVerificationMessage as it will be replaced by i18n
 
-const OrderForm = ({amount, items, color, selectedLanguage, isTakeAway, phoneNumber, arrivalTime,comment,customer_name,timeLeftToOrder,enable_ordering, onOrderSuccess}) => {
+const OrderForm = ({amount, items, color, selectedLanguage, isTakeAway, phoneNumber, arrivalTime,comment,customer_name, onOrderSuccess}) => { // Removed timeLeftToOrder, enable_ordering
     const { t } = useTranslation(); // Initialize useTranslation
-    const formatTime = (milliseconds) => {
-      const totalSeconds = Math.floor(milliseconds / 1000);
-      const minutes = Math.floor(totalSeconds / 60);
-      const remainingSeconds = totalSeconds % 60;
-      const formattedTime = `${String(minutes).padStart(2, '0')}:${String(remainingSeconds).padStart(2, '0')}`;
-      return formattedTime;
-    };
+    // Removed formatTime function
   const formRef = useRef(null);
     // const history = useHistory(); // Get the history object to navigate
   const [loading, setLoading] = useState(false)
@@ -142,10 +124,9 @@ const OrderForm = ({amount, items, color, selectedLanguage, isTakeAway, phoneNum
       className='.t-4' 
       block 
       type="submit" 
-      disabled={loading || 
-        !enable_ordering} 
+      disabled={loading || items.length === 0} // Updated disabled logic
     >
-      {loading ? renderProcessing(selectedLanguage) : enable_ordering ? renderTotal(selectedLanguage) : `${renderOrderingLimitMessage(selectedLanguage)} ${formatTime(timeLeftToOrder)}`}
+      {loading ? renderProcessing(selectedLanguage) : renderTotal(selectedLanguage)} {/* Simplified button text logic */}
     </Button>
   </Form>
 

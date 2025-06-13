@@ -44,7 +44,7 @@ const renderFilterAllButton = (selectedLanguage) => {
 };
 const Menu = () => {
   const { table } = useParams();
-  const { t } = useTranslation(); // Correctly initialize t here
+  const { t, i18n } = useTranslation(); // Destructure i18n instance
   // const [showAgreementModal, setShowAgreementModal] = useState(false); // Removed for agreement modal
   const [isLoading, setIsLoading] = useState(true); // Add loading state
 
@@ -56,7 +56,7 @@ const Menu = () => {
   const [selectedLanguage, setSelectedLanguage] = useState("en");
   const [showLanguageModal, setShowLanguageModal] = useState(false);
   // const [nextOrderingTime, setNextOrderingTime] = useState(0); // Removed for 10-min limit
-  const [enableOrdering, setEnableOrdering] = useState(true); // Default to true, limit logic removed
+  // const [enableOrdering, setEnableOrdering] = useState(true); // No longer needed
   // const [timeLeftToOrder, setTimeLeftToOrder] = useState(0); // Removed for 10-min limit
   // const takeawayBoxFee = 8.9; // Removed for agreement modal
 
@@ -85,11 +85,21 @@ const Menu = () => {
     }
   }, [orderHistory, params.table]);
 
-  const handleLanguageSelect = (language) => {
-    setSelectedLanguage(language);
-    setShowLanguageModal(false); // Hide language modal after selection
-    localStorage.setItem('selectedLanguage', language);
-    // setShowAgreementModal(true); // Removed: Don't show agreement modal after language selection
+  const handleLanguageSelect = (languageLabel) => { // languageLabel is "English", "Português", "中文"
+    let langCode = 'en'; // default
+    if (languageLabel === 'Português') {
+      langCode = 'pt';
+    } else if (languageLabel === '中文') {
+      langCode = 'zh'; // Assuming 'zh' is used in i18n.js, adjust if it's 'cn'
+    }
+    // It's important that langCode matches what's configured in your i18n setup (e.g., 'en', 'pt', 'zh')
+
+    setSelectedLanguage(languageLabel); // This state is used for renderCategoryName, renderFilterAllButton
+    i18n.changeLanguage(langCode); // This changes the language for the t() function
+    
+    setShowLanguageModal(false);
+    localStorage.setItem('selectedLanguage', languageLabel); // Stores the label e.g. "Português"
+    localStorage.setItem('i18nextLng', langCode); // Persists the code for i18next to pick up on next load
 };
 
 const location = useLocation();
@@ -307,7 +317,17 @@ const location = useLocation();
           <tbody>
             {Object.values(groupedItems).map((order, index) => (
               <tr key={index} style={{ borderBottom: '1px solid #dee2e6' }}>
-                <td style={{ padding: '8px' }}>{order.name}</td>
+                <td style={{ padding: '8px' }}>
+                  {(() => {
+                    // selectedLanguage is from the Menu component's scope
+                    switch (selectedLanguage) { 
+                      case 'English': return order.name_en || order.name; // Fallback to primary name
+                      case 'Português': return order.name_pt || order.name; // Fallback to primary name
+                      case '中文':
+                      default: return order.name;
+                    }
+                  })()}
+                </td>
                 <td style={{ padding: '8px', textAlign: 'right' }}>€{order.price.toFixed(1)}</td>
                 <td style={{ padding: '8px', textAlign: 'right' }}>{order.quantity}</td>
                 <td style={{ padding: '8px', textAlign: 'right' }}>€{(order.price * order.quantity).toFixed(1)}</td>
@@ -354,7 +374,7 @@ const location = useLocation();
               value={selectedCategoryName}
               onChange={(e) => handleCategoryClick(e.target.value)}
               className="custom-dropdown"
-              style={{ fontSize: '14px' }}
+              // style={{ fontSize: '14px' }} // Removed inline style
             >
               <option value="">{renderFilterAllButton(selectedLanguage)}</option>
               {categories
@@ -431,12 +451,14 @@ const location = useLocation();
               table_id={params.table}
               orderingInterval={place.ordering_limit_interval}
               // timeLeftToOrder={timeLeftToOrder} // Prop removed
-              enable_ordering={true} // Always enable ordering
+              // enable_ordering={true} // Prop no longer needed by ShoppingCart/OrderForm
               activeTab={activeTab}
               onOrderSuccess={(items) => {
                 setShoppingCart({});
                 const orderDetails = items.map(item => ({
                   name: item.name,
+                  name_en: item.name_en,
+                  name_pt: item.name_pt,
                   price: item.price,
                   quantity: item.quantity
                 }));

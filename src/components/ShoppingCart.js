@@ -14,7 +14,7 @@ const renderMenuItemName = (item, selectedLanguage) => {
   }
 };
 
-const ShoppingCart = ({ selectedLanguage, items, onAdd, onRemove, color, timeLeftToOrder, enable_ordering, onOrderSuccess }) => {
+const ShoppingCart = ({ selectedLanguage, items, onAdd, onRemove, color, onOrderSuccess }) => { // Removed timeLeftToOrder, enable_ordering
   const location = useLocation();
   const isTakeAway = location.pathname.includes('takeaway');
   const [phoneNumber, setPhoneNumber] = useState(0);
@@ -29,12 +29,7 @@ const ShoppingCart = ({ selectedLanguage, items, onAdd, onRemove, color, timeLef
     'Português': "Seu pedido"
   }[selectedLanguage] || "Your Order");
 
-  const renderWarning = (selectedLanguage) => ({
-    '中文': "每10分钟只能下一个订单",
-    'English': "Only one order allowed every 10 minutes",
-    'Español': "Solo se permite un pedido cada 10 minutos",
-    'Português': "Somente um pedido a cada 10 minutos"
-  }[selectedLanguage] || "Only one order allowed every 10 minutes");
+  // Removed renderWarning function
 
   const renderTotal = (selectedLanguage) => ({
     '中文': "总计",
@@ -55,10 +50,7 @@ const ShoppingCart = ({ selectedLanguage, items, onAdd, onRemove, color, timeLef
         {renderOrdername(selectedLanguage)}
       </h3>
 
-      {/* Warning Message */}
-      <h3 className="text-center mb-3 text-danger" style={{ fontSize: 'clamp(1rem, 1.8vw, 1.4rem)', fontWeight: 'bold' }}>
-        {renderWarning(selectedLanguage)}
-      </h3>
+      {/* Warning Message Removed */}
 
       {/* Shopping Cart Card */}
       <Card style={{ width: '100%', border: '1px solid #ddd', borderRadius: '12px', boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)', padding: '15px' }}>
@@ -114,8 +106,8 @@ const ShoppingCart = ({ selectedLanguage, items, onAdd, onRemove, color, timeLef
             arrivalTime={arrivalTime}
             comment={allcomment}
             customer_name={name}
-            timeLeftToOrder={timeLeftToOrder}
-            enable_ordering={enable_ordering}
+            // timeLeftToOrder prop removed
+            // enable_ordering prop removed, OrderForm will manage its button state based on items.length
             onOrderSuccess={onOrderSuccess}
           />
         </Card.Body>

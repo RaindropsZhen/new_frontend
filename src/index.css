@@ -393,7 +393,7 @@ body {
   flex: 1;
   max-width: 45%; /* Ensure dropdowns fit */
   padding: 12px 15px;
-  font-size: 1rem;
+  font-size: 1.1rem; /* Re-apply increased font size for the select box */
   border: 2px solid #FE6C4C;
   border-radius: 6px;
   background-color: #FE6C4C !important; /* Ensure the dropdown background is applied */
@@ -408,6 +408,7 @@ body {
   background-color: #FFC1A1;
   color: black;
   padding: 8px;
+  font-size: 16px; /* Re-apply font size for options */
 }
 
 /* Flex container to align dropdowns */
