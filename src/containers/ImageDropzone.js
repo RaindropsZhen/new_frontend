@@ -45,7 +45,7 @@ function ImageDropzone({ value, onChange, reset, setReset }) {
         URL.revokeObjectURL(previewUrl);
       }
     };
-  }, [value]);
+  }, [value, previewUrl]); // Added previewUrl to dependencies
 
   const onDrop = useCallback(
     (acceptedFiles) => {
