@@ -1,10 +1,10 @@
-import React, { useState, useEffect, useContext } from 'react';
-import { Row, Container, Card, Col } from 'react-bootstrap'; // Removed Button as StyledButton is removed
-import { useParams } from 'react-router-dom'; // useHistory not needed
-import { useTranslation } from 'react-i18next'; // Import useTranslation
-import styled from 'styled-components';
-import { fetchPlace } from '../apis';
-import AuthContext from '../contexts/AuthContext'; // Import AuthContext
+import React, { useState, useEffect, useContext } from "react";
+import { Row, Container, Card, Col } from "react-bootstrap"; // Removed Button as StyledButton is removed
+import { useParams } from "react-router-dom"; // useHistory not needed
+import { useTranslation } from "react-i18next"; // Import useTranslation
+import styled from "styled-components";
+import { fetchPlace } from "../apis";
+import AuthContext from "../contexts/AuthContext"; // Import AuthContext
 
 const StyledContainer = styled(Container)`
   height: 100vh;
@@ -35,18 +35,20 @@ const TableCard = styled(Card)`
   font-size: 1.5rem;
   font-weight: bold;
   cursor: pointer;
-  transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
+  transition:
+    transform 0.2s ease-in-out,
+    box-shadow 0.2s ease-in-out;
   border: 1px solid #dee2e6;
 
   &:hover {
     transform: translateY(-5px);
-    box-shadow: 0 8px 15px rgba(0,0,0,0.1);
+    box-shadow: 0 8px 15px rgba(0, 0, 0, 0.1);
   }
 `;
 
 const TableNumberInput = () => {
   const [place, setPlace] = useState(null);
-  const { id: placeId } = useParams(); 
+  const { id: placeId } = useParams();
   const auth = useContext(AuthContext);
   const { t } = useTranslation(); // Initialize useTranslation
 
@@ -67,10 +69,10 @@ const TableNumberInput = () => {
     // Assuming this '0' is intentional or a placeholder for a 'code' that might be used later.
     // If it should be the placeId itself, this needs adjustment.
     // For now, sticking to the original URL structure provided in the old code.
-    const newUrl = `/menu/0/${placeId}/${tableNumber}`; 
-    window.open(newUrl, '_blank'); 
+    const newUrl = `/menu/0/${placeId}/${tableNumber}`;
+    window.open(newUrl, "_blank");
   };
-  
+
   if (!place || !place.tables) {
     return (
       <StyledContainer>
@@ -81,14 +83,20 @@ const TableNumberInput = () => {
   }
 
   // Sort tables by table_number for consistent display
-  const sortedTables = [...place.tables].sort((a, b) => a.table_number - b.table_number);
+  const sortedTables = [...place.tables].sort(
+    (a, b) => a.table_number - b.table_number,
+  );
 
   return (
     <StyledContainer>
-      <Heading>{t('selectTable.title', 'Select Table')}</Heading>
-      <Row className="justify-content-center g-3"> {/* g-3 for gutter/spacing */}
+      <Heading>{t("selectTable.title", "Select Table")}</Heading>
+      <Row className="justify-content-center g-3">
+        {" "}
+        {/* g-3 for gutter/spacing */}
         {sortedTables.map((table) => (
-          <Col key={table.id} xs="auto"> {/* xs="auto" for natural width or specify Col size */}
+          <Col key={table.id} xs="auto">
+            {" "}
+            {/* xs="auto" for natural width or specify Col size */}
             <TableCard onClick={() => handleTableCardClick(table.table_number)}>
               <Card.Body className="d-flex align-items-center justify-content-center">
                 <Card.Title className="mb-0">{table.table_number}</Card.Title>

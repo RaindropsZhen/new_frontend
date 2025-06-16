@@ -28,7 +28,7 @@ export const TabItem = styled.div`
   align-items: center;
 
   &:hover {
-    color: #FE6C4C;
+    color: #fe6c4c;
   }
 `;
 

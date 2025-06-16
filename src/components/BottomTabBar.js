@@ -1,29 +1,43 @@
 import { FaUtensils, FaShoppingCart, FaHistory } from "react-icons/fa";
-import { useTranslation } from 'react-i18next'; // Import useTranslation
-import { BottomTabContainer, TabItem, TabIcon, Badge } from "./BottomTabBar.styles.js";
+import { useTranslation } from "react-i18next"; // Import useTranslation
+import {
+  BottomTabContainer,
+  TabItem,
+  TabIcon,
+  Badge,
+} from "./BottomTabBar.styles.js";
 
 const TabNavigationBar = ({ activeTab, onSelectTab, totalQuantity }) => {
   const { t } = useTranslation(); // Initialize useTranslation
   return (
     <BottomTabContainer>
-      <TabItem active={activeTab === "menu"} onClick={() => onSelectTab("menu")}>
+      <TabItem
+        active={activeTab === "menu"}
+        onClick={() => onSelectTab("menu")}
+      >
         <TabIcon>
           <FaUtensils />
         </TabIcon>
-        {t('tabs.menu')}
+        {t("tabs.menu")}
       </TabItem>
-      <TabItem active={activeTab === "cart"} onClick={() => onSelectTab("cart")}>
+      <TabItem
+        active={activeTab === "cart"}
+        onClick={() => onSelectTab("cart")}
+      >
         <TabIcon>
           <FaShoppingCart />
           {totalQuantity > 0 && <Badge>{totalQuantity}</Badge>}
         </TabIcon>
-        {t('tabs.cart')}
+        {t("tabs.cart")}
       </TabItem>
-      <TabItem active={activeTab === "history"} onClick={() => onSelectTab("history")}>
+      <TabItem
+        active={activeTab === "history"}
+        onClick={() => onSelectTab("history")}
+      >
         <TabIcon>
           <FaHistory />
         </TabIcon>
-        {t('tabs.history')}
+        {t("tabs.history")}
       </TabItem>
     </BottomTabContainer>
   );

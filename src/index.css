@@ -1,18 +1,27 @@
-@import url('https://fonts.googleapis.com/css2?family=Inria+Serif:wght@400;700&display=swap');
+@import url("https://fonts.googleapis.com/css2?family=Inria+Serif:wght@400;700&display=swap");
 
 body {
-  font-family: 'Inria Serif', serif;
+  font-family: "Inria Serif", serif;
   margin: 0;
   padding: 0;
   box-sizing: border-box;
 }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: 'Inria Serif', serif;
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: "Inria Serif", serif;
 }
 
-p, span, div, button, input {
-  font-family: 'Inria Serif', serif;
+p,
+span,
+div,
+button,
+input {
+  font-family: "Inria Serif", serif;
 }
 
 body {
@@ -71,7 +80,7 @@ body {
 }
 
 .new-order {
-  font-size: 1.0em;
+  font-size: 1em;
   font-weight: bold;
   color: rgb(233, 61, 61);
   background-color: rgba(238, 40, 0, 0.2); /* Example color with 50% opacity */
@@ -102,7 +111,7 @@ body {
 }
 
 .home-page-card {
-  box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   border-radius: 15px;
   border: none;
   transition: transform 0.3s ease-in-out;
@@ -141,16 +150,16 @@ body {
   border: none;
   border-radius: 0.25rem;
   padding: 0.5rem 1.5rem; /* Larger padding for a bigger button */
-  text-shadow: 0 2px 4px rgba(0,0,0,0.2); /* Text shadow for depth */
+  text-shadow: 0 2px 4px rgba(0, 0, 0, 0.2); /* Text shadow for depth */
   transition: background-color 0.3s ease-in-out; /* Smooth transition for hover effects */
 }
 
-.home-page-button-style:hover, .button-style:focus {
+.home-page-button-style:hover,
+.button-style:focus {
   background-color: #0056b3; /* Darker shade on hover/focus */
   color: #fff; /* Ensuring text color stays white */
   text-decoration: none; /* Removing underline from focus state */
 }
-
 
 .progress-bar {
   width: 100%; /* Set the width of the progress bar container */
@@ -189,7 +198,7 @@ body {
   left: 3%;
   width: 95%;
   height: 40%;
-  background-color: #F1FAFA;
+  background-color: #f1fafa;
   transition: 0.5s;
   transform-origin: center;
 }
@@ -202,16 +211,17 @@ body {
   left: 3%;
   width: 95%;
   height: 40%;
-  background-color: #F1FAFA;
+  background-color: #f1fafa;
   transition: 0.5s;
 }
 
-.menu-button:hover::before, button:hover::after {
-  transform: scale(0)
+.menu-button:hover::before,
+button:hover::after {
+  transform: scale(0);
 }
 
 .menu-button:hover {
-  box-shadow: inset 0px 0px 25px #1479EA;
+  box-shadow: inset 0px 0px 25px #1479ea;
 }
 
 .selected-button {
@@ -222,7 +232,7 @@ body {
 }
 
 .languageModalTitle {
-  font-family: 'Poppins';
+  font-family: "Poppins";
   font-size: 20px;
   font-weight: 400;
   line-height: 30px;
@@ -247,7 +257,7 @@ body {
   top: 112px;
   left: 26px;
   border-radius: 15px;
-  background-color: #FE6C4C;
+  background-color: #fe6c4c;
   color: white;
   font-size: 17px;
 }
@@ -260,32 +270,33 @@ body {
   top: 112px;
   left: 26px;
   border-radius: 15px;
-  background: #F5F5F5;
-  color:#0f0f0f;
+  background: #f5f5f5;
+  color: #0f0f0f;
   font-size: 17px;
 }
 
 .menu-item-card {
-
   border-radius: 12px;
-  border: 1px solid #E1E1E1;
-  background: linear-gradient(0deg, #E1E1E1, #E1E1E1),
-              linear-gradient(0deg, #FFFFFF, #FFFFFF);
+  border: 1px solid #e1e1e1;
+  background:
+    linear-gradient(0deg, #e1e1e1, #e1e1e1),
+    linear-gradient(0deg, #ffffff, #ffffff);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1); /* Optional: Add a subtle box shadow */
 }
 .plus-icon {
   width: 24px; /* Adjust size as needed */
   height: 24px; /* Adjust size as needed */
-  color: #FE6C4C;
+  color: #fe6c4c;
 }
 
 .printable-section {
   display: none;
-  font-family: 'Arial', sans-serif;
+  font-family: "Arial", sans-serif;
   color: #333;
 }
 
-.printable-section p, .printable-section span {
+.printable-section p,
+.printable-section span {
   font-size: 14px;
   line-height: 1.5;
 }
@@ -305,7 +316,8 @@ body {
     visibility: hidden;
   }
 
-  .printable-section, .printable-section * {
+  .printable-section,
+  .printable-section * {
     visibility: visible;
   }
   .printable-section {
@@ -324,18 +336,19 @@ body {
   }
 }
 
-
 .language-drop-down {
   margin: 12px;
   height: 50px;
   width: 120px;
   border-radius: 15px;
-  background: linear-gradient(0deg, #FE6C4C, #FE6C4C),linear-gradient(0deg, #FFDFD7, #FFDFD7);
+  background:
+    linear-gradient(0deg, #fe6c4c, #fe6c4c),
+    linear-gradient(0deg, #ffdfd7, #ffdfd7);
   justify-content: center;
   align-items: center;
   /* box-shadow: -5px -5px 15px #339b8a, 5px 5px 15px #3a0202, inset 5px 5px 10px #444, inset -5px -5px 10px #222; */
-  font-family: 'Poppins';
-  border: 1px solid #FE6C4C;
+  font-family: "Poppins";
+  border: 1px solid #fe6c4c;
   font-size: 16px;
   color: rgb(255, 255, 255);
   /* transition: 500ms; */
@@ -351,9 +364,11 @@ body {
 .menu-language-drop-down {
   border-radius: 6px;
   border: 1px;
-  background: linear-gradient(0deg, #F5F5F5, #F5F5F5), linear-gradient(0deg, #FFFFFF, #FFFFFF);
-  border: 1px solid #F5F5F5;
-  font-family: 'Poppins';
+  background:
+    linear-gradient(0deg, #f5f5f5, #f5f5f5),
+    linear-gradient(0deg, #ffffff, #ffffff);
+  border: 1px solid #f5f5f5;
+  font-family: "Poppins";
   color: rgb(12, 11, 11);
 }
 
@@ -376,12 +391,12 @@ body {
 
 .custom-col {
   padding: 2px !important; /* Remove padding */
-  margin: 0 !important;  /* Remove margin */
+  margin: 0 !important; /* Remove margin */
 }
 
 /* Ensure the parent container has the correct background color */
 .StickyFilterContainer {
-  background-color: #FFEEE5 !important; /* Use !important to override other styles */
+  background-color: #ffeee5 !important; /* Use !important to override other styles */
   padding: 15px 20px;
   border-radius: 8px;
   box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.1);
@@ -394,9 +409,9 @@ body {
   max-width: 45%; /* Ensure dropdowns fit */
   padding: 12px 15px;
   font-size: 1.1rem; /* Re-apply increased font size for the select box */
-  border: 2px solid #FE6C4C;
+  border: 2px solid #fe6c4c;
   border-radius: 6px;
-  background-color: #FE6C4C !important; /* Ensure the dropdown background is applied */
+  background-color: #fe6c4c !important; /* Ensure the dropdown background is applied */
   color: white !important; /* Force text color to white */
   text-align: center;
   outline: none;
@@ -405,7 +420,7 @@ body {
 
 /* Option styling */
 .custom-dropdown option {
-  background-color: #FFC1A1;
+  background-color: #ffc1a1;
   color: black;
   padding: 8px;
   font-size: 16px; /* Re-apply font size for options */

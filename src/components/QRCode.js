@@ -1,9 +1,9 @@
-import { AiOutlineLink } from 'react-icons/ai';
-import { Button } from 'react-bootstrap';
-import QRCodeReact from 'qrcode.react';
-import React, { useRef } from 'react';
-import styled from 'styled-components';
-import { useReactToPrint } from 'react-to-print';
+import { AiOutlineLink } from "react-icons/ai";
+import { Button } from "react-bootstrap";
+import QRCodeReact from "qrcode.react";
+import React from "react"; // Removed useRef
+import styled from "styled-components";
+// import { useReactToPrint } from "react-to-print"; // Removed useReactToPrint
 
 const Container = styled.div`
   position: relative;
@@ -22,26 +22,11 @@ const Overlay = styled.div`
   }
 `;
 
-const ComponentToPrint = styled.div`
-  text-align: center;
-  margin-top: 200px;
-  h1 {
-    font-size: 100px;
-    font-weight: bold;
-    margin-bottom: 50px;
-  }
-  h2 {
-    font-size: 60px;
-    margin-bottom: 100px
-  }
-`;
+// const ComponentToPrint = styled.div` ... `; // Removed
+// const handlePrint = useReactToPrint(...); // Removed
+// const componentRef = useRef(); // Removed
 
 const QRCode = (placeId) => {
-
-  const componentRef = useRef();
-  const handlePrint = useReactToPrint({
-    content: () => componentRef.current,
-  });
   const url = `${window.location.origin}/${placeId.placeId}/select_table`;
 
   return (
@@ -49,14 +34,14 @@ const QRCode = (placeId) => {
       <QRCodeReact value={url} size={200} />
 
       <Overlay>
-        <div className="d-flex" >
+        <div className="d-flex">
           <Button variant="standard" href={url} target="_blank">
-            <AiOutlineLink size={25}/> 链接 
+            <AiOutlineLink size={25} /> 链接
           </Button>
-        </div>  
+        </div>
       </Overlay>
     </Container>
-  )
-}
+  );
+};
 
 export default QRCode;

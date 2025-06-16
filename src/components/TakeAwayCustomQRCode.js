@@ -1,8 +1,15 @@
 import React, { useEffect, useRef, useState } from "react";
 import QRCodeStyling from "qr-code-styling";
-import { Col, Row, Button } from 'react-bootstrap';
+import { Col, Row, Button } from "react-bootstrap";
 
-const TakeAwayCustomQRCode = ({ place, dotColor, cornersDotColor, cornersSquareColor, backgroundColorleft, backgroundColorright }) => {
+const TakeAwayCustomQRCode = ({
+  place,
+  dotColor,
+  cornersDotColor,
+  cornersSquareColor,
+  backgroundColorleft,
+  backgroundColorright,
+}) => {
   const qrCodeRef = useRef(null);
   const qrCodeInstance = useRef(null);
 
@@ -16,23 +23,26 @@ const TakeAwayCustomQRCode = ({ place, dotColor, cornersDotColor, cornersSquareC
         image: place.image,
         dotsOptions: {
           color: dotColor,
-          type: "square"
+          type: "square",
         },
         cornersDotOptions: {
           color: cornersDotColor,
-          type: 'square'
+          type: "square",
         },
         cornersSquareOptions: {
           color: cornersSquareColor,
-          type: 'extra-rounded'
+          type: "extra-rounded",
         },
         backgroundOptions: {
-          color: 'blue',
+          color: "blue",
           gradient: {
-            type: 'linear',
+            type: "linear",
             rotation: 45,
-            colorStops: [{ offset: 0, color: backgroundColorleft }, { offset: 1, color: backgroundColorright }]
-          }
+            colorStops: [
+              { offset: 0, color: backgroundColorleft },
+              { offset: 1, color: backgroundColorright },
+            ],
+          },
         },
         gradient: 100,
         imageOptions: {
@@ -40,7 +50,7 @@ const TakeAwayCustomQRCode = ({ place, dotColor, cornersDotColor, cornersSquareC
           margin: 10,
           size: 1000,
         },
-        data: url
+        data: url,
       });
       qrCodeInstance.current.append(qrCodeRef.current);
     } else {
@@ -48,27 +58,37 @@ const TakeAwayCustomQRCode = ({ place, dotColor, cornersDotColor, cornersSquareC
       qrCodeInstance.current.update({
         dotsOptions: {
           color: dotColor,
-          type: "square"
+          type: "square",
         },
         cornersDotOptions: {
           color: cornersDotColor,
-          type: 'square'
+          type: "square",
         },
         cornersSquareOptions: {
           color: cornersSquareColor,
-          type: 'extra-rounded'
+          type: "extra-rounded",
         },
         backgroundOptions: {
-          color: 'blue',
+          color: "blue",
           gradient: {
-            type: 'linear',
+            type: "linear",
             rotation: 45,
-            colorStops: [{ offset: 0, color: backgroundColorleft }, { offset: 1, color: backgroundColorright }]
-          }
-        }
+            colorStops: [
+              { offset: 0, color: backgroundColorleft },
+              { offset: 1, color: backgroundColorright },
+            ],
+          },
+        },
       });
     }
-  }, [dotColor, cornersDotColor, cornersSquareColor, backgroundColorleft, backgroundColorright, place.image]);
+  }, [
+    dotColor,
+    cornersDotColor,
+    cornersSquareColor,
+    backgroundColorleft,
+    backgroundColorright,
+    place.image,
+  ]);
 
   const [fileExt, setFileExt] = useState("png");
 
@@ -78,7 +98,7 @@ const TakeAwayCustomQRCode = ({ place, dotColor, cornersDotColor, cornersSquareC
 
   const onDownloadClick = () => {
     qrCodeInstance.current.download({
-      extension: fileExt
+      extension: fileExt,
     });
   };
 
@@ -89,11 +109,11 @@ const TakeAwayCustomQRCode = ({ place, dotColor, cornersDotColor, cornersSquareC
       <Row className="justify-content-center mb-3 mt-3">
         <select
           style={{
-            marginRight: '10px',
-            fontSize: '1.3rem',
-            padding: '0.5rem',
-            width: '100px',
-            height: '50px'
+            marginRight: "10px",
+            fontSize: "1.3rem",
+            padding: "0.5rem",
+            width: "100px",
+            height: "50px",
           }}
           onChange={onExtensionChange}
           value={fileExt}
@@ -103,11 +123,11 @@ const TakeAwayCustomQRCode = ({ place, dotColor, cornersDotColor, cornersSquareC
         </select>
         <Button
           style={{
-            marginRight: '10px',
-            fontSize: '1.3rem',
-            padding: '0.5rem',
-            width: '200px',
-            height: '50px'
+            marginRight: "10px",
+            fontSize: "1.3rem",
+            padding: "0.5rem",
+            width: "200px",
+            height: "50px",
           }}
           variant="standard"
           onClick={onDownloadClick}

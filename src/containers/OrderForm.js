@@ -1,70 +1,84 @@
-import React, { useState, useContext, useRef } from 'react';
-import { Button, Form } from 'react-bootstrap';
-import { useParams,useHistory  } from 'react-router-dom';
-import { useTranslation } from 'react-i18next'; // Import useTranslation
+import React, { useState, useContext, useRef } from "react";
+import { Button, Form } from "react-bootstrap";
+import { useParams } from "react-router-dom"; // useHistory removed
+import { useTranslation } from "react-i18next"; // Import useTranslation
 // import ReCAPTCHA from "react-google-recaptcha";
-import { toast } from 'react-toastify';
-import { 
-    createOrderIntent
-  } from '../apis';
+import { toast } from "react-toastify";
+import { createOrderIntent } from "../apis";
 
-import AuthContext from '../contexts/AuthContext';
-const createdAt = new Date().toLocaleString('en-US', { timeZone: 'Atlantic/Azores' });
+import AuthContext from "../contexts/AuthContext";
+const createdAt = new Date().toLocaleString("en-US", {
+  timeZone: "Atlantic/Azores",
+});
 // Removed renderOrderingLimitMessage function
 
 // Removed renderTableVerificationMessage as it will be replaced by i18n
 
-const OrderForm = ({amount, items, color, selectedLanguage, isTakeAway, phoneNumber, arrivalTime,comment,customer_name, onOrderSuccess}) => { // Removed timeLeftToOrder, enable_ordering
-    const { t } = useTranslation(); // Initialize useTranslation
-    // Removed formatTime function
+const OrderForm = ({
+  amount,
+  items,
+  color,
+  selectedLanguage,
+  isTakeAway,
+  phoneNumber,
+  arrivalTime,
+  comment,
+  customer_name,
+  onOrderSuccess,
+}) => {
+  // Removed timeLeftToOrder, enable_ordering
+  const { t } = useTranslation(); // Initialize useTranslation
+  // Removed formatTime function
   const formRef = useRef(null);
-    // const history = useHistory(); // Get the history object to navigate
-  const [loading, setLoading] = useState(false)
-  const auth = useContext(AuthContext)
-  const params = useParams()
+  // const history = useHistory(); // Get the history object to navigate
+  const [loading, setLoading] = useState(false);
+  const auth = useContext(AuthContext);
+  const params = useParams();
 
-  const renderTotal= (selectedLanguage) => {
+  const renderTotal = (selectedLanguage) => {
     switch (selectedLanguage) {
-      case '中文':
+      case "中文":
         return "下单";
-      case 'English':
+      case "English":
         return "Place Order";
-      case 'Español':
+      case "Español":
         return "Enviar el pedido";
-      case 'Português':
+      case "Português":
         return "Enviar o pedido";
+      default:
+        return "Place Order";
     }
   };
 
-  const renderProcessing= (selectedLanguage) => {
+  const renderProcessing = (selectedLanguage) => {
     switch (selectedLanguage) {
-      case '中文':
+      case "中文":
         return "发送中";
-      case 'English':
+      case "English":
         return "Processing";
-      case 'Español':
+      case "Español":
         return "Procesando";
-      case 'Português':
+      case "Português":
         return "Processando";
-
+      default:
+        return "Processing";
     }
   };
   const renderOrderSuccessMessage = (selectedLanguage, orderNumber) => {
     switch (selectedLanguage) {
-      case '中文':
-        return `成功下单：订单号 ${orderNumber || ''}`;
-      case 'English':
-        return `Successfully placed an order: Order #${orderNumber || ''}`;
-      case 'Español':
-        return `Pedido realizado con éxito: Orden #${orderNumber || ''}`;
-      case 'Português':
-        return `Pedido realizado com sucesso: Pedido #${orderNumber || ''}`;
+      case "中文":
+        return `成功下单：订单号 ${orderNumber || ""}`;
+      case "English":
+        return `Successfully placed an order: Order #${orderNumber || ""}`;
+      case "Español":
+        return `Pedido realizado con éxito: Orden #${orderNumber || ""}`;
+      case "Português":
+        return `Pedido realizado com sucesso: Pedido #${orderNumber || ""}`;
       default:
-        return `Successfully placed an order: Order #${orderNumber || ''}`;
+        return `Successfully placed an order: Order #${orderNumber || ""}`;
     }
   };
 
-  
   const createOrder = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -76,36 +90,40 @@ const OrderForm = ({amount, items, color, selectedLanguage, isTakeAway, phoneNum
         return;
       }
 
-      const json = await createOrderIntent({
-        amount,
-        place: params.id,
-        table: params.table,
-        detail: items,
-        isTakeAway: isTakeAway,
-        comment: comment,
-        phoneNumber: phoneNumber,
-        arrival_time: arrivalTime,
-        language: selectedLanguage,
-        customer_name: customer_name,
-        created_at: createdAt,
-      }, auth.token);
+      const json = await createOrderIntent(
+        {
+          amount,
+          place: params.id,
+          table: params.table,
+          detail: items,
+          isTakeAway: isTakeAway,
+          comment: comment,
+          phoneNumber: phoneNumber,
+          arrival_time: arrivalTime,
+          language: selectedLanguage,
+          customer_name: customer_name,
+          created_at: createdAt,
+        },
+        auth.token,
+      );
 
       if (json?.success && json.order_id) {
         toast.success(
           renderOrderSuccessMessage(selectedLanguage, json.order_id),
           {
             autoClose: false,
-          }
+          },
         );
         onOrderSuccess(items);
       } else if (json?.error) {
-        toast(json.error, {type: "error"});
+        toast(json.error, { type: "error" });
         onOrderSuccess(items);
       } else {
-        toast.error("Failed to create order. Please try again.", { type: "error" });
+        toast.error("Failed to create order. Please try again.", {
+          type: "error",
+        });
         onOrderSuccess(items);
       }
-
     } catch (error) {
       toast(error.message || "Error processing order", { type: "error" });
     } finally {
@@ -115,22 +133,26 @@ const OrderForm = ({amount, items, color, selectedLanguage, isTakeAway, phoneNum
 
   return (
     <Form onSubmit={createOrder} ref={formRef}>
-    <div style={{ marginBottom: '10px', color: '#333', fontWeight: 'bold' }}>
-      {t('tableVerificationMessage', { tableDisplay: params.table === '77' ? 'VIP' : params.table })}
-    </div>
-    <Button
-      variant='standard' 
-      style={{backgroundColor: '#FE6C4C'}} 
-      className='.t-4' 
-      block 
-      type="submit" 
-      disabled={loading || items.length === 0} // Updated disabled logic
-    >
-      {loading ? renderProcessing(selectedLanguage) : renderTotal(selectedLanguage)} {/* Simplified button text logic */}
-    </Button>
-  </Form>
-
-  )
-} 
+      <div style={{ marginBottom: "10px", color: "#333", fontWeight: "bold" }}>
+        {t("tableVerificationMessage", {
+          tableDisplay: params.table === "77" ? "VIP" : params.table,
+        })}
+      </div>
+      <Button
+        variant="standard"
+        style={{ backgroundColor: "#FE6C4C" }}
+        className=".t-4"
+        block
+        type="submit"
+        disabled={loading || items.length === 0} // Updated disabled logic
+      >
+        {loading
+          ? renderProcessing(selectedLanguage)
+          : renderTotal(selectedLanguage)}{" "}
+        {/* Simplified button text logic */}
+      </Button>
+    </Form>
+  );
+};
 
 export default OrderForm;

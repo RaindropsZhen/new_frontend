@@ -1,17 +1,17 @@
-import { AiOutlineQrcode } from 'react-icons/ai';
-import { RiFileList3Line } from 'react-icons/ri';
-import { IoSettingsOutline } from 'react-icons/io5';
-import { FiEdit } from 'react-icons/fi'; // Icon for Edit Place
-import { Row, Col, Button, Modal } from 'react-bootstrap'; // Added Modal
-import { useParams, useHistory } from 'react-router-dom';
-import React, { useEffect, useState, useContext } from 'react';
-import styled from 'styled-components';
-import { RiEBike2Fill } from "react-icons/ri";
-import { TiPrinter } from "react-icons/ti";
-import AuthContext from '../contexts/AuthContext';
-import MainLayout from '../layouts/MainLayout';
-import {fetchPlace} from '../apis'; // Removed trailing comma
-import EditPlace from '../components/EditPlace'; // Import EditPlace component
+import { AiOutlineQrcode } from "react-icons/ai";
+import { RiFileList3Line } from "react-icons/ri";
+import { IoSettingsOutline } from "react-icons/io5";
+import { FiEdit } from "react-icons/fi"; // Icon for Edit Place
+import { Row, Col, Button, Modal } from "react-bootstrap"; // Added Modal
+import { useParams, useHistory } from "react-router-dom";
+import React, { useEffect, useState, useContext, useCallback } from "react"; // Added useCallback
+import styled from "styled-components";
+// import { RiEBike2Fill } from "react-icons/ri"; // Unused import
+// import { TiPrinter } from "react-icons/ti"; // Unused import
+import AuthContext from "../contexts/AuthContext";
+import MainLayout from "../layouts/MainLayout";
+import { fetchPlace } from "../apis"; // Removed trailing comma
+import EditPlace from "../components/EditPlace"; // Import EditPlace component
 
 const ButtonGrid = styled.div`
   display: grid;
@@ -44,47 +44,105 @@ const ButtonGrid = styled.div`
 const Place = () => {
   const [place, setPlace] = useState(null); // Initialize with null
   const [showEditPlaceModal, setShowEditPlaceModal] = useState(false);
-  
+
   const auth = useContext(AuthContext);
   const params = useParams();
   const history = useHistory();
 
-  const onFetchPlace = async () => {
+  const onFetchPlace = useCallback(async () => {
     const json = await fetchPlace(params.id, auth.token);
     if (json) {
       setPlace(json);
     }
-  };
+  }, [params.id, auth.token]); // Added dependencies to useCallback
 
   useEffect(() => {
     onFetchPlace();
-  }, []);
+  }, [onFetchPlace]); // Added onFetchPlace to dependencies
 
   return (
     <MainLayout>
-      <h1 style={{ textAlign: 'center', marginBottom: '20px' }}>管理界面</h1>
+      <h1 style={{ textAlign: "center", marginBottom: "20px" }}>管理界面</h1>
       <Row className="justify-content-center">
         <Col xs={12} md={6} lg={6}>
           <div className="mb-4">
             <ButtonGrid>
-              <Button variant="link" onClick={() => { history.push(`/places/${params.id}/settings`) }}>
-                <IoSettingsOutline size={50} style={{ color: '#444', lineHeight: 0, padding: 0, margin: 0 }} />
-                <div style={{ fontSize: '24px', marginTop: '5px' }}>菜单管理</div>
+              <Button
+                variant="link"
+                onClick={() => {
+                  history.push(`/places/${params.id}/settings`);
+                }}
+              >
+                <IoSettingsOutline
+                  size={50}
+                  style={{
+                    color: "#444",
+                    lineHeight: 0,
+                    padding: 0,
+                    margin: 0,
+                  }}
+                />
+                <div style={{ fontSize: "24px", marginTop: "5px" }}>
+                  菜单管理
+                </div>
               </Button>
 
-              <Button variant="link" onClick={() => setShowEditPlaceModal(true)}>
-                <FiEdit size={50} style={{ color: '#444', lineHeight: 0, padding: 0, margin: 0 }} />
-                <div style={{ fontSize: '24px', marginTop: '5px' }}>店铺设置</div>
+              <Button
+                variant="link"
+                onClick={() => setShowEditPlaceModal(true)}
+              >
+                <FiEdit
+                  size={50}
+                  style={{
+                    color: "#444",
+                    lineHeight: 0,
+                    padding: 0,
+                    margin: 0,
+                  }}
+                />
+                <div style={{ fontSize: "24px", marginTop: "5px" }}>
+                  店铺设置
+                </div>
               </Button>
 
-              <Button variant="link" onClick={() => { history.push(`/${params.id}/select_table/`) }}>
-                <AiOutlineQrcode size={50} style={{ color: '#444', lineHeight: 0, padding: 0, margin: 0 }} />
-                <div style={{ fontSize: '24px', marginTop: '5px' }}>点单链接</div>
+              <Button
+                variant="link"
+                onClick={() => {
+                  history.push(`/${params.id}/select_table/`);
+                }}
+              >
+                <AiOutlineQrcode
+                  size={50}
+                  style={{
+                    color: "#444",
+                    lineHeight: 0,
+                    padding: 0,
+                    margin: 0,
+                  }}
+                />
+                <div style={{ fontSize: "24px", marginTop: "5px" }}>
+                  点单链接
+                </div>
               </Button>
 
-              <Button variant="link" onClick={() => { history.push(`/places/${params.id}/orders`) }}>
-                <RiFileList3Line size={50} style={{ color: '#444', lineHeight: 0, padding: 0, margin: 0 }} />
-                <div style={{ fontSize: '24px', marginTop: '5px' }}>今日订单</div>
+              <Button
+                variant="link"
+                onClick={() => {
+                  history.push(`/places/${params.id}/orders`);
+                }}
+              >
+                <RiFileList3Line
+                  size={50}
+                  style={{
+                    color: "#444",
+                    lineHeight: 0,
+                    padding: 0,
+                    margin: 0,
+                  }}
+                />
+                <div style={{ fontSize: "24px", marginTop: "5px" }}>
+                  今日订单
+                </div>
               </Button>
 
               {/* <Button variant="link" >
@@ -99,27 +157,31 @@ const Place = () => {
             </ButtonGrid>
           </div>
         </Col>
-
       </Row>
 
       {place && (
-        <Modal show={showEditPlaceModal} onHide={() => setShowEditPlaceModal(false)} size="lg" centered>
+        <Modal
+          show={showEditPlaceModal}
+          onHide={() => setShowEditPlaceModal(false)}
+          size="lg"
+          centered
+        >
           <Modal.Header closeButton>
             <Modal.Title>编辑店铺信息 - {place.name}</Modal.Title>
           </Modal.Header>
           <Modal.Body>
-            <EditPlace 
-              place={place} 
+            <EditPlace
+              place={place}
               onDone={() => {
                 setShowEditPlaceModal(false);
                 onFetchPlace(); // Refresh place data after editing
-              }} 
+              }}
             />
           </Modal.Body>
         </Modal>
       )}
     </MainLayout>
-  )
+  );
 };
 
 export default Place;

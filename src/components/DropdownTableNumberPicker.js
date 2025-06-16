@@ -1,7 +1,7 @@
 // src/components/DropdownTableNumberPicker.js
 
-import React from 'react';
-import styled from 'styled-components';
+import React from "react";
+import styled from "styled-components";
 
 const StyledSelect = styled.select`
   font-size: 1rem;
@@ -20,20 +20,23 @@ const StyledSelect = styled.select`
   }
 `;
 const DropdownTableNumberPicker = ({ initialValue, min, max, onChange }) => {
-    const numberOptions = Array.from({ length: max - min + 1 }, (_, index) => min + index);
+  const numberOptions = Array.from(
+    { length: max - min + 1 },
+    (_, index) => min + index,
+  );
 
-    return (
-            <StyledSelect
-                value={initialValue}
-                onChange={(e) => onChange(parseInt(e.target.value))}
-            >
-                {numberOptions.map((option) => (
-                    <option key={option} value={option}>
-                        {option}
-                    </option>
-                ))}
-            </StyledSelect>
-    );
+  return (
+    <StyledSelect
+      value={initialValue}
+      onChange={(e) => onChange(parseInt(e.target.value))}
+    >
+      {numberOptions.map((option) => (
+        <option key={option} value={option}>
+          {option}
+        </option>
+      ))}
+    </StyledSelect>
+  );
 };
 
 export default DropdownTableNumberPicker;

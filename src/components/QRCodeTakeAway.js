@@ -1,9 +1,9 @@
-import { AiOutlineLink } from 'react-icons/ai';
-import { Button } from 'react-bootstrap';
-import QRCodeReact from 'qrcode.react';
-import React, { useRef } from 'react';
-import styled from 'styled-components';
-import { useReactToPrint } from 'react-to-print';
+import { AiOutlineLink } from "react-icons/ai";
+import { Button } from "react-bootstrap";
+import QRCodeReact from "qrcode.react";
+import React, { useRef } from "react";
+import styled from "styled-components";
+import { useReactToPrint } from "react-to-print";
 
 const Container = styled.div`
   position: relative;
@@ -32,7 +32,7 @@ const ComponentToPrint = styled.div`
   }
   h2 {
     font-size: 60px;
-    margin-bottom: 100px
+    margin-bottom: 100px;
   }
 `;
 
@@ -43,7 +43,7 @@ const QRCodeTakeAway = ({ placeId }) => {
   });
 
   const url = `${window.location.origin}/menu/${placeId}/takeaway`;
- 
+
   return (
     <Container>
       <QRCodeReact value={url} size={200} />
@@ -52,7 +52,11 @@ const QRCodeTakeAway = ({ placeId }) => {
           <Button variant="standard" onClick={handlePrint} className="mr-2">
             {`打印二维码`}
           </Button>
-          <Button variant="standard" href={`/menu/${placeId}/takeaway`} target="_blank">
+          <Button
+            variant="standard"
+            href={`/menu/${placeId}/takeaway`}
+            target="_blank"
+          >
             <AiOutlineLink size={25} />
           </Button>
         </div>
@@ -67,7 +71,7 @@ const QRCodeTakeAway = ({ placeId }) => {
         </ComponentToPrint>
       </div>
     </Container>
-  )
-}
+  );
+};
 
 export default QRCodeTakeAway;

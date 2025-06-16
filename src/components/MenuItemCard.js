@@ -1,9 +1,9 @@
-import { Row, Col, Modal } from 'react-bootstrap';
-import React, { useState, useEffect } from 'react';
-import Card from 'react-bootstrap/Card';
+import { Modal } from "react-bootstrap";
+import React, { useState, useEffect } from "react";
+import Card from "react-bootstrap/Card";
 import { LazyLoadImage } from "react-lazy-load-image-component";
-import styled from 'styled-components'; // Import styled-components
-import OperationButton from './OperationButton';
+import styled from "styled-components"; // Import styled-components
+import OperationButton from "./OperationButton";
 
 // Styled Components
 const NamePriceRow = styled.div`
@@ -11,7 +11,7 @@ const NamePriceRow = styled.div`
   justify-content: space-between;
   align-items: flex-start; /* Align to top in case name wraps */
   width: 100%;
-  margin-bottom: 8px; 
+  margin-bottom: 8px;
 `;
 
 const ItemName = styled.h5`
@@ -29,7 +29,7 @@ const ItemName = styled.h5`
 const ItemPrice = styled.p`
   font-size: 0.95rem;
   font-weight: bold;
-  color: ${props => props.color || '#007bff'};
+  color: ${(props) => props.color || "#007bff"};
   margin-bottom: 0;
   text-align: right;
   white-space: nowrap; /* Price usually doesn't wrap */
@@ -41,7 +41,7 @@ const CardBodyStyled = styled(Card.Body)`
   display: flex;
   flex-direction: column;
   flex-grow: 1;
-  justify-content: space-between; 
+  justify-content: space-between;
 `;
 
 // ItemInfo and ContentRow might not be needed with the new structure, or ItemInfo can be repurposed.
@@ -61,37 +61,37 @@ const ActionButtons = styled.div`
 
 const renderMenuItemDescriptionModalName = (selectedLanguage) => {
   switch (selectedLanguage) {
-    case '中文':
-      return '介绍';
-    case 'English':
-      return 'Description';
-    case 'Português':
-      return 'Descrição';
+    case "中文":
+      return "介绍";
+    case "English":
+      return "Description";
+    case "Português":
+      return "Descrição";
     default:
-      return '介绍';
+      return "介绍";
   }
 };
 
 const renderAvailabilityDinner = (selectedLanguage) => {
   switch (selectedLanguage) {
-    case '中文':
-      return '晚餐可点';
-    case 'English':
-      return 'Only available in dinner';
-    case 'Português':
-      return 'Disponível apenas no jantar';
+    case "中文":
+      return "晚餐可点";
+    case "English":
+      return "Only available in dinner";
+    case "Português":
+      return "Disponível apenas no jantar";
     default:
-      return 'Only available in dinner';
+      return "Only available in dinner";
   }
 };
 
 const renderMenuItemName = (item, selectedLanguage) => {
   switch (selectedLanguage) {
-    case '中文':
+    case "中文":
       return item.name;
-    case 'English':
+    case "English":
       return item.name_en;
-    case 'Português':
+    case "Português":
       return item.name_pt;
     default:
       return item.name_en;
@@ -100,11 +100,11 @@ const renderMenuItemName = (item, selectedLanguage) => {
 
 const renderMenuItemDescription = (item, selectedLanguage) => {
   switch (selectedLanguage) {
-    case '中文':
+    case "中文":
       return item.description;
-    case 'English':
+    case "English":
       return item.description_en;
-    case 'Português':
+    case "Português":
       return item.description_pt;
     default:
       return item.description;
@@ -112,37 +112,44 @@ const renderMenuItemDescription = (item, selectedLanguage) => {
 };
 
 const MenuItemCard = ({ language, item, onOrder, onRemove, color }) => {
-
   const [showDescription, setShowDescription] = useState(false);
   const handleShow = () => setShowDescription(true);
   const handleClose = () => setShowDescription(false);
 
   const date = new Date();
-  const lisbonTime = new Date(date.toLocaleString('en-US', { timeZone: 'Europe/Lisbon' }));
+  const lisbonTime = new Date(
+    date.toLocaleString("en-US", { timeZone: "Europe/Lisbon" }),
+  );
   const hour = lisbonTime.getHours();
   const minute = lisbonTime.getMinutes();
   const second = lisbonTime.getSeconds();
   const currentTimeSeconds = 3600 * hour + 60 * minute + second;
 
-  const [currentOrderingTiming, setCurrentOrderingTiming] = useState('');
+  const [currentOrderingTiming, setCurrentOrderingTiming] = useState("");
   const [currentAvailability, setCurrentAvailability] = useState(false);
-  
+
   useEffect(() => {
     const currentDay = new Date().getDay(); // 0 = Sunday, 6 = Saturday
-  
-    if (item.lunch_time_start <= currentTimeSeconds && currentTimeSeconds <= item.lunch_time_end) {
-      setCurrentOrderingTiming('lunch');
-    } else if (item.dinne_time_start <= currentTimeSeconds && currentTimeSeconds <= item.dinne_time_end) {
-      setCurrentOrderingTiming('dinner');
+
+    if (
+      item.lunch_time_start <= currentTimeSeconds &&
+      currentTimeSeconds <= item.lunch_time_end
+    ) {
+      setCurrentOrderingTiming("lunch");
+    } else if (
+      item.dinne_time_start <= currentTimeSeconds &&
+      currentTimeSeconds <= item.dinne_time_end
+    ) {
+      setCurrentOrderingTiming("dinner");
     } else {
-      setCurrentOrderingTiming('closes');
+      setCurrentOrderingTiming("closes");
     }
-  
+
     if (item.ordering_timing === "lunch_and_dinner") {
       setCurrentAvailability(true);
     } else {
       const is_available = item.ordering_timing === currentOrderingTiming;
-  
+
       // Check if the current day is Saturday (6) or Sunday (0)
       if (currentDay === 0 || currentDay === 6) {
         setCurrentAvailability(true);
@@ -152,30 +159,58 @@ const MenuItemCard = ({ language, item, onOrder, onRemove, color }) => {
     }
   }, [item, currentTimeSeconds, currentOrderingTiming]);
 
-  
   return (
     <>
-      <Card className='card' style={{ borderRadius: '10px', overflow: 'hidden', display: 'flex', flexDirection: 'column', height: '100%' }}>
+      <Card
+        className="card"
+        style={{
+          borderRadius: "10px",
+          overflow: "hidden",
+          display: "flex",
+          flexDirection: "column",
+          height: "100%",
+        }}
+      >
         <LazyLoadImage
           src={item.image}
           alt={renderMenuItemName(item, language)}
           style={{
-            objectFit: 'cover',
-            width: '100%',
-            height: '150px', // Adjusted image height
-            filter: currentAvailability ? '' : 'grayscale(80%)',
-            cursor: currentAvailability && (item.description || item.description_en || item.description_pt) ? 'pointer' : 'default'
+            objectFit: "cover",
+            width: "100%",
+            height: "150px", // Adjusted image height
+            filter: currentAvailability ? "" : "grayscale(80%)",
+            cursor:
+              currentAvailability &&
+              (item.description || item.description_en || item.description_pt)
+                ? "pointer"
+                : "default",
           }}
-          onClick={currentAvailability && (item.description || item.description_en || item.description_pt) ? handleShow : undefined}
+          onClick={
+            currentAvailability &&
+            (item.description || item.description_en || item.description_pt)
+              ? handleShow
+              : undefined
+          }
         />
         <CardBodyStyled>
-          <div> {/* Wrapper for top content: Name/Price and optional Description */}
+          <div>
+            {" "}
+            {/* Wrapper for top content: Name/Price and optional Description */}
             <NamePriceRow>
               <ItemName title={renderMenuItemName(item, language)}>
-                {item.code && <span className="red-text" style={{ marginRight: '5px', fontWeight: 'normal' }}>{item.code}</span>}
+                {item.code && (
+                  <span
+                    className="red-text"
+                    style={{ marginRight: "5px", fontWeight: "normal" }}
+                  >
+                    {item.code}
+                  </span>
+                )}
                 {renderMenuItemName(item, language)}
               </ItemName>
-              {item.price > 0 && <ItemPrice color={color}>{item.price}€</ItemPrice>}
+              {item.price > 0 && (
+                <ItemPrice color={color}>{item.price}€</ItemPrice>
+              )}
             </NamePriceRow>
             {/* 
             // Optional: Description can be added here if desired
@@ -186,7 +221,7 @@ const MenuItemCard = ({ language, item, onOrder, onRemove, color }) => {
             // )}
             */}
           </div>
-          
+
           {onOrder && (
             <ActionButtons>
               <OperationButton
@@ -197,7 +232,14 @@ const MenuItemCard = ({ language, item, onOrder, onRemove, color }) => {
               >
                 -
               </OperationButton>
-              <span style={{ margin: '0 8px', minWidth: '15px', textAlign: 'center', fontSize: '0.9rem' }}>
+              <span
+                style={{
+                  margin: "0 8px",
+                  minWidth: "15px",
+                  textAlign: "center",
+                  fontSize: "0.9rem",
+                }}
+              >
                 {item.quantity >= 0 ? item.quantity : 0}
               </span>
               <OperationButton
@@ -211,11 +253,18 @@ const MenuItemCard = ({ language, item, onOrder, onRemove, color }) => {
             </ActionButtons>
           )}
         </CardBodyStyled>
-        
+
         {/* Availability note */}
-        {!currentAvailability && item.ordering_timing === 'dinner' && (
-          <div style={{ padding: '5px 10px', textAlign: 'center', backgroundColor: '#f8f9fa', borderTop: '1px solid #eee' }}>
-            <small className="text-secondary" style={{fontSize: '0.7rem'}}>
+        {!currentAvailability && item.ordering_timing === "dinner" && (
+          <div
+            style={{
+              padding: "5px 10px",
+              textAlign: "center",
+              backgroundColor: "#f8f9fa",
+              borderTop: "1px solid #eee",
+            }}
+          >
+            <small className="text-secondary" style={{ fontSize: "0.7rem" }}>
               {renderAvailabilityDinner(language)}
             </small>
           </div>
@@ -226,12 +275,14 @@ const MenuItemCard = ({ language, item, onOrder, onRemove, color }) => {
       {(item.description || item.description_en || item.description_pt) && (
         <Modal show={showDescription} onHide={handleClose} centered>
           <Modal.Header closeButton>
-            <Modal.Title>{renderMenuItemDescriptionModalName(language)}</Modal.Title>
+            <Modal.Title>
+              {renderMenuItemDescriptionModalName(language)}
+            </Modal.Title>
           </Modal.Header>
           <LazyLoadImage
             src={item.image}
             alt={renderMenuItemName(item, language)}
-            style={{ width: '100%', height: 'auto' }}
+            style={{ width: "100%", height: "auto" }}
           />
           <Modal.Body>{renderMenuItemDescription(item, language)}</Modal.Body>
         </Modal>

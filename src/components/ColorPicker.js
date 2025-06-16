@@ -3,7 +3,7 @@ import { ChromePicker } from "react-color";
 import { Modal, Button } from "react-bootstrap";
 
 const ColorPickerComponent = ({ onChange }) => {
-  const [color, setColor] = useState('#4267b2'); // Initial color
+  const [color, setColor] = useState("#4267b2"); // Initial color
   const [showModal, setShowModal] = useState(false);
 
   const handleColorChange = (value) => {
@@ -34,13 +34,12 @@ const ColorPickerComponent = ({ onChange }) => {
           cursor: "pointer",
         }}
         onClick={handleOpenModal}
-      >
-      </Button>
+      ></Button>
       <Modal show={showModal} onHide={handleSettingCloseModal} centered>
         <Modal.Header closeButton>
-            <Modal.Title>自定义颜色</Modal.Title>
+          <Modal.Title>自定义颜色</Modal.Title>
         </Modal.Header>
-        <Modal.Body style={{ display: 'flex', justifyContent: 'center' }}>
+        <Modal.Body style={{ display: "flex", justifyContent: "center" }}>
           <ChromePicker
             color={color}
             onChange={handleColorChange}
@@ -50,14 +49,13 @@ const ColorPickerComponent = ({ onChange }) => {
           />
         </Modal.Body>
         <Modal.Footer className="justify-content-center">
-        <Button variant="standard" onClick={handleConfirm}>
+          <Button variant="standard" onClick={handleConfirm}>
             确认
-        </Button>
-        <Button variant="secondary" onClick={handleSettingCloseModal}>
+          </Button>
+          <Button variant="secondary" onClick={handleSettingCloseModal}>
             取消
-        </Button>
+          </Button>
         </Modal.Footer>
-
       </Modal>
     </div>
   );

@@ -1,7 +1,7 @@
-import { Spinner } from 'react-bootstrap';
-import { useDropzone } from 'react-dropzone';
-import React, { useCallback, useState,useEffect } from 'react';
-import styled from 'styled-components';
+import { Spinner } from "react-bootstrap";
+import { useDropzone } from "react-dropzone";
+import React, { useCallback, useState, useEffect } from "react";
+import styled from "styled-components";
 
 const Dropzone = styled.div`
   border: 1px dashed #ced4d9;
@@ -16,7 +16,7 @@ const Dropzone = styled.div`
   }
 `;
 
-function ImageDropzone({ value, onChange,reset, setReset }) {
+function ImageDropzone({ value, onChange, reset, setReset }) {
   const [loading, setLoading] = useState(false);
   const [previewUrl, setPreviewUrl] = useState(""); // Renamed from fileURL for clarity
 
@@ -26,14 +26,14 @@ function ImageDropzone({ value, onChange,reset, setReset }) {
       // Create a new object URL for the file
       const objectUrl = URL.createObjectURL(value);
       setPreviewUrl(objectUrl);
-    } else if (typeof value === 'string' && value) {
+    } else if (typeof value === "string" && value) {
       // If value is a string, assume it's a path or full URL
-      if (value.startsWith('http') || value.startsWith('blob:')) {
+      if (value.startsWith("http") || value.startsWith("blob:")) {
         setPreviewUrl(value); // It's already a full URL or a blob URL
       } else {
         // Construct full URL from relative path
-        const apiUrl = (process.env.REACT_APP_API_URL || '').replace(/\/$/, '');
-        const imagePath = value.startsWith('/') ? value.substring(1) : value;
+        const apiUrl = (process.env.REACT_APP_API_URL || "").replace(/\/$/, "");
+        const imagePath = value.startsWith("/") ? value.substring(1) : value;
         setPreviewUrl(`${apiUrl}/${imagePath}`);
       }
     } else {
@@ -41,62 +41,63 @@ function ImageDropzone({ value, onChange,reset, setReset }) {
     }
     // Cleanup object URL when component unmounts or value changes
     return () => {
-      if (previewUrl && previewUrl.startsWith('blob:')) {
+      if (previewUrl && previewUrl.startsWith("blob:")) {
         URL.revokeObjectURL(previewUrl);
       }
     };
   }, [value]);
 
-
-  const onDrop = useCallback((acceptedFiles) => {
-    setLoading(true);
-    const file = acceptedFiles[0];
-    if (file) {
-      // Revoke previous object URL if it exists
-      if (previewUrl && previewUrl.startsWith('blob:')) {
-        URL.revokeObjectURL(previewUrl);
+  const onDrop = useCallback(
+    (acceptedFiles) => {
+      setLoading(true);
+      const file = acceptedFiles[0];
+      if (file) {
+        // Revoke previous object URL if it exists
+        if (previewUrl && previewUrl.startsWith("blob:")) {
+          URL.revokeObjectURL(previewUrl);
+        }
+        const newPreviewUrl = URL.createObjectURL(file);
+        setPreviewUrl(newPreviewUrl);
+        onChange(file); // Pass the File object to the parent
       }
-      const newPreviewUrl = URL.createObjectURL(file);
-      setPreviewUrl(newPreviewUrl);
-      onChange(file); // Pass the File object to the parent
-    }
-    setLoading(false);
-  }, [onChange, previewUrl]); // Added previewUrl to dependencies
+      setLoading(false);
+    },
+    [onChange, previewUrl],
+  ); // Added previewUrl to dependencies
 
   useEffect(() => {
     if (reset) {
-      if (previewUrl && previewUrl.startsWith('blob:')) {
+      if (previewUrl && previewUrl.startsWith("blob:")) {
         URL.revokeObjectURL(previewUrl);
       }
       setPreviewUrl("");
-      if (setReset) setReset(false); 
+      if (setReset) setReset(false);
     }
   }, [reset, setReset, previewUrl]); // Added previewUrl to dependencies
 
-  const {getRootProps, getInputProps} = useDropzone({
+  const { getRootProps, getInputProps } = useDropzone({
     onDrop,
     multiple: false,
-    accept: 'image/*',
+    accept: "image/*",
   });
 
-  // displaySrc will now primarily rely on previewUrl state, 
+  // displaySrc will now primarily rely on previewUrl state,
   // as useEffect should correctly set it on initial load or value change.
   // The fallback logic here is removed to simplify and rely on the effect.
-  const displaySrc = previewUrl; 
+  const displaySrc = previewUrl;
 
   return (
     <Dropzone {...getRootProps()}>
       <input {...getInputProps()} />
-      {
-        displaySrc ? (
-          <img src={displaySrc} alt="Preview" />
-        ) : loading ? (
-          <Spinner variant="standard" animation="border" role="staus" />
-        ) : (
-          <span>拖拽图片，或者点击添加图片</span>)
-      }
+      {displaySrc ? (
+        <img src={displaySrc} alt="Preview" />
+      ) : loading ? (
+        <Spinner variant="standard" animation="border" role="staus" />
+      ) : (
+        <span>拖拽图片，或者点击添加图片</span>
+      )}
     </Dropzone>
-  )
+  );
 }
 
 export default ImageDropzone;

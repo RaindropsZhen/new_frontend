@@ -2,7 +2,7 @@ import React, { Fragment } from "react";
 
 import classes from "./Header.module.css";
 
-const Header = ({place}) => {
+const Header = ({ place }) => {
   return (
     <Fragment>
       <header className={classes.header}>

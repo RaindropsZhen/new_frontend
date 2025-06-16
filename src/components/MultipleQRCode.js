@@ -1,9 +1,9 @@
-import { AiOutlineLink } from 'react-icons/ai';
-import { Button } from 'react-bootstrap';
-import QRCodeReact from 'qrcode.react';
-import React, { useRef } from 'react';
-import styled from 'styled-components';
-import { useReactToPrint } from 'react-to-print';
+import { AiOutlineLink } from "react-icons/ai";
+import { Button } from "react-bootstrap";
+import QRCodeReact from "qrcode.react";
+import React, { useRef } from "react";
+import styled from "styled-components";
+import { useReactToPrint } from "react-to-print";
 
 const Container = styled.div`
   position: relative;
@@ -32,7 +32,7 @@ const ComponentToPrint = styled.div`
   }
   h2 {
     font-size: 60px;
-    margin-bottom: 100px
+    margin-bottom: 100px;
   }
 `;
 
@@ -48,12 +48,16 @@ const MultipleQRCode = ({ table, placeId }) => {
     <Container>
       <QRCodeReact value={url} size={200} />
       <Overlay>
-        <div className="d-flex" >
+        <div className="d-flex">
           <Button variant="standard" onClick={handlePrint} className="mr-2">
             {`打印`}
           </Button>
-          <Button variant="standard" href={`/menu/1/${placeId}/${table}`} target="_blank" >
-            链接   <AiOutlineLink size={25} />
+          <Button
+            variant="standard"
+            href={`/menu/1/${placeId}/${table}`}
+            target="_blank"
+          >
+            链接 <AiOutlineLink size={25} />
           </Button>
         </div>
       </Overlay>
@@ -67,7 +71,7 @@ const MultipleQRCode = ({ table, placeId }) => {
         </ComponentToPrint>
       </div>
     </Container>
-  )
-}
+  );
+};
 
 export default MultipleQRCode;
